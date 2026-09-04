@@ -1,0 +1,283 @@
+What is an Ensemble Model?
+
+An ensemble model combines predictions from multiple models to produce a final prediction.
+
+Instead of relying on one model, it uses the strengths of several models.
+
+In this project, the ensemble combines:
+
+Specialist Agent (Fine-Tuned LLM)
+Frontier Agent (RAG + Frontier Model)
+Neural Network Agent
+
+The goal is to reduce prediction error and increase accuracy.
+
+MODELS USED
+
+Specialist Agent
+
+Uses the fine-tuned model deployed on Modal.
+
+Job:
+
+Receives product description
+Sends it to fine-tuned model
+Returns predicted price
+Frontier Agent
+
+Uses RAG.
+
+Process:
+
+Find similar products from ChromaDB
+Retrieve relevant chunks
+Build prompt with context
+Send prompt to GPT-5.1
+Get price prediction
+
+This became one of the strongest models.
+
+Neural Network Agent
+
+Uses a deep neural network.
+
+Process:
+
+Product description
+Feature extraction
+Neural network inference
+Predicted price
+
+ENSEMBLE FORMULA
+
+The ensemble combines predictions using weights.
+
+Frontier Agent = 80%
+
+Specialist Agent = 10%
+
+Neural Network Agent = 10%
+
+Final Prediction:
+
+80% Frontier Price + 10% Specialist Price + 10% Neural Network Price
+
+The Frontier Agent received the largest weight because it had the best performance.
+
+RESULTS ACHIEVED
+
+Original ML Models
+
+Error: 87.6
+
+Neural Network
+
+Error: 63
+
+GPT-5.1
+
+Error: 44.74
+
+Fine-Tuned Model
+
+Error: 39.85
+
+Best model before RAG.
+
+Deep Neural Network
+
+Error: 46.49
+
+RAG + GPT-5.1
+
+Error: 30.19
+
+Massive improvement.
+
+Ensemble Model
+
+Error: 29.90
+
+Best result achieved.
+
+R² Score: 87%
+
+WHY ENSEMBLE WORKS
+
+Different models make different mistakes.
+
+Example:
+
+XGBoost: $820
+
+DNN: $880
+
+LLM: $860
+
+Actual: $850
+
+Combining them can produce a value closer to the true price.
+
+The ensemble benefits from multiple perspectives.
+
+IMPORTANT OBSERVATION
+
+Ensemble is not always the winner.
+
+Example:
+
+Shure MV7+ Microphone
+
+Actual Price: $299
+
+Specialist Model: $299 (perfect)
+
+Frontier Model: $289
+
+Ensemble: Slightly worse
+
+This shows that for individual products, one model may outperform the ensemble.
+
+However, across many products the ensemble usually performs better overall.
+
+FRONTIER AGENT
+
+Purpose: RAG-Based Price Estimation
+
+Workflow:
+
+Product Description ↓ Similarity Search ↓ Retrieve Related Products ↓ Build Context ↓ Send To GPT ↓ Price Prediction
+
+Uses:
+
+Embeddings
+ChromaDB
+Vector Search
+GPT
+
+NEURAL NETWORK AGENT
+
+Purpose: Predict product price using Deep Learning.
+
+Workflow:
+
+Product ↓ Preprocessing ↓ Neural Network ↓ Price Prediction
+
+ENSEMBLE AGENT
+
+Purpose: Combine all pricing agents.
+
+During initialization it creates:
+
+Specialist Agent
+Frontier Agent
+Neural Network Agent
+Preprocessor
+
+ENSEMBLE AGENT WORKFLOW
+
+Step 1
+
+Receive product description.
+
+Step 2
+
+Preprocess text using an LLM.
+
+Step 3
+
+Call Specialist Agent.
+
+Returns Price A.
+
+Step 4
+
+Call Frontier Agent.
+
+Returns Price B.
+
+Step 5
+
+Call Neural Network Agent.
+
+Returns Price C.
+
+Step 6
+
+Apply weighted combination.
+
+Step 7
+
+Return final price.
+
+MODELS CALLED DURING ONE PREDICTION
+
+Preprocessor LLM: 1 call
+
+RAG Encoder: 1 call
+
+Frontier LLM: 1 call
+
+Fine-Tuned LLM: 1 call
+
+Neural Network: 1 call
+
+Total:
+
+4 LLM-related calls + 1 Neural Network call
+
+IS THIS A TRUE AGENT?
+
+Instructor says this is an Agent Workflow.
+
+Reason:
+
+The sequence is fixed.
+
+Call Specialist ↓ Call Frontier ↓ Call Neural Network ↓ Combine Results
+
+There is no planning, reasoning about which agent to use, or autonomous decision making.
+
+Therefore:
+
+Agent Workflow ✅
+
+Fully Autonomous Agent ❌
+
+PRODUCTION AI ENGINEERING LESSON
+
+The instructor converted notebook code into proper Python modules.
+
+Added:
+
+Classes
+Docstrings
+Type Hints
+Logging
+Better Structure
+
+This is the transition from:
+
+Research Code → Production Code
+
+KEY TAKEAWAY
+
+Evolution of the project:
+
+Machine Learning ↓ Neural Networks ↓ Frontier Models ↓ Fine-Tuning ↓ RAG ↓ Ensemble ↓ Agent Workflow
+
+Final Best Result:
+
+Ensemble Agent
+
+MAE ≈ 29.9
+
+R² ≈ 87%
+
+The final ensemble achieved the best performance by combining:
+
+Fine-Tuned LLM
+RAG Frontier Model
+Deep Neural Network
+
+and leveraging the strengths of all three approaches.

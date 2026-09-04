@@ -1,0 +1,197 @@
+Tools and Tool Calling
+What is a Tool?
+
+A tool is simply a function that can perform some action.
+
+Examples:
+
+Search the web
+Get stock price
+Query database
+Read files
+Send email
+Update Google Sheet
+
+Tools give extra abilities to an LLM.
+
+Why Do We Need Tools?
+
+LLMs can only generate text.
+
+LLMs cannot:
+
+Search the internet
+Access databases
+Send emails
+Run SQL queries
+
+To do these actions, they need tools.
+
+Most Important Concept
+
+LLM does not execute tools.
+
+Our code executes tools.
+
+The LLM only says:
+
+"Use this tool."
+
+Then our code runs the tool.
+
+Tool Calling Flow
+
+User asks a question
+
+↓
+
+LLM decides which tool is needed
+
+↓
+
+LLM outputs tool name and parameters
+
+↓
+
+Our code reads that output
+
+↓
+
+Our code executes the tool
+
+↓
+
+Tool result is sent back to LLM
+
+↓
+
+LLM generates final answer
+
+Example
+
+User:
+
+"What is Tesla's stock price?"
+
+LLM understands the intent.
+
+LLM says:
+
+Use stock price tool for Tesla
+
+↓
+
+Our code runs the stock price function
+
+↓
+
+Tool returns price
+
+↓
+
+LLM creates final response
+
+Why Not Call The Tool Directly?
+
+Because users speak natural language.
+
+User says:
+
+"How much is Tesla trading at today?"
+
+Instead of:
+
+get_stock_price("Tesla")
+
+The LLM converts human language into the correct tool call.
+
+This is the real value of the LLM.
+
+What is Autonomy?
+
+Autonomy means the LLM chooses the next action.
+
+Example:
+
+Available actions:
+
+Move North
+Move South
+Move East
+Move West
+
+LLM chooses:
+
+"Move North"
+
+Our code sees that and performs the action.
+
+That choice is called autonomy.
+
+Reality of Autonomy
+
+Not magic.
+
+Just:
+
+Input → LLM Decision → Code Executes Action
+
+What is an Agent Loop?
+
+Agent keeps thinking and acting until goal is complete.
+
+Flow:
+
+User Request
+
+↓
+
+LLM Thinks
+
+↓
+
+Choose Tool
+
+↓
+
+Tool Runs
+
+↓
+
+Result Returned
+
+↓
+
+LLM Thinks Again
+
+↓
+
+Choose Another Tool
+
+↓
+
+Repeat Until Goal Achieved
+
+Very Important Mental Model
+
+Many people think:
+
+LLM → Runs Tool
+
+Wrong ❌
+
+Actual flow:
+
+LLM → Suggests Tool
+
+Code → Runs Tool
+
+Correct ✅
+
+Key Takeaways
+LLM only generates tokens (text)
+Tools perform actions
+LLM chooses tools
+Code executes tools
+Autonomy = LLM choosing next action
+Agent Loop = Think → Act → Observe → Repeat

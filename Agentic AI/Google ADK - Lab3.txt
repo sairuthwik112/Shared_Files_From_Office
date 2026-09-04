@@ -1,0 +1,693 @@
+Learn how to evaluate and improve ADK agents instead of directly building them.
+
+This lab teaches:
+
+Agent Evaluation
+Rubrics
+User Simulation
+Finding Agent Mistakes
+Improving Agent Behavior
+Re-running Evaluations
+Measuring Improvement
+
+Think of it like:
+
+Build Agent → Test Agent → Find Problems → Fix Problems → Test Again
+
+Main Business Scenario
+
+Cymbal Pools has pool installation records.
+
+The agent helps employees move customers through different stages.
+
+Pool Lifecycle:
+
+pool_estimates
+
+↓
+
+accepted_with_deposit
+
+↓
+
+scheduled_installations
+
+↓
+
+completed_pools
+
+↓
+
+paid_and_closed
+
+The agent should move records correctly between these tables.
+
+Why Evaluation is Needed
+
+Suppose customer reaches:
+
+scheduled_installations
+
+Agent incorrectly moves customer directly to:
+
+paid_and_closed
+
+Instead of:
+
+scheduled_installations
+
+↓
+
+completed_pools
+
+↓
+
+paid_and_closed
+
+Business process is broken.
+
+Evaluation helps detect these mistakes automatically.
+
+Task 1: Setup Environment
+
+Installed:
+
+Terraform
+ADK
+uv package manager
+
+Created:
+
+.env
+
+Contains:
+
+Google Cloud Project
+Region
+Gemini Model
+
+Purpose:
+
+Allows agent to authenticate and access Google Cloud resources.
+
+Why UV?
+
+Older approach:
+
+pip
+
+venv
+
+requirements.txt
+
+Multiple tools.
+
+UV combines everything into one tool.
+
+Benefits:
+
+Faster
+Cleaner
+Modern Python packaging
+Terraform Purpose
+
+Terraform is used later to reset database tables.
+
+Example:
+
+After evaluation:
+
+Bob moves to another table.
+
+Next evaluation needs original data.
+
+Terraform restores the database state.
+
+Task 2: Build Evaluation Set
+What is Evaluation?
+
+Testing an agent automatically.
+
+Instead of manually chatting every time.
+
+Example
+
+Test Question:
+
+Move Bob Jones from pool_estimates to accepted_with_deposit
+
+Expected Result:
+
+Correct transition
+
+Agent Score:
+
+PASS or FAIL
+
+What is an Eval Set?
+
+A collection of test scenarios.
+
+Think:
+
+Interview questions for the agent.
+
+Created:
+
+ledger.evalset.json
+
+Purpose:
+
+Stores evaluation configuration.
+
+What is scenarios.json?
+
+Contains customer test cases.
+
+Examples:
+
+Clark Kent
+
+Ron Weasley
+
+Bob Jones
+
+Each scenario asks the agent to perform actions.
+
+What is session_input.json?
+
+Provides initial environment data.
+
+Think:
+
+Initial database records before testing.
+
+What is eval_config.json?
+
+Defines evaluation criteria.
+
+Contains rubrics.
+
+What is a Rubric?
+
+A rule used to judge the agent.
+
+Example:
+
+Rubric:
+
+ledger_validity
+
+Checks:
+
+Did the agent move data correctly?
+
+First Rubric
+
+ledger_validity
+
+Checks:
+
+Record added properly
+
+Record deleted properly
+
+No data loss
+
+Added New Rubric
+
+valid_transitions
+
+Checks:
+
+Only allowed transitions happen.
+
+Valid Transitions
+
+pool_estimates
+
+↓
+
+accepted_with_deposit
+
+pool_estimates
+
+↓
+
+denied_estimates
+
+accepted_with_deposit
+
+↓
+
+scheduled_installations
+
+scheduled_installations
+
+↓
+
+completed_pools
+
+completed_pools
+
+↓
+
+paid_and_closed
+
+Example
+
+Valid:
+
+accepted_with_deposit
+
+↓
+
+scheduled_installations
+
+PASS
+
+Invalid:
+
+scheduled_installations
+
+↓
+
+paid_and_closed
+
+FAIL
+
+Running Evaluation
+
+Command:
+
+adk eval
+
+Purpose:
+
+Execute all scenarios automatically.
+
+What happens?
+
+Scenario
+
+↓
+
+Agent Responds
+
+↓
+
+Evaluator Reviews
+
+↓
+
+Rubrics Score Response
+
+↓
+
+PASS / FAIL
+
+Initial Results
+
+Clark Kent
+
+Ledger Validity → PASS
+
+Valid Transition → FAIL
+
+Reason:
+
+Agent skipped completed_pools
+
+Ron Weasley
+
+Ledger Validity → FAIL
+
+Reason:
+
+Deleted record without adding elsewhere
+
+Valid Transition → PASS
+
+Bob Jones
+
+Ledger Validity → PASS
+
+Valid Transition → PASS
+
+Conclusion:
+
+Agent has bugs.
+
+Reset Tables
+
+After evaluation:
+
+Database changes.
+
+Need clean state.
+
+Run Terraform.
+
+Purpose:
+
+Restore original records.
+
+Example
+
+Before Evaluation:
+
+Bob in pool_estimates
+
+After Evaluation:
+
+Bob moved elsewhere
+
+Terraform puts Bob back into original table.
+
+Task 3: Improve Agent
+
+Now we fix the issues.
+
+Problem 1
+
+perform_consistent_transaction
+
+Not implemented.
+
+Purpose
+
+Move customer safely from one table to another.
+
+Example
+
+Before:
+
+Bob in
+
+pool_estimates
+
+Move To:
+
+accepted_with_deposit
+
+Correct Process
+
+Read Record
+
+↓
+
+Write Record To New Table
+
+↓
+
+Delete Original Record
+
+↓
+
+Success
+
+Logic
+
+Read
+
+↓
+
+Verify Exists
+
+↓
+
+Insert
+
+↓
+
+Delete
+
+↓
+
+Return Success
+
+Why?
+
+Prevents data loss.
+
+Bad Example
+
+Delete first.
+
+Insert later.
+
+If insert fails:
+
+Customer disappears.
+
+Good Example
+
+Insert first.
+
+Delete afterwards.
+
+Problem 2
+
+check_transaction
+
+Not implemented.
+
+Purpose
+
+Verify movement between tables.
+
+Example
+
+Allowed
+
+pool_estimates
+
+↓
+
+accepted_with_deposit
+
+Return True
+
+Allowed
+
+completed_pools
+
+↓
+
+paid_and_closed
+
+Return True
+
+Not Allowed
+
+pool_estimates
+
+↓
+
+completed_pools
+
+Return False
+
+Why?
+
+Prevent business workflow violations.
+
+Problem 3
+
+Too Many Open Tools
+
+Agent originally used BigQuery Toolset.
+
+Problem
+
+Agent could do almost anything.
+
+Leads to mistakes.
+
+Solution
+
+Restrict available tools.
+
+Keep only:
+
+read_table
+
+read_table_all
+
+check_transaction
+
+perform_consistent_transaction
+
+Why?
+
+More control
+
+More predictable decisions
+
+Safer behavior
+
+Better evaluation scores
+
+Updated Instructions
+
+Explicitly explained each table.
+
+Examples:
+
+pool_estimates
+
+Contains customer estimates.
+
+accepted_with_deposit
+
+Contains approved estimates with deposits.
+
+completed_pools
+
+Contains finished installations.
+
+paid_and_closed
+
+Contains completed and fully paid projects.
+
+Now the agent understands the workflow.
+
+Improved Flow
+
+User Request
+
+↓
+
+Read Data
+
+↓
+
+Validate Transition
+
+↓
+
+Move Record Safely
+
+↓
+
+Return Response
+
+Second Evaluation
+
+Run Evaluations Again
+
+Purpose:
+
+Verify fixes.
+
+Expected Results
+
+Clark Kent
+
+PASS
+
+PASS
+
+Ron Weasley
+
+PASS
+
+PASS
+
+Bob Jones
+
+PASS
+
+PASS
+
+All Rubrics Pass
+
+Meaning:
+
+Agent behavior improved successfully.
+
+Upload Agent
+
+Final Step
+
+Upload:
+
+agent.py
+
+to Cloud Storage.
+
+Purpose:
+
+Allow grader to verify fixes.
+
+Key Concepts
+
+ADK = Agent Development Kit
+
+Evaluation = Automated testing for agents
+
+Eval Set = Collection of test cases
+
+Scenario = One conversation/test
+
+Rubric = Rule used for scoring
+
+User Simulator = Fake user for testing
+
+PASS = Correct behavior
+
+FAIL = Incorrect behavior
+
+Terraform = Reset environment
+
+Ledger Validity = Checks proper record movement
+
+Valid Transitions = Checks workflow rules
+
+BigQuery Tables = Business records
+
+Tool Restriction = Limit what agent can do
+
+Agent Improvement = Fix failures based on evaluation results
+
+Complete Workflow
+
+Build Agent
+
+↓
+
+Create Rubrics
+
+↓
+
+Create Eval Set
+
+↓
+
+Run Evaluation
+
+↓
+
+Find Failures
+
+↓
+
+Fix Agent Logic
+
+↓
+
+Limit Tools
+
+↓
+
+Re-run Evaluation
+
+↓
+
+All Tests Pass
+
+↓
+
+Upload Final Agent
+
+✅ This lab teaches the real production workflow used in companies: Don't trust an agent just because it works once. Evaluate it, measure failures, fix logic, and prove improvement through repeatable tests.

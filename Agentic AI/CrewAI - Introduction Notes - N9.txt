@@ -1,0 +1,370 @@
+CrewAI - Introduction Notes
+What is CrewAI?
+
+CrewAI is a lightweight multi-agent framework used to create agent teams that collaborate to solve tasks.
+
+Compared to OpenAI Agents SDK:
+
+More opinionated
+More structured
+More built-in conventions
+Faster to get started
+
+OpenAI Agents SDK gives more control.
+
+CrewAI gives more guidance.
+
+Core Concepts
+
+There are 3 main concepts:
+
+Agent
+Task
+Crew
+1. Agent
+
+An Agent is an AI worker.
+
+An Agent consists of:
+
+LLM
+Tools
+Memory
+Prompt Configuration
+
+Unlike OpenAI Agents SDK, CrewAI doesn't use only "instructions".
+
+Instead it uses 3 parts:
+
+Role
+
+What is the agent's job?
+
+Example:
+
+Research Analyst
+
+Goal
+
+What should the agent achieve?
+
+Example:
+
+Find accurate information about AI frameworks.
+
+Backstory
+
+Background information for the agent.
+
+Example:
+
+You are an experienced technology researcher with expertise in AI systems.
+
+Why Role + Goal + Backstory?
+
+CrewAI combines these together into one system prompt.
+
+CrewAI team believes this structure produces better agents.
+
+Benefits:
+
+Easier prompt design
+Better consistency
+Reusable agent templates
+
+Drawback:
+
+Less transparency
+System prompt generated behind the scenes
+2. Task
+
+A Task is work assigned to an agent.
+
+Think of it as:
+
+"What should be done?"
+
+A task contains:
+
+Description
+Expected Output
+
+Example:
+
+Description: Research the most popular AI Agent Frameworks.
+
+Expected Output: A detailed report with rankings and explanations.
+
+Important CrewAI Recommendation
+
+Tasks are more important than agents.
+
+Good Tasks + Simple Agents = Good Results
+
+Bad Tasks + Excellent Agents = Poor Results
+
+Focus on task quality.
+
+3. Crew
+
+A Crew is:
+
+Agents + Tasks
+
+Example:
+
+Research Agent ↓ Research Task
+
+Writer Agent ↓ Writing Task
+
+Together they form a Crew.
+
+Crew Execution Modes
+
+CrewAI supports 2 execution styles.
+
+Sequential Mode
+
+Simplest mode.
+
+Tasks run in order.
+
+Example:
+
+Task 1 ↓ Task 2 ↓ Task 3
+
+Very similar to orchestration by code.
+
+Predictable and easy to understand.
+
+Hierarchical Mode
+
+More advanced mode.
+
+A Manager Agent decides:
+
+Which task runs next
+Which agent should execute it
+What order should be used
+
+Flow:
+
+Manager Agent ↓ Task Decisions ↓ Worker Agents
+
+Very similar to orchestration by LLM.
+
+Sequential vs Hierarchical
+
+Sequential
+
+Fixed order
+Easier debugging
+More predictable
+
+Hierarchical
+
+Dynamic order
+More flexible
+Manager controls workflow
+YAML Configuration
+
+One of CrewAI's best features.
+
+Instead of defining everything inside Python code:
+
+CrewAI lets us define agents and tasks in YAML files.
+
+Benefits:
+
+Cleaner code
+Easier maintenance
+Prompts separated from logic
+Agent YAML File
+
+Contains:
+
+Role
+Goal
+Backstory
+
+Example:
+
+Researcher
+
+Role: Research Expert
+
+Goal: Collect accurate information
+
+Backstory: Experienced technology analyst
+
+Task YAML File
+
+Contains:
+
+Task Description
+Expected Output
+
+Example:
+
+Task: Research AI Agent Frameworks
+
+Expected Output: Detailed comparison report
+
+Python Files
+
+Every CrewAI project usually contains:
+
+crew.py
+
+Main Crew Definition
+
+Responsibilities:
+
+Load Agents
+Load Tasks
+Connect Everything
+Create Crew
+
+This is the heart of the project.
+
+main.py
+
+Entry Point
+
+Responsibilities:
+
+Start application
+Trigger crew execution
+Project Structure
+
+Typical CrewAI Project
+
+agents.yaml ↓ Agent Definitions
+
+tasks.yaml ↓ Task Definitions
+
+crew.py ↓ Crew Creation
+
+main.py ↓ Execution Start
+
+LLM Support
+
+CrewAI uses:
+
+LightLLM
+
+behind the scenes.
+
+Benefits:
+
+Supports:
+
+OpenAI
+Gemini
+Anthropic
+Grok
+Many Open Source Models
+
+Easy model switching.
+
+Just change configuration.
+
+Environment Variable Gotchas
+Gotcha 1
+
+For Gemini:
+
+Use:
+
+GOOGLE_API_KEY
+GEMINI_API_KEY
+
+CrewAI expects GEMINI_API_KEY.
+
+If missing:
+
+Gemini may not work.
+
+Gotcha 2
+
+Extra .env File
+
+Sometimes CrewAI creates a local .env file inside the project folder.
+
+This can override the main .env file.
+
+Result:
+
+API keys cannot be found.
+
+Solution:
+
+Delete the unnecessary inner .env file.
+
+Gotcha 3
+
+System-Level API Keys
+
+CrewAI uses:
+
+load_dotenv()
+
+without override=True.
+
+If your computer already has:
+
+OPENAI_API_KEY
+
+set globally,
+
+CrewAI may use that old key instead of your project key.
+
+Symptoms:
+
+Authentication errors
+Wrong API key used
+
+Solution:
+
+Check environment variables on your machine.
+
+Why People Like CrewAI
+
+Advantages:
+
+Easy setup
+Clean project structure
+YAML configuration
+Multi-agent support
+Good abstractions
+Supports many LLMs
+Drawbacks
+More opinionated
+Less direct control
+More framework conventions
+Some behavior hidden behind abstractions
+Interview Revision
+
+Agent = AI worker with Role, Goal, Backstory.
+
+Task = Work assigned to an agent.
+
+Crew = Collection of agents and tasks.
+
+Sequential = Tasks run in fixed order.
+
+Hierarchical = Manager LLM decides execution order.
+
+agents.yaml = Agent definitions.
+
+tasks.yaml = Task definitions.
+
+crew.py = Builds the crew.
+
+main.py = Runs the crew.
+
+LightLLM = Allows CrewAI to work with many LLM providers.
+
+One-Line Summary
+
+CrewAI is an opinionated multi-agent framework where Agents (Role + Goal + Backstory) perform Tasks, and multiple Agents and Tasks are organized into a Crew that can run either sequentially or under a manager agent in hierarchical mode.

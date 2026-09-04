@@ -1,0 +1,134 @@
+API
+
+Collection of endpoints
+Defines rules and structure
+Full service
+
+🔹 Endpoint
+
+Specific URL
+Performs one action
+Part of API
+
+Using Python Client (common in your case)
+👉 Used in:
+
+LangChain apps
+RAG pipelines
+AI prototypes
+Jupyter notebooks
+
+👉 Example flow:
+User → Python code → OpenAI Client → Model → Response
+
+
+✅ Using HTTP Endpoints
+👉 Used in:
+
+Web apps backend
+Microservices
+Mobile apps
+Enterprise systems
+
+👉 Example flow:
+Frontend → Backend API → HTTP request → OpenAI → Response
+
+response.choices[0].message.content is used to extract the generated text output from the API response returned by the language model.
+
+Chat Completion = an API that generates AI responses based on a conversation (messages)
+
+YES — you can use OpenAI client with Gemini
+👉 BUT → Gemini is NOT the model inside OpenAI
+Instead:
+✅ You are using OpenAI client (tool)
+✅ To call Gemini model (Google)
+✅ Through a compatible endpoint
+
+How to run the open source models?
+To use open-source models, we can install Ollama, download the model weights, run the local server, and access the model via its API using tools like the OpenAI client.
+
+Difference of LLM Models
+
+Base models are raw language models trained on data, chat models are fine-tuned for conversational interaction, and reasoning models are optimized for step-by-step problem solving and complex reasoning tasks.
+
+Hybrid model contains chat plus reasoning models both nowadays most models are using the like GPT-5, GEMINI 2.5 PRO....
+
+
+Full Website Summarizer using Ollama
+
+
+"""
+Website summarizer using Ollama instead of OpenAI
+"""
+
+from openai import OpenAI
+from scraper import fetch_website_contents   # your custom scraper function
+
+# Local Ollama API endpoint
+OLLAMA_BASE_URL = "http://localhost:11434/v1"
+
+# Model to use
+MODEL = "llama3.2"
+
+# System prompt (defines behavior)
+system_prompt = """
+You are a snarky assistant that analyzes the contents of a website,
+and provides a short, snarky, humorous summary, ignoring text that might be navigation related.
+Respond in markdown. Do not wrap the markdown in a code block - respond just with the markdown.
+"""
+
+# User prompt (task instruction)
+user_prompt_prefix = """
+Here are the contents of a website.
+Provide a short summary of this website.
+If it includes news or announcements, then summarize these too.
+"""
+
+# Build messages for LLM
+def messages_for(website):
+    """Create message list for the LLM."""
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt_prefix + website}
+    ]
+
+# Main summarization function
+def summarize(url):
+    """Fetch and summarize a website using Ollama."""
+
+    # Connect to local Ollama
+    ollama = OpenAI(base_url=OLLAMA_BASE_URL, api_key="ollama")
+
+    # Get website content
+    website = fetch_website_contents(url)
+
+    # Send to model
+    response = ollama.chat.completions.create(
+        model=MODEL,
+        messages=messages_for(website)
+    )
+
+    # Return summary text
+    return response.choices[0].message.content
+
+# Main entry point
+def main():
+    """Main function to run the program."""
+    
+    url = input("Enter a URL to summarize: ")
+    print("\nFetching and summarizing...\n")
+
+    summary = summarize(url)
+
+    print("\n✅ Summary:\n")
+    print(summary)
+
+# Run program
+if __name__ == "__main__":
+    main()
+
+
+
+
+
+

@@ -1,0 +1,562 @@
+What is the goal of this lab?
+
+The goal is to make multiple agents work together and solve a task.
+
+Instead of using only one agent:
+
+User ↓ Agent ↓ Response
+
+We use multiple agents:
+
+User ↓ Agent 1 Agent 2 Agent 3 ↓ Decision Agent ↓ Best Result
+
+This is called Agent Orchestration.
+
+WHAT IS ORCHESTRATION BY CODE?
+
+Orchestration by Code means:
+
+The developer decides:
+
+Which agent runs
+When it runs
+In what order it runs
+What output is passed to the next agent
+
+The workflow is controlled by Python code.
+
+The LLM is not deciding the workflow.
+
+You decide the workflow.
+
+BUSINESS SCENARIO
+
+Company Name:
+
+Comply AI
+
+Product:
+
+A SaaS platform that helps companies become SOC 2 compliant and prepare for audits.
+
+Goal:
+
+Generate cold sales emails to potential customers.
+
+THREE DIFFERENT SALES AGENTS
+
+Instead of creating one sales agent, three different sales agents are created.
+
+All agents sell the same product.
+
+The difference is their writing style.
+
+AGENT 1
+
+Professional Sales Agent
+
+Writing Style:
+
+Professional
+Serious
+Credible
+Formal
+
+Purpose:
+
+Create business-like emails.
+
+AGENT 2
+
+Humorous Sales Agent
+
+Writing Style:
+
+Funny
+Light-hearted
+Engaging
+
+Purpose:
+
+Make the email more memorable.
+
+AGENT 3
+
+Executive Sales Agent
+
+Writing Style:
+
+Short
+Direct
+Executive style
+
+Purpose:
+
+Respect busy people's time.
+
+WHY CREATE THREE AGENTS?
+
+Because nobody knows which style will be most effective.
+
+Instead of guessing:
+
+Generate multiple versions ↓ Compare them ↓ Choose the best one
+
+This is a common Agentic AI pattern.
+
+CREATING AGENTS
+
+Each agent has:
+
+Name
+Instructions
+Model
+
+Only the instructions are different.
+
+Model stays the same.
+
+Example:
+
+Professional Agent ↓ Formal Email
+
+Humorous Agent ↓ Funny Email
+
+Executive Agent ↓ Short Email
+
+RUNNING A SINGLE AGENT
+
+Initially only one agent is run.
+
+Purpose:
+
+Verify the agent works.
+
+Example output:
+
+A professional sales email about SOC2 compliance.
+
+RUNNING MULTIPLE AGENTS
+
+Now all three agents are executed.
+
+Goal:
+
+Generate three email versions.
+
+WHY NOT RUN THEM ONE BY ONE?
+
+Possible:
+
+Agent 1 ↓ Wait
+
+Agent 2 ↓ Wait
+
+Agent 3 ↓ Wait
+
+Slow.
+
+WHY USE ASYNCIO.GATHER?
+
+Asyncio allows running multiple tasks concurrently.
+
+Flow:
+
+Agent 1 ↘ Agent 2 → Running Together ↗ Agent 3
+
+Instead of waiting for Agent 1 to finish before Agent 2 starts.
+
+BENEFIT OF ASYNCIO.GATHER
+
+Faster execution.
+
+All agents generate emails simultaneously.
+
+Result:
+
+Less waiting time.
+
+PARALLEL EXECUTION
+
+What happened?
+
+Professional Agent ↓ Creates Email
+
+Humorous Agent ↓ Creates Email
+
+Executive Agent ↓ Creates Email
+
+All at approximately the same time.
+
+RESULT
+
+Three different emails are generated.
+
+Email 1: Professional
+
+Email 2: Humorous
+
+Email 3: Executive
+
+NOW WE HAVE A NEW PROBLEM
+
+We have three emails.
+
+Which one should be used?
+
+SALES PICKER AGENT
+
+A fourth agent is created.
+
+Name:
+
+Sales Picker
+
+Purpose:
+
+Choose the best email.
+
+SALES PICKER INSTRUCTIONS
+
+The prompt says:
+
+Imagine you are the customer.
+
+Review all email options.
+
+Choose the one you would most likely reply to.
+
+Do not explain.
+
+Return only the chosen email.
+
+WHY IS THIS CLEVER?
+
+Instead of hardcoding rules:
+
+"If email is shortest choose it."
+
+or
+
+"If email is funniest choose it."
+
+We let another LLM judge the results.
+
+COMPLETE WORKFLOW
+
+Agent 1 ↓ Professional Email
+
+Agent 2 ↓ Humorous Email
+
+Agent 3 ↓ Executive Email
+
+↓
+
+Sales Picker
+
+↓
+
+Best Email
+
+SMUSHING EMAILS TOGETHER
+
+After generating 3 emails:
+
+The outputs are combined into one large string.
+
+That combined string is sent to Sales Picker.
+
+Sales Picker reads all options and chooses one.
+
+THIS IS STILL ORCHESTRATION BY CODE
+
+Very Important.
+
+Although multiple agents are involved:
+
+Sales Picker does not decide who runs.
+
+Python code decides:
+
+Run Agent 1 Run Agent 2 Run Agent 3
+
+Then
+
+Run Sales Picker
+
+Therefore:
+
+It is still orchestration by code.
+
+TRACE ANALYSIS
+
+Trace name:
+
+Sales Selection Workflow
+
+Trace shows:
+
+Professional Agent ↓ Humorous Agent ↓ Executive Agent
+
+Running in parallel.
+
+After all three finish:
+
+Sales Picker runs.
+
+Then:
+
+Final result returned.
+
+WHY WAS TRACE USEFUL?
+
+You can confirm:
+
+All agents executed
+Execution order
+Timing
+Duration
+Final selection
+
+Very useful for debugging workflows.
+
+ADDING A TOOL
+
+The workflow becomes more powerful.
+
+A new tool is created:
+
+send_email_tool
+
+Purpose:
+
+Send the selected email.
+
+INPUTS TO THE TOOL
+
+Subject
+
+Text Body
+
+HTML Body
+
+WHY USE @function_tool?
+
+This converts the Python function into an Agent Tool.
+
+Without decorator:
+
+LLM cannot use it.
+
+With decorator:
+
+LLM can call it.
+
+DOCSTRING IMPORTANCE
+
+The tool contains descriptions.
+
+Example:
+
+Subject of the email.
+
+Plain text body.
+
+HTML body.
+
+The SDK automatically converts these descriptions into tool metadata.
+
+WHAT DOES THE SDK DO?
+
+It generates tool schema automatically.
+
+The LLM learns:
+
+What the tool does
+What parameters are needed
+How to call it
+
+NEW AGENT: SALES SENDER
+
+Previously:
+
+Sales Picker selected the best email.
+
+Now:
+
+Sales Sender selects the best email AND sends it.
+
+RESPONSIBILITY OF SALES SENDER
+
+Step 1: Review email options
+
+Step 2: Choose best email
+
+Step 3: Call send_email_tool
+
+Step 4: Return result
+
+TOOL CHOICE REQUIRED
+
+A special setting is used.
+
+Purpose:
+
+Force tool usage.
+
+Without it:
+
+Agent might choose not to send email.
+
+Sometimes LLMs ignore available tools.
+
+This setting ensures:
+
+Tool must be called.
+
+NEW WORKFLOW
+
+Professional Agent ↓ Email Generated
+
+Humorous Agent ↓ Email Generated
+
+Executive Agent ↓ Email Generated
+
+↓
+
+Sales Sender
+
+↓
+
+Chooses Best Email
+
+↓
+
+Calls send_email_tool
+
+↓
+
+Email Sent
+
+↓
+
+Success Response
+
+TRACE WITH TOOL CALL
+
+Trace now shows:
+
+Agent Execution ↓ Best Email Selected ↓ Tool Call ↓ Tool Parameters ↓ Tool Success ↓ Final Response
+
+HOW DID THEY VERIFY SUCCESS?
+
+Method 1:
+
+Trace
+
+Shows tool was executed.
+
+Method 2:
+
+Inbox
+
+Actual email arrived.
+
+Therefore:
+
+Workflow worked correctly.
+
+WHAT EMAIL WAS CHOSEN?
+
+In the instructor's run:
+
+The humorous email was selected.
+
+Specifically the email containing:
+
+"I promise not to mention synergy once."
+
+The Sales Sender liked that version the best.
+
+Your run may choose a different email.
+
+WHY MIGHT RESULTS DIFFER?
+
+LLMs are probabilistic.
+
+Different executions may produce:
+
+Different emails
+Different evaluations
+Different selections
+
+This is normal.
+
+CHALLENGE OF AGENTIC SYSTEMS
+
+Because LLMs make decisions:
+
+Outputs are not always identical.
+
+Therefore developers must:
+
+Test repeatedly
+Improve prompts
+Refine instructions
+Tune workflows
+
+WHY ORCHESTRATION BY CODE IS POPULAR
+
+Advantages:
+
+Easy to understand
+Predictable
+Easy debugging
+Complete control
+Clear execution order
+
+You always know:
+
+Which agent runs first Which agent runs second Which agent runs third
+
+COMPLETE ARCHITECTURE
+
+User Request ↓ Professional Agent ↓ Generate Email
+
+Humorous Agent ↓ Generate Email
+
+Executive Agent ↓ Generate Email
+
+(All run in parallel)
+
+↓
+
+Sales Sender
+
+↓
+
+Choose Best Email
+
+↓
+
+send_email_tool
+
+↓
+
+Email / Notification Sent
+
+↓
+
+Final Success Response
+
+KEY INTERVIEW TAKEAWAY
+
+Orchestration by Code means the developer explicitly controls the workflow.
+
+Example:
+
+Run Agent A ↓ Run Agent B ↓ Run Agent C ↓ Pass Results ↓ Run Decision Agent ↓ Call Tool
+
+The LLM generates content, but the workflow itself is controlled by Python code.
+
+That is why this lab is called "Orchestration by Code."

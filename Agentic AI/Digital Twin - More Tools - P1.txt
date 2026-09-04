@@ -1,0 +1,481 @@
+1. Why Pushover is Used
+
+Purpose:
+
+Send push notifications directly to your phone.
+Useful when AI agent receives important information.
+
+Benefits:
+
+Instantly know when someone interacts with your AI.
+Get notified when users show interest.
+Get notified when AI cannot answer questions.
+2. Pushover Setup
+
+Need two keys:
+
+User Key
+Found after login.
+Starts with "U".
+API Token
+Create an application.
+Starts with "A".
+
+Store in .env:
+
+PUSHOVER_USER = User Key
+PUSHOVER_TOKEN = API Token
+
+Also install Pushover app on mobile and link account.
+
+3. Sending a Push Notification
+
+Flow:
+
+Application
+
+↓
+
+Create JSON payload
+
+↓
+
+Call Pushover API
+
+↓
+
+Notification received on phone
+
+Purpose:
+
+Real-time alerts from AI agent.
+4. Why Add Tools to the Digital Twin?
+
+Without tools:
+
+AI can only chat.
+
+With tools:
+
+AI can take actions.
+AI can notify owner.
+AI can collect leads.
+AI can monitor user interactions.
+Tool 1: Record User Details
+
+Purpose:
+
+Capture potential customers or recruiters.
+
+Information collected:
+
+Email
+Name (optional)
+Notes (optional)
+
+Example:
+
+User: "I am John. My email is john@gmail.com. I'd like to discuss opportunities."
+
+Tool stores:
+
+Email = john@gmail.com
+Name = John
+Notes = Interested in opportunities
+
+Notification sent to phone.
+
+Tool 2: Record Unknown Question
+
+Purpose:
+
+Track questions the AI cannot answer.
+
+Example:
+
+User: "What was your experience with XYZ technology?"
+
+If technology isn't present in context:
+
+AI: "I don't know."
+
+At same time:
+
+Unknown Question Tool stores:
+
+"What was your experience with XYZ technology?"
+
+Owner receives notification.
+
+Why Record Unknown Questions?
+
+Helps improve Digital Twin.
+
+Benefits:
+
+Discover missing information.
+Understand user interests.
+Improve prompt context.
+Update LinkedIn summary or profile.
+
+Example:
+
+Many users ask:
+
+"Have you worked with Kubernetes?"
+
+You notice this question repeating.
+
+Solution:
+
+Add Kubernetes experience into context.
+
+Result:
+
+Better future answers.
+Tool Descriptions
+
+Each tool requires a JSON schema.
+
+Tool schema explains:
+
+Tool name
+Tool purpose
+Parameters
+Required fields
+
+This information is provided to the LLM.
+
+Record User Details Tool Schema
+
+Contains:
+
+Name:
+
+recordUserDetails
+
+Description:
+
+Use when user wants to connect.
+
+Parameters:
+
+email
+name
+notes
+
+Required:
+
+email only
+Record Unknown Question Tool Schema
+
+Contains:
+
+Name:
+
+recordUnknownQuestion
+
+Description:
+
+Use when AI cannot answer.
+
+Parameter:
+
+question
+
+Required:
+
+question
+Important Prompting Lesson
+
+Sometimes LLM ignores tools.
+
+To increase usage:
+
+Use stronger instructions.
+
+Instead of:
+
+Record unanswered questions.
+
+Use:
+
+Always use this tool whenever a question cannot be answered.
+
+Reason:
+
+LLM predicts tokens.
+
+Stronger wording increases probability of desired behavior.
+
+Tools Collection
+
+All tool schemas are placed into a tools list.
+
+Then sent to GPT.
+
+Flow:
+
+Tools
+
+↓
+
+Converted to JSON
+
+↓
+
+Sent to Model
+
+↓
+
+Model knows available tools
+
+Handling Tool Calls
+
+After GPT responds:
+
+Need Python code to process tool requests.
+
+Flow:
+
+GPT Response
+
+↓
+
+Extract Tool Calls
+
+↓
+
+Identify Tool Name
+
+↓
+
+Run Corresponding Function
+
+↓
+
+Return Tool Result
+
+First Approach: Manual If Statements
+
+Logic:
+
+If tool name is RecordUserDetails → Call RecordUserDetails()
+
+If tool name is RecordUnknownQuestion → Call RecordUnknownQuestion()
+
+Simple but becomes messy.
+
+Problem:
+
+More tools
+
+↓
+
+More if statements
+
+↓
+
+More maintenance
+
+Better Approach Using globals()
+
+Python stores functions in a dictionary-like structure.
+
+Example idea:
+
+Tool Name (String)
+
+↓
+
+Find Matching Function
+
+↓
+
+Execute Function
+
+Instead of many if statements.
+
+Benefits:
+
+Cleaner code
+Easier scaling
+Less duplication
+How globals() Works
+
+Suppose:
+
+Tool name returned by GPT:
+
+recordUnknownQuestion
+
+Python:
+
+Looks up function with same name.
+
+↓
+
+Gets actual function object.
+
+↓
+
+Executes function.
+
+This creates automatic mapping between:
+
+Tool Name
+
+and
+
+Function
+
+Advantage of globals()
+
+Without globals():
+
+If Tool A → Call A
+
+If Tool B → Call B
+
+If Tool C → Call C
+
+If Tool D → Call D
+
+Large if-chain.
+
+With globals():
+
+Tool Name ↓
+
+Lookup Function ↓
+
+Execute
+
+Much cleaner.
+
+Security Problem With globals()
+
+Very important.
+
+globals() exposes all global functions.
+
+Potential issue:
+
+LLM could theoretically attempt calling functions that were never intended as tools.
+
+Example:
+
+Instead of:
+
+recordUserDetails
+
+LLM tries:
+
+Some other function
+
+That could be dangerous.
+
+Production Solution
+
+Never expose all global functions.
+
+Instead use:
+
+Tool Registry
+
+Example concept:
+
+Allowed Tools
+
+recordUserDetails
+recordUnknownQuestion
+
+Only these can execute.
+
+Any other tool request:
+
+Reject immediately.
+
+This is safer.
+
+Overall Tool Calling Flow
+
+User Message
+
+↓
+
+GPT Receives Available Tool Schemas
+
+↓
+
+GPT Selects Tool
+
+↓
+
+Tool Call Returned
+
+↓
+
+Python Handles Tool Call
+
+↓
+
+Function Executes
+
+↓
+
+Result Returned
+
+↓
+
+GPT Generates Final Response
+
+Key Learning
+
+Tool Calling has two parts:
+
+Part 1: Tool Definition
+
+Describe tool using JSON.
+
+Includes:
+
+Name
+Description
+Parameters
+Part 2: Tool Execution
+
+Read GPT tool request.
+
+↓
+
+Match function.
+
+↓
+
+Execute function.
+
+↓
+
+Return results.
+
+Interview Point
+
+Why do we create a tool for unanswered questions?
+
+Answer:
+
+It helps collect real-world feedback about gaps in the AI's knowledge. Developers can analyze those questions and continuously improve the context, prompting, or knowledge sources of the AI system.
+
+
+*****
+
+handle_tool_calls() is responsible for executing the functions requested by the LLM and returning their outputs.
+
+loop() is the agent loop that repeatedly calls the LLM, executes requested tools, feeds the results back to the LLM, and continues until the model produces a final response.
+
+Pipeline:
+
+User → LLM → Tool Call → handle_tool_calls() → Tool Result → LLM → Final Answer.
+
+When multiple tool calls are required, loop() repeats this cycle until the task is completed.

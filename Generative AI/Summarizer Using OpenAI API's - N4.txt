@@ -1,0 +1,275 @@
+Ollama is a tool that allows running and serving open-source LLMs locally with a simple API, enabling offline and privacy-focused AI development.
+The use of ollama is we can use open source llms model locally in our computer
+
+A .env file is used to store environment variables (configuration values) separately from your code.
+👉 Simple meaning:
+.env = place to store secrets and settings (like API keys, passwords, URLs)
+
+In Cursor (or VS Code), Jupyter Notebook (.ipynb) is used to write and run code in small blocks (cells) instead of running the whole file at once.
+
+
+👉 Ollama = Run LLMs locally (on your system)
+👉 OpenAI = Use LLMs via cloud APIs (over the internet)
+
+This code builds a simple AI application where you give a website URL, the program fetches its content, prepares prompts (system + user), and sends the data to an LLM. The model reads the content and generates a summary, which is then returned and displayed in a clean format.
+
+Load API Key
+→ Read your OpenAI API key from .env file so you can use the model.
+
+
+Check API Key
+→ Validate if the key exists, has correct format, and has no extra spaces.
+
+
+Create First Message
+→ Write a simple message like “Hello GPT” to test the model.
+
+
+Convert to Message Format
+→ Wrap text into:
+{"role": "user", "content": message}
+
+→ This is required format for LLM.
+
+
+Call the Model
+→ Send message to OpenAI API and get a response.
+
+
+Fetch Website Content
+→ Use fetch_website_contents(url)
+→ This gets raw text from the webpage.
+
+
+Define System Prompt
+→ Tell model how to behave (e.g., “be funny, give short summary”).
+
+
+Define User Prompt
+→ Tell model what to do (e.g., “summarize this website”).
+
+
+Create Messages Function
+→ Combine:
+
+system prompt (behavior)
+user prompt + website content (task + data)
+
+
+
+Create Summarize Function
+→ Steps inside it:
+
+
+
+fetch website text
+create messages
+send to LLM
+return summary
+
+
+
+Run Summarize Function
+→ Input: URL
+→ Output: summarized content
+
+
+Display Output Nicely
+→ Show summary using markdown formatting.
+
+# Install required libraries (if needed)
+# pip install openai python-dotenv requests beautifulsoup4
+
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
+import requests
+from bs4 import BeautifulSoup
+from IPython.display import display, Markdown
+
+# -------------------------------
+# STEP 1: Load API key
+# -------------------------------
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    print("No API key found!")
+else:
+    print("API key loaded successfully")
+
+# -------------------------------
+# STEP 2: Initialize OpenAI client
+# -------------------------------
+client = OpenAI()
+
+# -------------------------------
+# STEP 3: Test simple LLM call
+# -------------------------------
+message = "Hello GPT! This is my first message"
+
+messages = [
+    {"role": "user", "content": message}
+]
+
+response = client.chat.completions.create(
+    model="gpt-4.1-mini",
+    messages=messages
+)
+
+print("Test Response:")
+print(response.choices[0].message.content)
+
+# -------------------------------
+# STEP 4: Fetch website content
+# -------------------------------
+def fetch_website_contents(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    return soup.get_text()
+
+# -------------------------------
+# STEP 5: Define prompts
+# -------------------------------
+system_prompt = """
+You are a helpful assistant that summarizes website content.
+Provide a short and clear summary.
+"""
+
+user_prompt_prefix = """
+Here is the content of a website:
+"""
+
+# -------------------------------
+# STEP 6: Create messages function
+# -------------------------------
+def messages_for(website):
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt_prefix + website}
+    ]
+
+# -------------------------------
+# STEP 7: Main summarize function
+# -------------------------------
+def summarize(url):
+    website = fetch_website_contents(url)
+
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=messages_for(website)
+    )
+
+    return response.choices[0].message.content
+
+# -------------------------------
+# STEP 8: Display nicely
+# -------------------------------
+def display_summary(url):
+    summary = summarize(url)
+    display(Markdown(summary))
+
+# -------------------------------
+# STEP 9: Run the project
+# -------------------------------
+display_summary("https://edwarddonner.com")
+
+
+
+Difference Between Open and Closed Source Models
+
+Open Source Models
+
+Code is available
+Weights are available (fully or partially)
+Can run locally
+Can modify and fine-tune
+Free to use
+High privacy (data stays on your system)
+Performance is good but not top-level
+
+✅ Examples:
+
+Llama 2 / Llama 3
+Mistral / Mixtral
+Gemma
+Falcon
+GPT‑2
+
+
+🔒 Closed Source Models
+
+Code is not available
+Weights are not accessible
+Only usable through API
+Cannot modify the model
+Paid (API cost)
+Data goes to cloud
+Very high performance
+
+✅ Examples:
+
+GPT‑4 / GPT‑5 (OpenAI)
+Claude (Anthropic)
+Gemini (Google)
+
+3 Ways to Use Open Source Models (Correct Version)
+✅ 1️⃣ Chat Interface (UI-based usage)
+👉 Use model like ChatGPT interface
+
+No coding required
+Simple interaction (ask questions)
+Runs locally or hosted
+
+✅ Examples:
+
+Ollama UI (chat mode)
+Hugging Face Spaces (chat apps)
+Local web UIs (Open WebUI)
+
+👉 Use case:
+
+Beginners
+Quick testing
+Learning
+
+
+✅ 2️⃣ API-based usage (Cloud or Hosted)
+👉 Models are hosted somewhere → you call them using APIs
+
+Works like OpenAI API
+No need to manage model locally
+Scalable
+
+⚠️ Your correction:
+👉 This is NOT only closed source
+👉 Even open models can be served via APIs
+✅ Examples:
+
+Hugging Face Inference API
+AWS Bedrock (some models)
+Azure AI
+Google Vertex AI
+
+👉 Use case:
+
+Production applications
+Web apps
+Scalable systems
+
+
+✅ 3️⃣ Local Inference (Direct usage on your system)
+👉 Run model directly on your laptop/server
+
+Full control
+No internet needed
+Uses model weights
+
+✅ Examples:
+
+Ollama
+Hugging Face Transformers (local)
+llama.cpp
+
+
+

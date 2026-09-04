@@ -1,0 +1,576 @@
+Project Goal
+
+Build a Coding Agent that can:
+
+Create Python files
+Read files
+Write files
+Execute Python code
+Run code safely inside Docker
+Return results
+
+Think:
+
+Agent + Tools + Docker Sandbox = Mini Claude Code
+
+Important Learning
+
+This project follows the instructor's rule:
+
+Start Simple
+
+1 Agent
+1 Task
+
+Instead of creating many agents unnecessarily.
+
+Agent
+
+Agent: Python Developer
+
+Role:
+
+Python Developer
+
+Goal:
+
+Use sandbox tools to complete coding assignments.
+
+Backstory:
+
+Experienced Python developer.
+
+LLM:
+
+GPT-5.4-mini
+
+Task
+
+Task: Coding Task
+
+Description:
+
+Use sandbox tools to write and run Python code for the assignment.
+
+Expected Output:
+
+What was done
+Final result
+
+Output File:
+
+solution.md
+
+New Concept: Code Execution
+
+Old CrewAI:
+
+Plain Text
+1
+allow_code_execution=True
+Show more lines
+
+Previously worked.
+
+Now:
+
+Deprecated
+No longer performs actual execution
+
+Therefore:
+
+We create our own tools.
+
+Why Use Docker?
+
+Problem:
+
+If agent runs code directly on your system:
+
+Plain Text
+1
+Delete Files
+2
+Read Sensitive Data
+3
+Modify System
+Show more lines
+
+Possible security risks.
+
+Solution:
+
+Docker Sandbox
+
+Run code inside isolated container.
+
+Sandbox Concept
+
+Created Folder:
+
+sandbox/
+
+Agent can only:
+
+Read files
+Write files
+Execute files
+
+inside this folder.
+
+Think:
+
+Sandbox = Safe Play Area
+
+Custom Tools Created
+
+4 Tools
+
+1. List Sandbox Files
+
+Purpose:
+
+Show all files in sandbox.
+
+Returns:
+
+Plain Text
+1
+file1.py
+2
+file2.py
+Show more lines
+
+or
+
+Plain Text
+1
+Sandbox is empty
+Show more lines
+2. Read Sandbox File
+
+Input:
+
+Filename
+
+Purpose:
+
+Read file contents.
+
+Example:
+
+Plain Text
+1
+solution.py
+Show more lines
+
+Returns file content.
+
+3. Write Sandbox File
+
+Inputs:
+
+Filename
+Content
+
+Purpose:
+
+Create or overwrite a file.
+
+Example:
+
+Write:
+
+Plain Text
+1
+main.py
+Show more lines
+
+with Python code.
+
+4. Run Sandbox Python
+
+Most Important Tool
+
+Purpose:
+
+Execute Python file safely.
+
+Example:
+
+Plain Text
+1
+run_sandbox_python("main.py")
+Show more lines
+How Docker Execution Works
+
+Tool runs:
+
+Docker Container
+
+↓
+
+Mount sandbox folder
+
+↓
+
+Execute Python file
+
+↓
+
+Capture output
+
+↓
+
+Destroy container
+
+Container is temporary.
+
+Called:
+
+Ephemeral Container
+
+Meaning:
+
+Exists briefly and gets removed.
+
+Docker Command Logic
+
+Container:
+
+Python 3.13
+
+Sandbox Folder:
+
+Mounted inside container
+
+Python File:
+
+Executed
+
+Output:
+
+Captured and returned to agent
+
+Timeout:
+
+60 seconds
+
+If longer:
+
+Fail execution
+
+Tool Creation
+
+CrewAI uses:
+
+@tool
+
+decorator
+
+Example Concept:
+
+Plain Text
+1
+@tool
+2
+function()
+Show more lines
+
+This automatically converts Python function into CrewAI Tool.
+
+Requirements:
+
+Type hints
+Docstring
+Return value
+Sandbox Tools Collection
+
+All tools grouped into:
+
+sandbox_tools
+
+Contains:
+
+List Files
+Read File
+Write File
+Run Python
+
+Then attached to agent.
+
+crew.py
+
+Contains:
+
+Agent definition
+Task definition
+Tool attachment
+
+Agent gets:
+
+sandbox_tools
+
+Now agent can:
+
+Inspect files
+Create files
+Execute code
+Assignment Given
+
+Calculate:
+
+Plain Text
+1
+1 - 1/3 + 1/5 - 1/7 + ...
+Show more lines
+
+for:
+
+1,000,000 terms
+
+Then:
+
+Multiply result by 4
+
+Why Can't LLM Do This Directly?
+
+1 Million calculations
+
+↓
+
+Too large
+
+↓
+
+Needs actual computation
+
+Therefore:
+
+Agent must write code.
+
+What Agent Did
+
+Step 1
+
+Checked sandbox.
+
+Result:
+
+Plain Text
+1
+Sandbox Empty
+Show more lines
+
+↓
+
+Step 2
+
+Created Python file.
+
+↓
+
+Step 3
+
+Wrote code.
+
+↓
+
+Step 4
+
+Executed code in Docker.
+
+↓
+
+Step 5
+
+Collected result.
+
+↓
+
+Step 6
+
+Generated report.
+
+Mathematical Concept
+
+Series Used:
+
+Leibniz Series
+
+Formula:
+
+Plain Text
+1
+π / 4
+2
+=
+3
+1 - 1/3 + 1/5 - 1/7 + ...
+Show more lines
+
+Therefore:
+
+Sum × 4
+
+≈ π
+
+Result:
+
+Approximately
+
+Plain Text
+1
+3.14159
+Show more lines
+Files Generated
+sandbox/
+
+Contains:
+
+Generated Python code.
+
+Example:
+
+Plain Text
+1
+leibniz_pi.py
+Show more lines
+output/
+
+Contains:
+
+Plain Text
+1
+solution.md
+Show more lines
+
+Summary report.
+
+What Is This Similar To?
+
+Looks like:
+
+Claude Code
+
+Cursor Agent
+
+OpenAI Codex
+
+But Important Difference:
+
+We built it ourselves.
+
+Big Idea
+
+Claude Code is basically:
+
+LLM
+
+Tools
+
+File Access
+
+Code Execution
+
+Feedback Loop
+
+This project shows how such coding agents are built.
+
+Tool Flow
+
+Agent
+
+↓
+
+List Files
+
+↓
+
+Write Python File
+
+↓
+
+Run Python File
+
+↓
+
+Read Output
+
+↓
+
+Generate Answer
+
+Traces
+
+Used to verify:
+
+Tool calls
+File creation
+Docker execution
+LLM reasoning
+
+Always check traces when debugging.
+
+Interview Revision
+
+Agent = AI Worker
+
+Tool = Capability
+
+Sandbox = Safe execution environment
+
+Docker = Isolated container
+
+@tool = Creates CrewAI tool
+
+Code Execution = Achieved through custom tools
+
+Ephemeral Container = Temporary container deleted after use
+
+Run Sandbox Python = Executes code safely in Docker
+
+Claude Code = LLM + Tools + Code Execution
+
+20-Second Revision
+
+Coda Project = Mini Claude Code
+
+1 Agent → Python Developer
+
+1 Task → Coding Assignment
+
+4 Tools:
+
+List Files
+Read File
+Write File
+Run Python
+
+Docker provides safe code execution.
+
+Agent writes Python code → stores in sandbox → runs it in Docker → captures output → generates report.
+
+Key takeaway:
+
+Coding agents are just LLMs equipped with file-system tools and secure code-execution tools.
+
+Provide your feedback on BizChat
+
+Assignment
+    ↓
+Agent
+    ↓
+List Sandbox Files
+    ↓
+Write Python File
+    ↓
+Store in sandbox/
+    ↓
+Run File in Docker
+    ↓
+Get Output
+    ↓
+Create Report
+    ↓
+solution.md

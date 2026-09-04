@@ -1,0 +1,127 @@
+Forward Pass
+Question: What is Python?
+The model uses:
+
+Llama weights (frozen)
+LoRA weights (trainable)
+
+to generate an answer.
+Example:
+Correct answer: Python is a programming language.
+Model predicts: Python is a snake.
+Forward Pass = Generate a prediction.
+
+Step 2: Loss Calculation
+Now the model compares:
+Correct answer: Python is a programming language.
+Predicted answer: Python is a snake.
+The model measures how wrong it is.
+
+Small mistake → Low loss
+Big mistake → High loss
+
+Loss = Error score.
+
+Step 3: Backward Pass
+The model analyzes the error.
+It calculates gradients.
+Gradients tell:
+
+Which LoRA weights caused the error
+Whether to increase or decrease them
+By how much
+
+Remember:
+
+Llama weights → Frozen ❌
+LoRA weights → Updated ✅
+
+Backward Pass = Calculate how LoRA weights should change.
+
+Step 4: Optimization
+The optimizer uses gradients to update LoRA weights.
+Example:
+Current LoRA weight = 5
+Gradient says increase it.
+Optimizer changes it to:
+5 → 5.1
+Now the model should perform slightly better next time.
+Optimization = Update weights using gradients.
+
+Learning Rate
+Learning rate controls how much the weights change.
+Small learning rate:
+
+Small updates
+Slow learning
+Stable
+
+Large learning rate:
+
+Large updates
+Fast learning
+Can become unstable
+
+Learning Rate = Size of the weight update.
+
+Gradient
+Gradient tells the model:
+"Which direction should I change the weights to reduce the error?"
+Example:
+If the prediction is wrong,
+Gradient says:
+
+Increase this weight
+Decrease that weight
+
+Gradient = Direction of learning.
+
+Optimizer
+The optimizer uses gradients and learning rate to update weights.
+Common optimizer:
+
+AdamW ✅
+
+Optimizer = Component that actually changes the weights.
+
+Batch
+A batch is a group of training examples processed together.
+Example:
+1000 training examples
+Batch size = 100
+The model learns from 100 examples at a time.
+Batch = Number of examples processed at once.
+
+Gradient Accumulation
+Suppose GPU can only fit 4 examples at a time.
+But you want an effective batch size of 16.
+Process:
+
+Train on 4 samples
+Train on next 4 samples
+Train on next 4 samples
+Train on next 4 samples
+
+Then update the weights once.
+4 + 4 + 4 + 4 = 16
+Gradient Accumulation = Combine gradients from multiple small batches before updating weights.
+
+Epoch
+One epoch means seeing the entire dataset once.
+Example:
+1000 training examples
+After the model processes all 1000 examples:
+✅ 1 Epoch completed
+If Epoch = 3
+The model reads all training data 3 times.
+Epoch = One complete pass through the dataset.
+
+Easy Memory Trick
+Forward Pass → Predict
+Loss → Measure error
+Gradient → Find how to reduce error
+Optimizer → Update weights
+Learning Rate → Size of update
+Batch → Data processed at once
+Gradient Accumulation → Combine small batches
+Epoch → Read whole dataset once 

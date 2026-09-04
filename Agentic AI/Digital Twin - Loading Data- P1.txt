@@ -1,0 +1,223 @@
+Digital Twin Project Setup
+Create a folder called twin
+Add two files:
+
+linkedin.pdf
+
+Download your LinkedIn profile as a PDF
+Save it as linkedin.pdf (all lowercase)
+Linux servers are case-sensitive, so exact naming matters
+
+summary.txt
+
+Short summary about yourself
+2 to 5 sentences
+Include your background, skills, interests, etc.
+This helps build a digital twin of yourself
+
+Example:
+
+My name is Sai Ruthwik Reddy
+I am a Project Engineer at Wipro
+Interested in AI, ML, GenAI, Agentic AI, and LLMs
+Working on AI projects and research
+Purpose of the Project
+Build a Digital Twin of yourself
+Acts like an AI version of you
+Can answer questions about:
+Your skills
+Experience
+Education
+Projects
+Career background
+Similar to an intelligent resume
+Could be used by employers or clients
+Packages Used
+
+Gradio
+
+Creates user interfaces
+
+PyPDF
+
+Reads PDF files
+
+OpenAI Client
+
+Connects to LLM models
+Reading the LinkedIn PDF
+
+Steps:
+
+Open linkedin.pdf
+Use PdfReader
+Read all pages
+Extract text from every page
+Combine all extracted text
+
+Result:
+
+LinkedIn profile becomes plain text
+
+Important:
+
+Extracted text may look messy
+Jobs, skills, summaries may be mixed together
+LLMs can still understand unstructured text very well
+Reading summary.txt
+
+Steps:
+
+Open file
+Read content
+Save in variable
+Print to verify
+
+Result:
+
+AI gets additional personal information
+Three Important LLM Concepts
+1. System Prompt
+
+Definition:
+
+Special instruction given to the model
+Sets behavior and role
+
+Examples:
+
+You are a helpful assistant
+You are a coding assistant
+You are a career advisor
+You are a snarky assistant
+
+Purpose:
+
+Gives overall context
+Controls tone and personality
+Influences responses
+2. Conversation History
+
+Definition:
+
+Collection of previous messages
+
+Pattern:
+
+User → Assistant → User → Assistant → User
+
+Example:
+
+User: Hi
+
+Assistant: Hello
+
+User: My name is Sai
+
+Assistant: Nice to meet you
+
+User: What is my name?
+
+The entire conversation is sent again when generating the next response.
+
+Purpose:
+
+Maintains context
+Creates continuity
+3. Illusion of Memory
+
+Most Important Concept
+
+Reality:
+
+LLMs do NOT actually remember past conversations
+
+Every API call is:
+
+Independent
+Stateless
+
+The reason ChatGPT seems to remember:
+
+Each request includes:
+
+System prompt
+Entire conversation history
+
+So model can see:
+
+System: You are helpful
+
+User: Hi
+
+Assistant: Hello
+
+User: My name is Sai
+
+Assistant: Nice to meet you
+
+User: What is my name?
+
+Because the model sees the entire conversation again, it can answer:
+
+"Your name is Sai."
+
+Why LLM Appears to Have Memory
+
+Not because:
+
+It remembered a previous call
+
+But because:
+
+Previous messages were included again in the input
+
+This creates the "illusion of memory."
+
+Cost of Conversation History
+
+Question:
+
+Are we paying for previous messages every time?
+
+Answer:
+
+Yes
+
+Why?
+
+Model must process all previous context
+Needed for intelligent responses
+Otherwise it forgets everything
+
+Without conversation history:
+
+User: My name is Sai
+
+(New API call)
+
+User: What is my name?
+
+Response:
+
+I don't know
+
+Because previous message wasn't included.
+
+Structure of Messages Sent to LLM
+
+Input contains:
+
+System Prompt
+
+Role and instructions
+
+Conversation History
+
+Previous user/assistant messages
+
+Latest User Message
+
+Current question
+
+The model uses all of this to generate the next response.

@@ -1,0 +1,393 @@
+🚀 TECHNIQUES USED IN TRAINING TIME
+These techniques help the model learn better
+
+✅ 1. Data Augmentation
+
+Add more data
+Example:
+
+rewrite descriptions
+generate synthetic data
+
+
+
+
+✅ 2. Feature Engineering
+
+Convert text → numbers
+TF-IDF, embeddings
+
+
+✅ 3. Model Training
+
+Linear regression
+Neural networks
+Transformers
+
+
+✅ 4. Regularization
+
+Prevent overfitting
+Dropout, L2
+
+
+✅ 5. Hyperparameter Tuning
+
+Learning rate
+batch size
+
+
+✅ 6. Loss Function Optimization
+
+Reduce error (MAE, RMSE)
+
+
+✅ 7. Fine-tuning
+
+Train pretrained models on your data
+
+TECHNIQUES USED IN INFERENCE TIME
+
+These techniques help improve prediction quality and speed
+
+✅ 1. Prompt Engineering (LLMs)
+
+Better input → better output
+
+
+✅ 2. Retrieval (RAG)
+
+Fetch relevant context before prediction
+
+
+✅ 3. Caching
+
+Store previous responses
+
+
+✅ 4. Quantization
+
+Make model smaller and faster
+
+
+✅ 5. Beam Search / Sampling
+
+Better output generation
+
+
+✅ 6. Post-processing
+
+Clean output
+Format result
+
+
+✅ 7. Ensemble (sometimes)
+
+Combine multiple model outputs
+
+
+🔥 KEY DIFFERENCE (VERY IMPORTANT)
+Training Techniques:
+👉 Improve how model learns
+Inference Techniques:
+👉 Improve how model behaves after learning
+
+
+Fine-Tuning Methods
+
+All three are fine-tuning methods, but they differ in how the model learns from data.
+
+SFT → learns from correct answers
+DPO → learns from preferences (better vs worse)
+RFT (RLHF) → learns using rewards (trial & error)
+
+
+✅ 1. SFT (Supervised Fine-Tuning)
+🔹 Idea
+👉 Teach model using input → correct output pairs
+
+🔹 Example
+Input: "What is the capital of India?"
+Output: "New Delhi"
+
+
+🔹 What happens
+
+Model predicts answer
+Compare with actual answer
+Adjust weights
+
+👉 Like normal training
+
+🔹 Simple analogy
+Teacher gives:
+
+Question ✅
+Correct answer ✅
+
+Student just memorizes patterns
+
+🔹 When to use SFT
+Use SFT when:
+
+✅ You have labeled data (correct answers)
+✅ Task is clear (classification, QA, prediction)
+✅ You want a strong base model
+
+
+🔹 In your project
+👉 Price prediction dataset
+Input: product description  
+Output: price
+
+✅ This is SFT
+
+✅ 2. DPO (Direct Preference Optimization)
+🔹 Idea
+👉 Teach model by comparing better answer vs worse answer
+
+🔹 Example
+Question: "Write a polite email"
+
+Answer A: "Send me the report now"
+Answer B: "Could you please share the report?"
+
+👉 B is better ✅
+
+
+🔹 What happens
+
+Model sees 2 outputs
+Learns: “this one is better”
+
+👉 No need for reward model
+
+🔹 Simple analogy
+Teacher says:
+
+❌ This is bad
+✅ This is better
+
+Student learns preferences
+
+🔹 When to use DPO
+Use DPO when:
+
+✅ You don’t have exact answers
+✅ But you know which answer is better
+✅ Need better alignment (politeness, tone, safety)
+
+
+🔹 Real-world use
+
+Chatbots (tone improvement)
+Response ranking
+Reducing harmful outputs
+
+
+✅ 3. RFT / RLHF (Reinforcement Fine-Tuning)
+(RFT = Reinforcement Fine-Tuning, commonly RLHF)
+
+🔹 Idea
+👉 Model learns using reward signals (trial and error)
+
+🔹 Example
+Model generates answer → humans give reward score
+
+Good answer → +10  
+Bad answer → -5
+
+
+🔹 What happens
+
+Model generates output
+Reward model scores it
+Model updates to maximize reward
+
+👉 Learning like a game
+
+🔹 Simple analogy
+Like training a dog 🐶
+
+Good behavior → reward ✅
+Bad behavior → penalty ❌
+
+
+🔹 When to use RFT (RLHF)
+Use when:
+
+✅ You want human-aligned behavior
+✅ Task is complex (ChatGPT-like systems)
+✅ No clear single "correct answer"
+✅ Need reasoning, safety, helpfulness
+
+
+🔹 Real-world use
+
+ChatGPT, Claude, Gemini
+Complex decision-making systems
+
+We do NOT use all datasets for training. We train only on training data, validate during training, and test the model on unseen test data to measure performance
+
+
+✅ Fine-Tuning + Training Notes
+✅ What is Fine-Tuning
+
+Fine-tuning = training a pretrained model using your own data
+Goal → make model good at a specific task
+We update model weights (parameters) using custom data
+
+
+✅ How Training Works (Core Flow)
+
+Give input-output data
+Convert text → numbers (tokens)
+Model predicts output
+Compare with actual output
+Calculate error (loss)
+Update weights
+Repeat many times
+
+
+✅ Example (Your Project)
+Input: "Apple iPhone 13, 128GB"
+Output: 50000
+👉 Model learns:
+
+iPhone → high price
+cable → low price
+
+
+✅ JSONL Format
+Simple:
+{"input":"Apple iPhone 13","output":"50000"}
+
+Chat format:
+{"messages":[{"role":"user","content":"Apple iPhone 13"},{"role":"assistant","content":"50000"}]}
+
+
+✅ Dataset Split
+Training → 70% → learning
+Validation → 15% → tuning
+Test → 15% → final evaluation
+
+✅ Role of Each Data
+Training data:
+
+Used for learning ✅
+
+Validation data:
+
+Used during training ✅
+No weight update ❌
+
+Test data:
+
+Used after training ✅
+Completely unseen ❌
+
+
+✅ When Validation is Used
+
+After each epoch
+Check performance
+Tune parameters
+Detect overfitting
+
+Flow:
+Train → Validate → Train → Validate
+
+✅ Evaluation (Important)
+Model is NOT exact → we measure error
+Example:
+Actual = 50000
+Predicted = 47000
+Error = 3000
+Metrics:
+
+MAE → average error
+MSE → squared error
+RMSE → root error
+
+👉 Goal = minimize error
+
+✅ Key Concept
+Model does NOT memorize data
+Model learns patterns ✅
+
+✅ Fine-Tuning Types
+SFT → learn from correct answers
+DPO → learn from better vs worse answers
+RFT (RLHF) → learn using rewards
+
+✅ When to Use
+SFT:
+
+Clear input-output data
+Example: price prediction ✅
+
+DPO:
+
+Have multiple answers
+Want best one
+
+RFT:
+
+Want human-like behavior
+ChatGPT systems
+
+
+✅ Hyperparameters
+Learning rate → speed of learning
+Epochs → number of passes
+Batch size → samples at once
+Optimizer → how weights update
+Dropout → avoid overfitting
+Weight decay → regularization
+
+✅ Providers for Fine-Tuning
+
+OpenAI → easiest ✅
+Hugging Face → full control ✅
+Google Vertex AI
+AWS Bedrock / SageMaker
+Anthropic
+Open-source (LLaMA, Mistral)
+
+
+✅ Groq (Important)
+
+Groq = inference platform ✅
+NOT for training ❌
+Used for running models fast
+
+👉 Use Groq for:
+
+batch processing
+fast responses
+
+
+✅ Final Key Points
+
+
+Train → training data
+
+
+Validate → check performance
+
+
+Test → final evaluation
+
+
+Fine-tuning updates model weights
+
+
+Model learns patterns, not exact answers
+
+
+Evaluation = measure error
+
+
+
+✅ One-Line Summary
+Fine-tuning = training a pretrained model using input-output data so it learns patterns and can predict accurately on unseen data

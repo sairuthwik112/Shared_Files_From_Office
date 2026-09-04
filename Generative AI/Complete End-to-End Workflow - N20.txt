@@ -1,0 +1,464 @@
+Complete End-to-End Workflow of the Agentic Deal Finder System
+
+Think of the entire system as a company with 4 employees:
+
+Planning Agent (Manager)
+Scanner Agent (Research Team)
+Ensemble Agent (Pricing Expert)
+Messaging Agent (Marketing Team)
+
+The user only talks to the Manager.
+
+The Manager coordinates everyone else.
+
+Step 1: User Starts The Process
+
+The user gives a goal.
+
+Example:
+
+"Find the best bargain deal and notify me."
+
+At this moment:
+
+The system knows nothing.
+
+It doesn't know:
+
+Which products exist
+Which deals are available
+Which deal is best
+
+It only knows the final goal.
+
+Step 2: Planning Agent Receives The Goal
+
+The Planning Agent is the brain that controls the workflow.
+
+It starts reasoning:
+
+"I need to find the best deal."
+
+"But I don't know any deals yet."
+
+"So first I should search for deals."
+
+The Planning Agent does not search itself.
+
+Instead, it decides to use a tool.
+
+Step 3: Planning Agent Calls Scanner Agent
+
+The Planning Agent chooses:
+
+"Use the Scan Internet tool."
+
+Behind the scenes this tool actually calls the Scanner Agent.
+
+Now control moves to the Scanner Agent.
+
+Step 4: Scanner Agent Collects Deals
+
+Scanner Agent visits:
+
+RSS feeds
+Deal websites
+Bargain websites
+
+Example collected deals:
+
+Dell Laptop
+Samsung TV
+iPhone
+Air Fryer
+Smart Watch
+
+Typically it gathers around 30 deals.
+
+At this stage all data is messy text.
+
+Example:
+
+"Dell Inspiron Laptop originally $999 now only $599"
+
+"Dont miss this Samsung TV for $499"
+
+The computer cannot cleanly use this yet.
+
+This is called:
+
+Unstructured Data
+
+Step 5: Scanner Agent Sends Data To GPT
+
+Now the Scanner Agent calls GPT using Structured Outputs.
+
+GPT receives:
+
+Deal descriptions
+Product information
+Discount information
+
+GPT's job is:
+
+Understand the text
+Extract useful information
+Select the most promising deals
+Step 6: GPT Converts Unstructured Data Into Structured Data
+
+GPT reads:
+
+"Dell Laptop was $999 now $599"
+
+and understands:
+
+Product = Dell Laptop
+
+Current Price = 599
+
+Original Price = 999
+
+Then GPT creates structured JSON-like information.
+
+Instead of messy paragraphs, we now have organized data.
+
+This is the huge value of LLMs.
+
+They're acting like intelligent parsers.
+
+Step 7: OpenAI SDK Creates Python Objects
+
+GPT returns structured JSON.
+
+OpenAI SDK converts that JSON into:
+
+Deal Objects
+
+Example:
+
+Deal
+
+Description
+Price
+URL
+
+Now everything becomes easy for Python to use.
+
+The Scanner Agent returns:
+
+Top 5 Deals
+
+to the Planning Agent.
+
+Step 8: Planning Agent Receives Top Deals
+
+Now the Planning Agent has information like:
+
+Deal A
+
+Price = $600
+
+Deal B
+
+Price = $500
+
+Deal C
+
+Price = $900
+
+But it still doesn't know:
+
+Which one is actually a bargain?
+
+A $600 product might only be worth $620.
+
+Not a great deal.
+
+So more analysis is required.
+
+Step 9: Planning Agent Decides To Estimate True Value
+
+The Planning Agent reasons:
+
+"I know the selling prices."
+
+"I don't know the real values."
+
+"I should estimate their true values."
+
+So it calls another tool.
+
+This tool triggers the Ensemble Agent.
+
+Step 10: Ensemble Agent Starts Price Analysis
+
+The Ensemble Agent is the pricing specialist.
+
+Its goal:
+
+Determine what a product should really cost.
+
+It does not rely on one model.
+
+It combines many models.
+
+Think of it like asking multiple experts.
+
+Step 11: Product Information Is Prepared
+
+Before estimating value, the system enriches the information.
+
+Example:
+
+Instead of:
+
+"Dell Laptop"
+
+it generates:
+
+Product Name
+Category
+Features
+Brand
+
+This gives pricing models more context.
+
+Step 12: Multiple AI Models Analyze The Product
+
+The Ensemble Agent calls multiple models.
+
+Frontier Models:
+
+GPT-5
+GPT-5.1
+Claude
+
+Open Source Models:
+
+Fine-Tuned Specialist Model
+GPT OSS
+Embedding Models
+
+Traditional ML:
+
+Neural Network
+
+Every model gives its opinion.
+
+Just like asking multiple analysts.
+
+Step 13: Ensemble Agent Produces A Final Valuation
+
+Example:
+
+Dell Laptop
+
+Selling Price = $600
+
+Estimated True Value = $1000
+
+Samsung TV
+
+Selling Price = $500
+
+Estimated True Value = $550
+
+Now the system knows how good each discount is.
+
+Step 14: Results Return To Planning Agent
+
+The Planning Agent now receives:
+
+Deal 1
+
+Price = $600
+
+Value = $1000
+
+Savings = $400
+
+Deal 2
+
+Price = $500
+
+Value = $550
+
+Savings = $50
+
+The Planning Agent now has enough information to decide.
+
+Step 15: Planning Agent Chooses The Best Deal
+
+This is the autonomous decision-making step.
+
+Nobody hard-coded:
+
+"Always choose Dell."
+
+Instead the Planning Agent evaluates all options.
+
+It concludes:
+
+"The Dell Laptop provides the biggest value advantage."
+
+Winner selected.
+
+Step 16: Planning Agent Calls Messaging Agent
+
+Now the Planning Agent has:
+
+Product
+Price
+Estimated Value
+URL
+
+Next objective:
+
+Notify the user.
+
+So it activates the Messaging Agent.
+
+Step 17: Messaging Agent Creates Human-Friendly Message
+
+Without AI:
+
+Notification might look like:
+
+"Dell Laptop - Price $600."
+
+Boring.
+
+The Messaging Agent uses an LLM to create excitement.
+
+Example:
+
+"🚨 Amazing Deal Alert! Grab this Dell Laptop for just $600 while it's worth nearly $1000!"
+
+Now the message feels natural and persuasive.
+
+Step 18: Messaging Agent Sends Notification
+
+The message is sent to Pushover.
+
+Pushover is a notification service.
+
+The service takes the message and forwards it to the user's phone.
+
+Step 19: User Receives Notification
+
+The phone receives:
+
+"🚨 Amazing Deal Alert! Grab this Dell Laptop for just $600 while it's worth nearly $1000!"
+
+The goal has been achieved.
+
+What Is The Planning Agent Really Doing?
+
+The Planning Agent never:
+
+❌ Reads RSS feeds
+
+❌ Predicts prices
+
+❌ Sends notifications
+
+Instead it continuously asks:
+
+"What should happen next?"
+
+Its job is orchestration.
+
+Just like a project manager.
+
+Why Is This Called Agentic AI?
+
+Because the workflow is:
+
+Goal ↓ Reason ↓ Choose Tool ↓ Get Result ↓ Reason Again ↓ Choose Next Tool ↓ Repeat Until Goal Achieved
+
+This loop is the key idea.
+
+Complete Workflow In One View
+
+User Request
+
+↓
+
+Planning Agent Starts
+
+↓
+
+Calls Scanner Agent
+
+↓
+
+RSS Feeds + Deal Websites
+
+↓
+
+GPT Reads Deal Data
+
+↓
+
+Structured Outputs
+
+↓
+
+Top 5 Deals Returned
+
+↓
+
+Planning Agent
+
+↓
+
+Calls Ensemble Agent
+
+↓
+
+Multiple Models Estimate True Value
+
+↓
+
+Best Deal Identified
+
+↓
+
+Planning Agent
+
+↓
+
+Calls Messaging Agent
+
+↓
+
+LLM Creates Alert Message
+
+↓
+
+Pushover Notification Service
+
+↓
+
+Phone Notification
+
+↓
+
+User Receives Best Deal
+
+The Most Important Thing To Remember
+
+The heart of this system is not the Scanner Agent, Ensemble Agent, or Messaging Agent.
+
+The heart of the system is:
+
+Planning Agent → Reasoning → Tool Selection → Agent Loop
+
+The Planning Agent keeps asking:
+
+What information do I need?
+Which tool can give me that information?
+Am I done?
+If not, what should I do next?
+
+That repeated reasoning process is what makes the system an actual Agentic AI system rather than a simple chatbot.

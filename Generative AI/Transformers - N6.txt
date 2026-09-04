@@ -1,0 +1,35 @@
+                                                  GPT - Generative Pre-Trained Transformer
+
+Transformers enable efficient training on large datasets using parallel processing and attention mechanisms, leading to better performance and scalability, though they can be computationally expensive.
+
+Before the Transformer we have the model that called LSTM(Long Short Term Memory) But it didn't do work in parallel so it is very time consuming
+
+Tokens are the text units processed by the model, while parameters are the learned values that help the model understand and generate that text.
+
+LLMs do NOT have memory by default
+Every time you call the model:
+
+It behaves like a brand new request
+It does not remember past conversations automatically
+
+LLMs are stateless, meaning they do not retain memory between calls. To maintain conversation context, we pass the entire message history in every API request.
+
+Context Window - it is like maximum number of input tokens that can give to the model
+
+
+An API key is unique per user account and is used for authentication and billing, while the same key can be used to access different models by specifying the model name in the request.
+
+openai=OPENAI() - connects the code to open ai api
+
+Example:
+User input:
+https://example.com
+
+
+We convert into:
+Here is the website: https://example.com
+Please extract relevant links for a company brochure.
+Return output in JSON format.
+
+👉 This is called prompt engineering
+

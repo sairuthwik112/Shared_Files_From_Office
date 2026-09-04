@@ -1,0 +1,387 @@
+Goal: Build, debug, deploy, and use a Paint Agent for Cymbal Shops.
+
+The agent helps users:
+
+Select paint
+Select color
+Calculate paint quantity
+Calculate cost
+Use company paint datasheets
+Remember previous selections
+
+Task 1: Agent Search
+
+Why?
+
+LLM doesn't know Cymbal Shops paint products.
+
+Need company knowledge source.
+
+Created:
+
+Agent Search App = Paint Search
+Data Store = Cymbal Paint
+Source = Paint Datasheets PDF
+
+Flow:
+
+User Question ↓ Search App ↓ Datasheet ↓ Correct Product Information
+
+Key Point: Search App provides company-specific knowledge to the agent.
+
+Task 2: ADK Setup
+
+ADK = Agent Development Kit
+
+Used to create AI agents.
+
+Installed:
+
+ADK
+Chainlit
+Dependencies
+
+Created .env file
+
+Contains:
+
+Project ID
+Region
+Model
+Search Engine ID
+
+Important:
+
+SEARCH_ENGINE_ID connects Search Agent to Paint Search App.
+
+Task 3: Debug Paint Agent
+
+Initial Error:
+
+Multiple tools are supported only when they are all search tools
+
+Reason:
+
+Root Agent had:
+
+Search Tool
+Other Tools
+Sub-Agent transfers
+
+Google doesn't allow mixing search tools with other tools directly.
+
+Fix:
+
+Find Search Agent.
+
+Search Agent uses VertexAiSearchTool.
+
+Wrap Search Agent using AgentTool.
+
+Remove Search Agent from sub_agents list.
+
+Add Search Agent as tool.
+
+Result:
+
+Agent can search paint data successfully.
+
+Agent Structure
+
+Root Agent
+
+├── Search Agent ├── Room Planner Agent └── Coverage Calculator Agent
+
+Root Agent controls workflow.
+
+Sub-agents perform specialized tasks.
+
+Task 4: Session State
+
+Purpose:
+
+Store customer selections.
+
+Examples:
+
+SELECTED_PAINT
+
+PRICE
+
+COVERAGE_RATE
+
+Fix 1
+
+tools.py
+
+Before:
+
+Tool did nothing.
+
+After:
+
+Stores values inside:
+
+tool_context.state
+
+Example:
+
+SELECTED_PAINT = EcoGreens
+
+PRICE = 45
+
+COVERAGE_RATE = 12
+
+Fix 2
+
+Coverage Calculator Agent
+
+Before:
+
+COVERAGE_RATE
+
+PRICE
+
+were treated as plain text.
+
+Agent couldn't read saved values.
+
+Replace With:
+
+{COVERAGE_RATE?}
+
+{PRICE?}
+
+Meaning:
+
+Read value from session state.
+
+? means optional.
+
+No crash if value doesn't exist.
+
+Session State Flow
+
+User selects paint ↓ Store in state ↓ Coverage Agent reads state ↓ Calculate liters ↓ Calculate buckets ↓ Calculate cost
+
+Testing
+
+Run:
+
+adk web
+
+Conversation:
+
+hello
+
+↓
+
+yes
+
+↓
+
+Choose EcoGreens
+
+↓
+
+Enter room dimensions
+
+↓
+
+Enter coats
+
+↓
+
+Coverage calculation
+
+↓
+
+Cost calculation
+
+Task 5: Deploy Agent Runtime
+
+Purpose:
+
+Move agent from local machine to cloud.
+
+Deploy command:
+
+adk deploy agent_engine
+
+Display Name:
+
+Paint Agent
+
+Deployment Process
+
+Package Code
+
+↓
+
+Resolve Dependencies
+
+↓
+
+Create Container
+
+↓
+
+Upload Container
+
+↓
+
+Create Reasoning Engine
+
+↓
+
+Start Agent Runtime
+
+IAM Roles Required
+
+Agent Platform User
+
+Discovery Engine User
+
+Assigned To:
+
+service-PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com
+
+Reason:
+
+Allow Reasoning Engine to access Search resources.
+
+Reasoning Engine
+
+Hosted version of agent.
+
+Contains:
+
+Gemini Model
+Agent Logic
+Search Tool
+Session Memory
+Sub-Agents
+
+Example Resource:
+
+projects/.../locations/us-central1/reasoningEngines/...
+
+Task 6: Chainlit Frontend
+
+Purpose:
+
+Provide chat UI for users.
+
+Update app.py
+
+Replace:
+
+YOUR_AGENT_RESOURCE_NAME
+
+with
+
+Reasoning Engine Resource Name
+
+Run UI
+
+chainlit run app.py
+
+Default URL:
+
+localhost:8000
+
+Port Error
+
+address already in use
+
+Meaning:
+
+Another application already uses port 8000.
+
+Check:
+
+fuser 8000/tcp
+
+Kill:
+
+kill -9 PID
+
+Or use another port.
+
+Important Concepts
+
+ADK = Agent Development Kit
+
+Root Agent = Main Controller
+
+Sub-Agent = Specialized Worker
+
+AgentTool = Wrap agent as tool
+
+VertexAiSearchTool = Search company documents
+
+Search App = Enterprise knowledge source
+
+Session State = Agent memory
+
+tool_context.state = Stores memory
+
+Key Templating = Reads memory
+
+Examples:
+
+{PRICE?}
+
+{COVERAGE_RATE?}
+
+Reasoning Engine = Hosted Agent
+
+Agent Runtime = Production Environment
+
+Chainlit = Chat UI
+
+Complete Flow
+
+User
+
+↓
+
+Chainlit UI
+
+↓
+
+Reasoning Engine
+
+↓
+
+Root Agent
+
+↓
+
+Search Agent
+
+↓
+
+Paint Datasheet
+
+↓
+
+Store State
+
+↓
+
+Room Planner
+
+↓
+
+Coverage Calculator
+
+↓
+
+Cost Calculation
+
+↓
+
+Final Recommendation
+
+✅ Search ✅ Memory ✅ Multi-Agent ✅ Deployment ✅ Frontend UI ✅ Production Agent

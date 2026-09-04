@@ -1,0 +1,450 @@
+ASYNCIO NOTES FOR AGENTS SDK & AGENTIC AI
+
+Why AsyncIO is Important
+
+Most AI agents spend time waiting for LLM responses.
+Waiting for OpenAI, Azure OpenAI, APIs, databases, or files is called I/O operations.
+During this waiting time, CPU is mostly idle.
+AsyncIO allows Python to do other work while waiting.
+Almost all modern agent frameworks use AsyncIO.
+Examples:
+OpenAI Agents SDK
+LangGraph
+CrewAI
+FastAPI
+Many AI application servers
+
+==================================================
+
+Short Version (Interview Answer)
+
+Two Rules:
+
+Use async before function definition
+
+Instead of: def my_function():
+
+Use: async def my_function():
+
+Use await when calling async functions
+
+Instead of: result = my_function()
+
+Use: result = await my_function()
+
+Remember:
+
+async creates a coroutine.
+await executes the coroutine.
+
+==================================================
+
+Why Do We Need AsyncIO?
+
+Problem:
+
+Suppose an AI agent needs to:
+
+Call GPT-4o
+Call another API
+Read a file
+Query a database
+
+If performed sequentially:
+
+Step 1 → Wait for GPT response Step 2 → Wait for API response Step 3 → Wait for database response
+
+A lot of time is wasted because computer is just waiting.
+
+AsyncIO allows:
+
+While GPT is responding, another task can run.
+
+Result:
+
+Faster execution
+Better resource utilization
+Higher scalability
+
+==================================================
+
+Traditional Concurrency Approaches
+
+Multithreading
+Multiple threads run tasks.
+Managed by OS.
+More complex.
+Can have race conditions.
+Requires locks and synchronization.
+Multiprocessing
+Multiple processes run tasks.
+Uses multiple CPU cores.
+Higher memory usage.
+Good for heavy calculations.
+AsyncIO
+Lightweight.
+Simpler than threading.
+Best for I/O operations.
+Common in AI systems.
+
+==================================================
+
+What is a Coroutine?
+
+Normal Function:
+
+def process_data():
+
+Async Function:
+
+async def process_data():
+
+An async function is called a Coroutine.
+
+Definition:
+
+A coroutine is a special function that can be paused and resumed.
+
+Key Point:
+
+Normal Function
+
+Runs from start to finish.
+
+Coroutine
+
+Can stop, wait, and continue later.
+
+==================================================
+
+What Happens Internally?
+
+Example:
+
+async def do_work(): return "Done"
+
+When we call:
+
+do_work()
+
+It DOES NOT execute.
+
+Instead it creates:
+
+Coroutine Object
+
+Think of it as:
+
+"Work description"
+
+not
+
+"Actual work"
+
+==================================================
+
+How Does Execution Start?
+
+We use await.
+
+Example:
+
+result = await do_work()
+
+What await does:
+
+Registers coroutine with event loop.
+Schedules it for execution.
+Waits for completion.
+Returns result.
+
+==================================================
+
+Event Loop
+
+Definition:
+
+Event Loop is the heart of AsyncIO.
+
+Responsibilities:
+
+Tracks all coroutines.
+Schedules execution.
+Switches between tasks.
+Resumes waiting coroutines.
+
+Simple Understanding:
+
+Event Loop = Task Manager
+
+==================================================
+
+How Event Loop Works
+
+Step 1:
+
+Coroutine A starts.
+
+Step 2:
+
+It reaches await.
+
+Step 3:
+
+Coroutine A pauses.
+
+Step 4:
+
+Event Loop starts Coroutine B.
+
+Step 5:
+
+Coroutine B reaches await.
+
+Step 6:
+
+Coroutine B pauses.
+
+Step 7:
+
+Event Loop starts Coroutine C.
+
+Step 8:
+
+When A's response arrives, Event Loop resumes A.
+
+This continues until all tasks complete.
+
+==================================================
+
+Most Important Concept
+
+AsyncIO is NOT True Parallelism.
+
+Many beginners think:
+
+"Multiple tasks run simultaneously."
+
+Not exactly.
+
+Reality:
+
+Only one coroutine executes at a time.
+
+When it encounters await:
+
+It pauses.
+Gives control back to event loop.
+Another coroutine gets a chance to run.
+
+This is called:
+
+Cooperative Multitasking
+
+==================================================
+
+Cooperative vs Preemptive Multitasking
+
+Cooperative Multitasking
+
+Used by AsyncIO.
+Tasks voluntarily give up control using await.
+Explicit control.
+
+Preemptive Multitasking
+
+Used by Threads.
+OS decides when to switch tasks.
+Implicit control.
+
+Interview Question:
+
+Q: AsyncIO uses which multitasking model?
+
+Answer: AsyncIO uses Cooperative Multitasking.
+
+==================================================
+
+Sequential Await Example
+
+Imagine:
+
+await task1() await task2() await task3()
+
+Execution:
+
+task1 completes ↓ task2 starts ↓ task3 starts
+
+This is still sequential.
+
+No parallel execution.
+
+==================================================
+
+Running Tasks Together
+
+Use:
+
+asyncio.gather()
+
+Purpose:
+
+Run multiple coroutines concurrently.
+
+Example Flow:
+
+task1 task2 task3
+
+All scheduled together.
+
+When one waits, another runs.
+
+Benefits:
+
+Faster execution
+Better utilization
+Common in AI agents
+
+==================================================
+
+How asyncio.gather Works
+
+Without gather:
+
+Task A ↓ Task B ↓ Task C
+
+Total Time:
+
+A + B + C
+
+With gather:
+
+Task A
+ Task B --> Together Task C /
+
+Total Time:
+
+Approximately Equal To
+
+Longest Task Time
+
+==================================================
+
+AsyncIO in AI Agents
+
+Typical Agent Activities:
+
+LLM Calls
+API Requests
+Database Queries
+File Reading
+Web Scraping
+Tool Calls
+
+All are I/O-bound operations.
+
+Therefore:
+
+AsyncIO is ideal.
+
+==================================================
+
+What is I/O Bound?
+
+I/O Bound means:
+
+Most time is spent waiting.
+
+Examples:
+
+GPT response
+API response
+Database result
+File read
+
+Best Solution:
+
+AsyncIO
+
+==================================================
+
+What is CPU Bound?
+
+CPU Bound means:
+
+Most time spent on calculations.
+
+Examples:
+
+Image Processing
+Training Neural Networks
+Matrix Multiplication
+Scientific Computations
+
+Best Solutions:
+
+Multithreading
+Multiprocessing
+
+Not AsyncIO
+
+==================================================
+
+Advantages of AsyncIO
+
+Lightweight
+No heavy OS threads.
+Minimal memory consumption.
+Scalable
+Can manage thousands of tasks.
+Great for Agents
+Ideal for LLM calls.
+Ideal for APIs.
+Simple Execution Model
+Only one coroutine runs at a time.
+No Race Conditions (Typically)
+Easier to reason about code.
+
+==================================================
+
+Disadvantages of AsyncIO
+
+Learning curve.
+Requires async and await everywhere.
+Not useful for CPU-heavy work.
+Mixing sync and async code can be confusing.
+
+==================================================
+
+Interview Questions
+
+Q1. What is AsyncIO? Answer: AsyncIO is a Python framework for asynchronous programming that allows multiple I/O tasks to be handled efficiently using coroutines and an event loop.
+
+Q2. What is a coroutine? Answer: A coroutine is a function defined using async def that can be paused and resumed.
+
+Q3. What is await? Answer: await schedules and waits for an async coroutine to complete.
+
+Q4. What is an event loop? Answer: An event loop manages and schedules all coroutines in an AsyncIO application.
+
+Q5. Does AsyncIO provide true parallelism? Answer: No. It uses cooperative multitasking and runs one coroutine at a time.
+
+Q6. What is asyncio.gather()? Answer: It runs multiple coroutines concurrently and waits for all of them to finish.
+
+Q7. Why is AsyncIO popular in Agentic AI? Answer: Because AI agents spend most of their time waiting for LLM and API responses, making AsyncIO ideal for handling many I/O operations efficiently.
+
+Q8. When should you avoid AsyncIO? Answer: For CPU-intensive operations such as model training or heavy mathematical computations.
+
+==================================================
+
+One-Line Revision
+
+async def = create coroutine
+await = execute coroutine
+Event Loop = schedules coroutines
+Coroutine = pausable function
+AsyncIO = cooperative multitasking
+asyncio.gather() = run multiple coroutines concurrently
+Best for I/O-bound tasks
+Not ideal for CPU-bound tasks
+Widely used in AI Agents, LangGraph, CrewAI, and OpenAI Agents SDK
+Only one coroutine runs at a time, but tasks appear concurrent through scheduling

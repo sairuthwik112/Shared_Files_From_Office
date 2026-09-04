@@ -1,0 +1,772 @@
+✅ ✅ 1. What is RAG?
+👉 RAG = Retrieval + Generation
+
+Retrieve relevant data from external sources
+Generate answer using LLM
+
+👉 One-line:
+
+Search relevant data first, then generate answer
+
+
+✅ ✅ 2. Why RAG?
+✅ Uses custom data (PDFs, docs)
+✅ Gives accurate answers
+✅ Reduces hallucination
+✅ No need to retrain model
+
+✅ ✅ 3. Components
+
+Embedding Model → Text → Vector
+Vector DB (FAISS/Pinecone) → Stores vectors
+Retriever → Finds relevant data
+LLM → Generates answer
+
+
+✅ ✅ 4. Phase‑1: INDEXING (Data Preparation)
+👉 Done once
+
+Steps:
+
+Load files (PDF, docs)
+Extract text
+Chunking (split text into small parts)
+Convert chunks → embeddings
+Store (vector + text in DB)
+Create index (for fast search)
+
+
+👉 Output:
+
+Vector Database ready
+
+
+✅ ✅ 5. Phase‑2: RETRIEVAL + GENERATION
+👉 Done every time user asks
+
+Steps:
+
+User query
+Query → embedding
+Similarity search
+Get Top‑K chunks
+Build context
+Send to LLM
+Generate final answer
+
+
+✅ ✅ 6. Similarity Search
+👉 Compare:
+Query vector vs Stored vectors
+
+👉 Using:
+
+Cosine similarity
+
+👉 Higher score = more similar
+
+✅ ✅ 7. Top‑K Retrieval
+👉 Select only best K results
+Example:
+k = 3 → top 3 chunks
+
+✅ Improves:
+
+speed
+accuracy
+avoids noise
+
+
+✅ ✅ 8. What happens after similarity?
+✅ Retrieve top chunks
+✅ Extract text
+✅ Send as context to LLM
+✅ LLM generates answer
+
+✅ ✅ 9. FAISS / Pinecone
+👉 Used for:
+✅ Fast vector search
+✅ Top‑K retrieval
+✅ Indexing
+
+Difference:
+
+FAISS → Local
+Pinecone → Cloud
+
+
+✅ ✅ 10. Important Concepts
+✅ Embeddings = semantic meaning
+✅ Chunking improves retrieval
+✅ Same embedding model for query + data
+✅ LLM doesn’t search → only generates
+
+✅ ✅ 11. Flow (Final)
+FILES → Chunk → Embedding → Vector DB
+
+Query → Embedding → Search → Top‑K → LLM → Answer
+
+
+✅ ✅ One-Line Summary (VERY IMPORTANT)
+👉 RAG = Convert data → store as vectors → retrieve relevant parts → generate answer
+
+--> Performance Of RAG Pipeline
+
+ RAG EVALUATION NOTES
+
+✅ 1. Why we need evaluation in RAG
+RAG has two parts:
+
+Retriever (gets chunks)
+LLM (generates answer)
+
+If answer is wrong, we need to know:
+
+Is retrieval wrong?
+Or is LLM wrong?
+
+So we evaluate both separately.
+
+✅ 2. What is a Test Dataset
+A test dataset is like an exam.
+It contains:
+
+Question (what user asks)
+Correct chunk(s) (what should be retrieved)
+Reference answer (correct answer)
+Keywords (important terms expected)
+
+Purpose:
+
+To compare expected vs actual output
+To measure system performance
+
+
+✅ 3. Full Evaluation Process (Start to End)
+
+Create test dataset
+Take one question
+Run RAG system
+Retrieve chunks
+Evaluate retrieval
+Generate answer
+Evaluate answer
+Repeat for all questions
+Take average scores
+
+
+🔷 RETRIEVAL EVALUATION
+
+✅ Purpose
+Check whether the system is retrieving the correct chunks.
+
+✅ What happens
+For each question:
+
+Retriever returns ranked list of chunks
+We compare with correct chunk(s) from test dataset
+
+
+✅ Important concept
+Retriever uses similarity scores, but:
+
+Similarity score is model’s guess
+It may rank wrong chunk at top
+
+So we need evaluation to check correctness.
+
+✅ MRR (Mean Reciprocal Rank)
+Meaning:
+
+Checks where the first correct chunk appears
+
+How it works:
+
+Find rank of first correct chunk
+Calculate 1 divided by rank
+
+Understanding:
+
+Rank 1 → perfect
+Rank 2 → acceptable
+Rank 5 → poor
+
+Purpose:
+
+Measures how fast correct chunk is found
+
+
+✅ NDCG (Normalized Discounted Cumulative Gain)
+Meaning:
+
+Checks how well all relevant chunks are ranked
+
+Key idea:
+
+Top ranks are more important
+Lower ranks are less important
+
+Purpose:
+
+Measures overall ranking quality
+
+
+✅ Important Note
+MRR and NDCG are calculated:
+
+Per question
+Then averaged across all questions
+
+They are NOT calculated for individual chunks.
+
+🔷 ANSWER EVALUATION
+
+✅ Purpose
+Check whether the LLM gives the correct answer.
+
+✅ What happens
+Compare:
+
+Reference answer (expected)
+Generated answer (actual)
+
+
+✅ Possible cases
+
+Retrieval wrong → answer wrong
+Retrieval correct → answer wrong (LLM issue)
+Retrieval correct → answer correct (best case)
+
+
+🔷 WHY BOTH EVALUATIONS ARE NEEDED
+
+Retrieval evaluation:
+
+Checks if correct information is retrieved
+
+Answer evaluation:
+
+Checks if LLM correctly uses that information
+
+Both are needed because RAG has two different components.
+
+🔷 IMPORTANT REALIZATION
+
+Retriever already ranks chunks using similarity,
+but this ranking may not be correct.
+So:
+
+Similarity score = model prediction
+MRR/NDCG = ground truth verification
+
+
+🔷 WHAT TO DO WHEN MRR/NDCG ARE LOW
+
+Low scores mean:
+
+correct chunks are not ranked properly
+
+We do NOT manually pick chunks.
+We improve the system by:
+
+changing chunk size
+using better embeddings
+increasing top-k
+using reranking
+using hybrid search
+improving data quality
+
+Goal:
+
+correct chunk should appear at top rank
+
+
+🔷 FINAL SIMPLE UNDERSTANDING
+
+Test dataset → gives correct answers
+Retriever → gives predicted chunks
+Evaluation → compares both
+MRR → checks how early correct chunk appears
+NDCG → checks how well chunks are ranked
+Retrieval evaluation → checks data quality
+Answer evaluation → checks LLM quality
+
+🔷 FINAL ONE-LINE SUMMARY
+
+RAG evaluation is done to ensure that the system retrieves the correct chunks and generates accurate answers, using metrics like MRR and NDCG to measure how well the retriever ranks relevant information.
+
+Advanced RAG Techniques
+
+Advanced RAG techniques include hybrid search, reranking, query expansion, multi-query retrieval, metadata filtering, chunk optimization, and self-reflection mechanisms. These techniques improve retrieval accuracy, ranking quality, and reduce hallucination in production RAG systems.
+
+Without RAG Pipeline Workflow
+
+STEP 1: Load Documents
+   ↓
+fetch_documents()
+
+   WHAT:
+   - Reads all .md files from folders
+   - Converts them into structured data
+
+   OUTPUT:
+   [
+     {type, source, text},
+     ...
+   ]
+
+   WHY:
+   - Raw files → structured format for processing
+
+
+----------------------------------------------------
+
+STEP 2: Create Prompt for LLM
+   ↓
+make_prompt(document)
+
+   WHAT:
+   - Creates instruction for LLM
+   - Tells it how to split document
+
+   OUTPUT:
+   "Split document into chunks with:
+        - headline
+        - summary
+        - original text
+        - overlap"
+
+   WHY:
+   - LLM needs clear instructions
+
+
+----------------------------------------------------
+
+STEP 3: Convert Prompt → Messages
+   ↓
+make_messages(document)
+
+   WHAT:
+   - Formats prompt into chat format
+
+   OUTPUT:
+   [
+     {"role": "user", "content": prompt}
+   ]
+
+   WHY:
+   - OpenAI API requires message format
+
+
+----------------------------------------------------
+
+STEP 4: Process Document using LLM
+   ↓
+process_document(document)
+
+   WHAT:
+   - Send prompt to LLM
+   - LLM splits document into chunks
+   - Parse response into objects
+
+   OUTPUT:
+   [
+     Chunk(headline, summary, text),
+     Chunk(headline, summary, text)
+   ]
+
+   WHY:
+   - Convert raw text → meaningful chunks
+
+
+----------------------------------------------------
+
+STEP 5: Convert Chunk → Result
+   ↓
+chunk.as_result(document)
+
+   WHAT:
+   - Combine:
+        headline + summary + text
+   - Add metadata
+
+   OUTPUT:
+   Result(
+      page_content,
+      metadata
+   )
+
+   WHY:
+   - Standard format for vector DB
+
+
+----------------------------------------------------
+
+STEP 6: Process ALL documents (Parallel)
+   ↓
+create_chunks(documents)
+
+   WHAT:
+   - Uses multiple workers
+   - Processes documents simultaneously
+
+   OUTPUT:
+   [
+     Result, Result, Result, ...
+   ]
+
+   WHY:
+   - Speed up LLM processing
+   - Production optimization
+
+
+----------------------------------------------------
+
+STEP 7: Extract Text for Embedding
+   ↓
+texts = [chunk.page_content]
+
+   WHAT:
+   - Collect all chunk text
+
+   OUTPUT:
+   [ "text1", "text2", ... ]
+
+   WHY:
+   - Embedding model needs raw text
+
+
+----------------------------------------------------
+
+STEP 8: Create Embeddings
+   ↓
+openai.embeddings.create()
+
+   WHAT:
+   - Convert text → vectors
+
+   OUTPUT:
+   [
+     [0.23, -0.88, ...],
+     [0.11, -0.45, ...]
+   ]
+
+   WHY:
+   - Enables semantic search
+
+
+----------------------------------------------------
+
+STEP 9: Prepare Metadata + IDs
+   ↓
+
+   WHAT:
+   - Create ids → ["0","1","2"]
+   - Extract metadata
+
+   WHY:
+   - DB needs unique ids + context
+
+
+----------------------------------------------------
+
+STEP 10: Store in Chroma DB
+   ↓
+collection.add()
+
+   WHAT:
+   - Store:
+        embeddings
+        text
+        metadata
+
+   OUTPUT:
+   Vector Database
+
+   WHY:
+   - Store knowledge for retrieval
+
+
+----------------------------------------------------
+
+STEP 11: PIPELINE COMPLETE ✅
+
+
+STEP 1: User Question
+↓
+(original_question)
+WHAT:
+
+User asks a question
+
+OUTPUT:
+"What is home loan interest rate?"
+
+WHY:
+
+This is the input to the RAG system
+
+
+
+STEP 2: Rewrite Query (Improve Search)
+↓
+rewrite_query(question)
+WHAT:
+
+Uses LLM to rewrite question into more specific query
+Uses history also
+
+OUTPUT:
+"home loan interest rate eligibility policy"
+
+WHY:
+
+User queries are often vague ❌
+Better query → better retrieval ✅
+
+
+
+STEP 3: Convert Query to Embedding
+↓
+openai.embeddings.create()
+WHAT:
+
+Convert question → vector
+
+OUTPUT:
+[0.12, -0.88, 0.44, ...]
+
+WHY:
+
+Vector needed for similarity search
+
+
+
+STEP 4: Fetch Unranked Chunks (1st Retrieval)
+↓
+fetch_context_unranked(original_question)
+WHAT:
+
+Search vector DB using original question
+Retrieve top K chunks (RETRIEVAL_K = 20)
+
+OUTPUT:
+[chunk1, chunk2, chunk3, ... (20 chunks)]
+
+WHY:
+
+Get initial relevant data
+But ranking is NOT accurate ❌
+
+
+
+STEP 5: Fetch Unranked Chunks (2nd Retrieval)
+↓
+fetch_context_unranked(rewritten_question)
+WHAT:
+
+Search again using improved query
+
+OUTPUT:
+[chunkA, chunkB, chunkC, ...]
+
+WHY:
+
+Sometimes original query misses results ❌
+Rewrite improves coverage ✅
+
+
+
+STEP 6: Merge Chunks
+↓
+merge_chunks(chunks1, chunks2)
+WHAT:
+
+Combine both results
+Remove duplicate chunks
+
+OUTPUT:
+[chunk1, chunk2, chunkA, chunkB, ...]
+
+WHY:
+
+Combine both searches → better results ✅
+
+
+
+STEP 7: Rerank Chunks (VERY IMPORTANT 🔥)
+↓
+rerank(question, chunks)
+WHAT:
+
+LLM reorders chunks based on relevance
+Takes:
+
+question
+chunk content
+
+
+
+OUTPUT:
+[best_chunk, second_best_chunk, ...]
+
+WHY:
+
+Vector DB gives approximate ranking ❌
+LLM improves ranking ✅
+
+
+
+STEP 8: Select Top Final Chunks
+↓
+reranked[:FINAL_K]
+WHAT:
+
+Select top 10 chunks
+
+OUTPUT:
+[best 10 chunks]
+
+WHY:
+
+Avoid too much context
+Reduce noise + cost
+
+
+
+STEP 9: Create Context String
+↓
+make_rag_messages(...)
+WHAT:
+
+Combine chunks into one context string
+
+OUTPUT:
+Extract from file1:
+...
+
+Extract from file2:
+...
+
+WHY:
+
+LLM needs readable structured context
+
+
+
+STEP 10: Create System Prompt
+↓
+SYSTEM_PROMPT.format(context)
+WHAT:
+
+Inject context into prompt
+
+OUTPUT:
+"You are assistant...
+
+Context:
+<all retrieved data>"
+
+WHY:
+
+This is where RAG happens ✅
+LLM sees external knowledge
+
+
+
+STEP 11: Add History + Question
+↓
+WHAT:
+
+Build final messages:
+
+System → instructions + context  
+History → past conversation  
+User → current question  
+
+WHY:
+
+Maintain conversation continuity
+
+
+
+STEP 12: Call LLM for Final Answer
+↓
+completion(model=MODEL, messages=...)
+WHAT:
+
+LLM generates answer using context
+
+OUTPUT:
+"The home loan interest rate is 8.5%..."
+
+WHY:
+
+Final step → answer generation
+
+
+
+STEP 13: Return Answer + Chunks
+↓
+return response, chunks
+WHAT:
+
+Return:
+
+Answer
+Retrieved chunks
+
+
+
+OUTPUT:
+("answer", [chunks])
+
+WHY:
+
+Useful for:
+
+debugging
+evaluation (MRR/NDCG)
+
+
+
+
+🔷 ✅ COMPLETE FLOW (FINAL)
+User Question
+ ↓
+rewrite_query()
+ ↓
+Embedding → vector
+ ↓
+Retrieve chunks (original query)
+ ↓
+Retrieve chunks (rewritten query)
+ ↓
+merge_chunks()
+ ↓
+rerank()
+ ↓
+top K selection
+ ↓
+make_rag_messages()
+ ↓
+LLM generates answer
+ ↓
+Final Answer + Chunks
+
+
+🔷 ✅ HOW THIS CONNECTS TO INGESTION
+
+
+🔥 MOST IMPORTANT DIFFERENCE FROM BASIC RAG
+Your system uses:
+✅ Query rewriting
+✅ Dual retrieval
+✅ Reranking
+👉 This is ADVANCED RAG (Production Level)
+
+🔥 FINAL ONE-LINE UNDERSTANDING
+👉
+"This pipeline improves basic RAG by rewriting user queries, retrieving broader chunk sets, merging results, and using an LLM-based reranker to select the most relevant context before generating the final answer."
+
+

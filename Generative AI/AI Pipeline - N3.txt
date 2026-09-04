@@ -1,0 +1,201 @@
+encoder-decoder architecture
+
+Encoder–Decoder Model (Simple Explanation)
+The model takes an input sentence (example: “The cat ate the mouse”).
+The sentence is read one word at a time.
+While reading, the model keeps a memory of what it has understood so far.
+This memory is called the hidden state.
+Hin means the memory coming into the current word.
+The model reads the current word and updates the memory.
+The updated memory is called Hout.
+This Hout is passed to the next word as its Hin.
+After the last word, the final hidden state contains the meaning of the full sentence.
+This final memory is passed to the decoder.
+The decoder starts with a special GO token.
+Using the memory, the decoder generates one output word at a time.
+After generating each word, the decoder updates its memory.
+The decoder continues generating words until it produces an END token.
+The final generated words form the output sentence (example: translation, summary, answer).
+This whole process is called sequence‑to‑sequence learning.
+Modern LLMs (Gemini, GPT) already have this architecture built in.
+We learn this mainly to understand how LLMs work, not to build it ourselves.
+
+Encoder–decoder is an older architecture concept, and Transformers are the modern models that use this concept to translate text more efficiently.
+
+BERT fine tuning for text classification
+
+1.Raw text data is collected with input text and labels
+2.Preprocessing module cleans the text and tokenizes it into tokens
+3.Special tokens like [CLS] and [SEP] are added to the tokenized text
+4.Tokens are converted into numerical IDs and padded or truncated
+5.The processed tokens are passed into the BERT encoder
+6.The BERT encoder reads all tokens bidirectionally
+7.BERT generates contextual embeddings that capture text meaning
+8.The [CLS] token embedding is extracted as the sentence representation
+9.This representation is passed to the classifier layer
+10.The classifier maps embeddings to predefined classes
+11.The predicted class is compared with the true label
+12.The error (loss) is calculated
+13.Model weights are updated during training
+14.This process repeats until the model learns accurately
+15.The trained model can now classify new unseen text
+
+Building AI Applications
+
+1.Define the business problem and AI use case
+2.Decide the AI approach such as classification prediction or generative AI
+3.Collect the required data from files databases APIs or logs
+4.Clean and prepare the raw data to remove noise and errors
+5.Preprocess the data into model‑readable format like tokens numbers or tensors
+6.Select an appropriate pretrained model such as BERT GPT or Gemini
+7.Add task‑specific layers if needed like a classifier or regression head
+8.Train or fine‑tune the model using labeled data
+9.Evaluate model performance using accuracy and other metrics
+10.For GenAI apps create embeddings for documents and store in vector database
+11.Retrieve relevant context using similarity search for each user query
+12.Build prompts by combining instructions context and user input
+13.Call the AI model API to generate predictions or responses
+14.Build backend logic to connect data model and API securely
+15.Create the user interface such as web app chat UI or dashboard
+16.Deploy the application to cloud infrastructure
+17.Monitor performance cost accuracy and user feedback
+18.Iterate and improve the model prompts or data continuously
+
+Image Generation
+
+1.Collect a large dataset of real images
+2.Start with a real image and gradually add random noise to it over many steps
+3.Repeat noise addition until the image becomes almost pure noise
+4.Record how much noise was added at each step
+5.Train a neural network to predict the noise added to a noisy image
+6.Provide the noisy image and the time step as input to the model during training
+7.Compare the predicted noise with the real noise and calculate loss
+8.Update the model weights to improve noise prediction
+9.After training is complete discard the original image data
+10.Start image generation from pure random noise
+11.Pass the noise image and time step into the trained diffusion model
+12.Model predicts the noise present in the image
+13.Remove a small amount of predicted noise from the image
+14.Move to the previous time step and repeat denoising
+15.Gradually the random noise forms shapes and structures
+16.Final denoising step produces a clear image
+17.For text‑to‑image generation convert the text prompt into embeddings
+18.Use text embeddings to guide the denoising process at every step
+19.Adjust the image pixels so they match the meaning of the text
+20.Output the final generated image
+
+Vector Search
+
+vector search is helpful in find the results that are similar in meaning to the query that is semantic understanding, multimodal capability and personalization and recommendations.
+
+1.Collect data such as text images audio video or code
+2.Pass the data through an embedding model
+3.Convert each data item into a numerical vector representation
+4.Store all generated vectors along with their metadata
+5.Create a vector index to organize vectors in vector space
+6.Optimize the index for fast similarity search
+7.Convert the user query into a query vector using the same embedding model
+8.Compare the query vector with stored vectors using similarity metrics
+9.Search the vector space to find the closest matching vectors
+10.Retrieve the most relevant data items based on similarity scores
+11.Return the matched results such as text images audio video or code to the user
+
+Vector Search
+
+1.Vector search starts by converting raw data such as text into numerical vectors
+2.Initially simple methods like one‑hot encoding convert words into binary vectors
+3.One‑hot encoding creates a matrix with 1 at the word position and 0 elsewhere
+4.One‑hot encoding does not capture relationships or meaning between words
+5.To capture semantic meaning we use text embedding models
+6.Text embedding models convert sentences into dense numerical vectors
+7.Similar meanings are represented by vectors close to each other
+8.All generated vectors are stored along with their metadata
+9.The vectors are indexed in a vector space to enable fast search
+10.A vector search index is created to organize vectors efficiently
+11.When a query is given the query text is converted into a vector
+12.The query vector is compared with stored vectors in the index
+13.Vector similarity is calculated using distance or similarity measures
+14.Common distance metrics include Euclidean distance and Manhattan distance
+15.Other similarity measures include cosine similarity and dot product
+16.The goal is to find vectors that are closest to the query vector
+17.Vector search algorithms are used to find nearest neighbors
+18.Brute force search compares the query vector with all vectors
+19.Brute force gives accurate results but is slow for large datasets
+20.Approximate Nearest Neighbor algorithms improve search speed
+21.Tree‑based and graph‑based indexing methods are commonly used
+22.These ANN methods reduce computation while keeping good accuracy
+23.The system retrieves the top‑K most similar vectors
+24.The associated data items are returned as search results
+25.In BigQuery the process starts with generating text embeddings
+26.Embeddings are stored and indexed using BigQuery vector search
+27.A vector search index is created inside BigQuery
+28.An endpoint is created to serve vector search queries
+29.A user query is converted into an embedding
+30.BigQuery runs a vector search query using the index
+31.The system returns the most relevant results based on vector similarity
+
+
+RAG AND GROUNDED AGENT
+
+RAG architecture or framework is used to work with the enterprise data that is not trained with the llm 
+
+and it has go all the process of converting data into vector embeddings and giving indexes to them and assigning the words with the help of hybrid search
+
+Hybrid Search
+
+Collect enterprise documents such as PDFs text files or database records
+2.Split large documents into smaller text chunks
+3.Create a keyword index using lexical methods like BM25 or inverted index
+4.Convert each text chunk into a vector using a text embedding model
+5.Store embeddings in a vector database and create a vector index
+6.User submits a search query
+7.The query is processed for keyword search to find exact word matches
+8.The same query is converted into a vector embedding
+9.Vector similarity search is performed to find semantically similar content
+10.Keyword search produces lexical relevance scores
+11.Vector search produces semantic similarity scores
+12.Both scores are combined using a ranking or score fusion method
+13.Results are re‑ranked based on combined relevance
+14.Top‑K most relevant results are selected
+15.In RAG systems the retrieved results are added as context to the LLM
+16.The LLM generates the final answer using retrieved context and the query
+
+The search process 
+
+1.User enters search text
+2.Search text is converted into a query vector
+3.Index is searched to find nearby vectors
+4.Distance is calculated between query vector and candidate vectors
+5.Vectors are ranked by smallest distance
+6.Top‑K closest vectors are returned
+7.Associated original data is shown to the user
+
+After indexing, search works by converting the user query into a vector and calculating the distance between this query vector and the stored indexed vectors to find the most semantically similar results.
+
+1.Text is converted into embeddings using a pretrained Transformer encoder model
+2.The text is first tokenized into words or sub words
+3.Each token is mapped to an initial numerical representation
+4.These representations pass through multiple Transformer encoder layers
+5.Attention mechanisms adjust values based on context and meaning
+6.The final encoder layer outputs a dense numerical vector
+7.This vector is called the text embedding
+8.Each number in the embedding represents a learned semantic feature
+9.Individual numbers have no direct human meaning
+10.Meaning is captured when vectors are compared to each other
+11.The embedding model outputs a fixed‑length vector for every input
+12.In this model the fixed length is 768 dimensions
+13.768 is a design choice of the model architecture
+14.It balances semantic richness and computational efficiency
+15.All words sentences and documents use the same 768‑length vector
+16.This is required so similarity and distance can be calculated
+17.The values are usually normalized and lie between -1 and 1
+18.Normalization helps with stable similarity calculations
+19.When printing embeddings only the first 10 values are shown
+20.This is done only for readability and debugging
+21.The full 768 values are still present and used internally
+22.Printing all values would be too long and not useful
+23.Word embeddings and sentence embeddings have the same length
+24.The same embedding space allows fair comparison
+25.Vector search uses the full embedding not the first 10 values
+26.Distance or similarity is calculated using all 768 dimensions
+27.This is how semantic similarity is measured in vector search and RAG

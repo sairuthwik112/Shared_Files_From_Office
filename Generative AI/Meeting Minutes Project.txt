@@ -1,0 +1,165 @@
+
+This project is designed to convert an audio recording of a meeting into structured meeting minutes that include summary, discussion points, key takeaways, and action items.
+
+The process starts with taking an audio file as input. This audio contains the spoken conversation from the meeting. Since machine learning models cannot directly understand audio, the first step is to convert this audio into text.
+
+For this purpose, a speech-to-text model is used. This model listens to the audio and generates a transcription, which is the written version of everything spoken in the meeting. At this stage, the output is plain text without any structure or formatting.
+
+Once the transcription is generated, the next step is to prepare instructions for the language model. This is done using two components called the system message and the user prompt.
+
+The system message defines the role of the model. It tells the model that it should behave like a meeting assistant and generate structured meeting minutes. It also specifies the output format, such as using markdown and including sections like summary, discussion points, takeaways, and action items.
+
+The user prompt contains the actual input data along with instructions. It includes the transcription of the meeting and clearly describes what kind of output is expected. For example, it asks the model to extract key details, organize them properly, and generate meaningful minutes.
+
+After preparing the system message and user prompt, both are combined into a structured format called messages. This format represents a conversation where the system gives instructions and the user provides input.
+
+Next, the model processes this input. If a modern API like OpenAI is used, the system automatically handles tasks like tokenization and formatting internally. If a local model like LLaMA is used, the input must go through tokenization manually, where text is converted into numerical tokens that the model can understand.
+
+The tokenized input is then passed into the model for generation. The model analyzes the transcription, understands the context of the meeting, and generates a structured response based on the instructions.
+
+During generation, the model produces tokens step by step, which are later converted back into human-readable text. This process may optionally include streaming, where output appears gradually.
+
+Once the model finishes generating the response, the output tokens are decoded back into text. This final text is the meeting minutes containing properly structured sections like summary, key discussion points, takeaways, and action items.
+
+Finally, the output is displayed to the user. In notebook environments, it is often rendered using markdown formatting so that headings, bullet points, and sections appear clearly and professionally.
+
+
+Codes- 
+
+
+# ============================
+# 1. IMPORT REQUIRED LIBRARIES
+# ============================
+
+from openai import OpenAI                     # OpenAI API for transcription + chat
+from IPython.display import display, Markdown # For formatted output (optional)
+
+# If using local LLaMA model
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, TextStreamer
+
+
+# ============================
+# 2. AUDIO → TEXT (TRANSCRIPTION)
+# ============================
+
+client = OpenAI(api_key="YOUR_API_KEY")  # Create OpenAI client
+
+audio_file = open("meeting_audio.mp3", "rb")  # Load audio file
+
+# Convert audio → text
+transcription_response = client.audio.transcriptions.create(
+    model="gpt-4o-mini-transcribe",   # Speech-to-text model
+    file=audio_file                  # Input audio
+)
+
+# Extract only the text
+transcription = transcription_response.text
+
+print("Transcription:\n", transcription)
+
+
+# ============================
+# 3. PREPARE PROMPTS (INSTRUCTIONS)
+# ============================
+
+# System message → defines role of model
+system_message = """
+You produce minutes of meetings from transcripts, with summary, key discussion points,
+takeaways and action items with owners, in markdown format without code blocks.
+"""
+
+# User prompt → actual input + instructions
+user_prompt = f"""
+Below is an extract transcript of a meeting.
+Please write minutes including:
+- summary
+- discussion points
+- takeaways
+- action items with owners
+
+Transcription:
+{transcription}
+"""
+
+# Combine into chat format
+messages = [
+    {"role": "system", "content": system_message},  # behavior instruction
+    {"role": "user", "content": user_prompt}        # actual data + task
+]
+
+
+# ============================
+# 4. METHOD 1: USING OPENAI (SIMPLE WAY ✅)
+# ============================
+
+# Send messages to ChatGPT model
+response = client.chat.completions.create(
+    model="gpt-4o-mini",    # Chat model
+    messages=messages
+)
+
+# Extract final result text
+final_output = response.choices[0].message.content
+
+print("\n\nMeeting Minutes (Simple API Output):\n")
+print(final_output)
+
+# Optional: display nicely formatted markdown
+display(Markdown(final_output))
+
+
+# ============================
+# 5. METHOD 2: USING LOCAL LLAMA MODEL (ADVANCED)
+# ============================
+
+# ---- 5.1 Quantization (reduce memory usage) ----
+quant_config = BitsAndBytesConfig(
+    load_in_4bit=True,                      # Load model in 4-bit (low memory)
+    bnb_4bit_use_double_quant=True,         # Extra compression
+    bnb_4bit_compute_dtype=torch.bfloat16,  # Faster computation
+    bnb_4bit_quant_type="nf4"               # Efficient quantization type
+)
+
+# ---- 5.2 Load tokenizer ----
+tokenizer = AutoTokenizer.from_pretrained("LLAMA_MODEL_NAME")
+
+# Set padding token (required for some models)
+tokenizer.pad_token = tokenizer.eos_token
+
+# ---- 5.3 Convert messages → tokens → tensor → GPU ----
+inputs = tokenizer.apply_chat_template(
+    messages,
+    return_tensors="pt"   # Convert to PyTorch tensor
+).to("cuda")              # Move to GPU
+
+# ---- 5.4 Streaming (optional, shows output gradually) ----
+streamer = TextStreamer(tokenizer)
+
+# ---- 5.5 Load LLaMA model ----
+model = AutoModelForCausalLM.from_pretrained(
+    "LLAMA_MODEL_NAME",
+    device_map="auto",            # Auto GPU allocation
+    quantization_config=quant_config  # Apply low-memory config
+)
+
+# ---- 5.6 Generate output tokens ----
+outputs = model.generate(
+    inputs,
+    max_new_tokens=2000,    # Max response length
+    streamer=streamer       # Show output live
+)
+
+# ---- 5.7 Decode tokens → readable text ----
+response_text = tokenizer.decode(outputs[0])
+
+print("\n\nMeeting Minutes (Local LLaMA Output):\n")
+print(response_text)
+
+# Optional: formatted display
+display(Markdown(response_text))
+
+
+# ============================
+# ✅ END OF PROJECT
+# ============================

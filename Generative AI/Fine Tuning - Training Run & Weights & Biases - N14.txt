@@ -1,0 +1,438 @@
+Starting Training
+Training Command
+Fine-tuning starts using:
+
+trainer.train()
+
+This starts:
+
+forward pass ✅
+loss calculation ✅
+backpropagation ✅
+weight updates ✅
+
+
+After Training Starts
+Check GPU Memory
+Monitor:
+
+GPU RAM usage
+GPU utilization
+
+Purpose:
+
+Ensure training is running correctly
+Avoid out-of-memory errors
+
+
+Out of Memory Error
+If GPU memory is full:
+Reduce:
+
+batch size
+
+Example:
+Instead of:
+
+batch size = 32
+
+Try:
+
+16
+8
+
+
+Training Progress Bar
+Shows:
+
+completed steps
+remaining steps
+estimated training time
+
+Example:
+
+28 / 625 steps completed
+
+
+Understanding Training Steps
+Example:
+
+Dataset = 20,000 records
+Batch Size = 32
+
+Calculation:
+20,000 / 32
+≈ 625 steps
+Meaning:
+
+Each step processes one batch
+625 steps complete one epoch
+
+
+Model Saving
+At end of training:
+
+Final model pushed to Hugging Face
+
+Purpose:
+
+Prevent losing model
+Save trained weights
+
+
+Checkpoints
+Model saved every N steps.
+Example:
+
+every 100 steps
+
+Checkpoint contains:
+
+current model weights
+training state
+
+
+Weights & Biases Monitoring
+What is Logged?
+Training Loss
+Shows:
+How wrong the model is on training data.
+Goal:
+
+loss should decrease
+
+
+Learning Rate
+Shows:
+Current learning rate during training.
+Helps verify:
+
+warmup working
+scheduler working
+
+
+Warmup Visualization
+At beginning:
+Learning rate starts small
+Then gradually increases
+Example:
+0
+↓
+0.00002
+↓
+0.00005
+↓
+0.0001
+Purpose:
+
+stabilize training
+
+
+Learning Rate Scheduler
+Using:
+
+Cosine Scheduler
+
+Pattern:
+
+Start high
+Slowly decrease
+
+Reason:
+Early Training:
+
+bigger updates
+
+Late Training:
+
+smaller refinements
+
+
+Understanding Training Loss
+What is Training Loss?
+Measures:
+How wrong model predictions are on training data.
+
+Desired Trend
+Training Loss:
+3.0
+↓
+2.0
+↓
+1.5
+↓
+1.2
+Good ✅
+
+Why Big Drop Happens Initially
+Model quickly learns output format.
+Example:
+Price data:
+Learns:
+
+answer contains number
+answer contains decimal
+answer ends correctly
+
+This rapidly reduces loss.
+
+Training Loss Curve
+Typical pattern:
+Large drop initially
+↓
+Gradual improvement
+↓
+Flattening
+This is normal.
+
+Why Training Loss Has Noise
+Every batch is different.
+Example:
+Batch 1
+
+easier examples
+
+Batch 2
+
+harder examples
+
+Loss fluctuates naturally.
+
+Smoothing Graph
+Weights & Biases provides smoothing.
+Purpose:
+
+remove noise
+reveal real trend
+
+
+Validation Loss (Most Important)
+What is Validation Loss?
+Loss measured on unseen validation data.
+Validation data is:
+
+never used for learning
+only used for evaluation
+
+
+Why Validation Loss Matters
+Training loss can improve because:
+
+model memorizes training data
+
+Validation loss shows:
+
+actual generalization
+
+
+Desired Validation Loss Trend
+Validation Loss:
+1.30
+↓
+1.28
+↓
+1.26
+↓
+1.24
+Good ✅
+Model improving on unseen data.
+
+Why Validation Loss Is Better Than Training Loss
+Training Loss:
+
+different batches every time
+
+Validation Loss:
+
+same validation dataset every time
+
+Therefore:
+
+more reliable
+less noisy
+
+
+Evaluation Frequency
+Validation performed:
+Every save step
+Example:
+Save every 100 steps
+Then:
+Step 100
+→ Validation
+Step 200
+→ Validation
+Step 300
+→ Validation
+
+Interpreting Results
+Good Training
+Training Loss ↓
+Validation Loss ↓
+Meaning:
+
+learning
+generalizing
+
+Perfect ✅
+
+Overfitting
+Training Loss ↓
+Validation Loss ↑
+Meaning:
+
+memorization
+poor generalization
+
+Bad ❌
+
+Example From The Run
+Initial Eval Loss:
+1.29
+Later Eval Loss:
+1.24
+Meaning:
+
+validation performance improved
+fine-tuning worked
+
+
+Learning Rate Graph
+Expected Shape
+Warmup:
+
+learning rate increases
+
+Then:
+Cosine decay:
+
+learning rate decreases gradually
+
+Pattern:
+Start low
+↓
+Reach peak
+↓
+Slowly decline
+
+Why Reduce Learning Rate Later?
+Early training:
+
+large corrections needed
+
+Later training:
+
+tiny adjustments needed
+
+Helps achieve:
+
+stable convergence
+better final accuracy
+
+
+SFT Trainer Notes
+What is SFT Trainer?
+SFT = Supervised Fine-Tuning
+Provided by:
+
+Hugging Face TRL
+
+Purpose:
+Automatically handles:
+
+forward pass
+loss calculation
+backpropagation
+optimizer updates
+validation
+
+No need to manually write training loop.
+
+Inputs Given To SFT Trainer
+Model
+Base LLaMA model
+
+Training Dataset
+Used for learning.
+
+Validation Dataset
+Used for evaluation.
+
+LoRA Configuration
+Contains:
+
+r
+alpha
+dropout
+target modules
+
+
+Training Arguments
+Contains:
+
+epochs
+batch size
+learning rate
+save steps
+log steps
+
+
+Dataset Structure Notes
+SFT Trainer expects:
+Prompt
+User input
+Example:
+What is the price?
+
+Completion
+Correct answer
+Example:
+499.99
+
+The trainer automatically uses:
+Prompt
+↓
+Prediction
+↓
+Compare with Completion
+↓
+Calculate Loss
+
+Important Concepts Learned
+Training Loss
+Error on training data.
+
+Validation Loss
+Error on unseen validation data.
+
+Warmup
+Gradually increases learning rate at start.
+
+Cosine Scheduler
+Gradually decreases learning rate later.
+
+Checkpoint
+Saved version of model during training.
+
+Evaluation
+Testing model on validation data during training.
+
+Generalization
+Model performs well on unseen data.
+
+Overfitting
+Model memorizes training data and performs poorly on unseen data.
+
+Interview Notes
+
+Training loss should decrease during training.
+Validation loss is more important than training loss.
+Validation loss measures performance on unseen data.
+Warmup slowly increases learning rate at beginning.
+Cosine scheduler gradually decreases learning rate.
+Checkpoints are saved periodically during training.
+SFT Trainer automates fine-tuning.
+A good model has both training loss and validation loss decreasing.
+Overfitting occurs when training loss decreases but validation loss increases.
+Validation loss is the primary metric for selecting the best checkpoint.
+Provide your feedback on BizChat

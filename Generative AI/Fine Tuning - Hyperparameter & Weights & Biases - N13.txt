@@ -1,0 +1,757 @@
+Hyperparameter & Weights & Biases Notes (Notepad Format)
+Project Configuration
+Base Model
+
+The pretrained model used for fine-tuning
+Example:
+
+Llama 3.2
+
+
+Already trained by Meta
+We only fine-tune it
+
+
+Project Name
+
+Name used to identify the project
+Appears in:
+
+Hugging Face
+Weights & Biases
+
+
+
+Example:
+
+price
+
+
+Hugging Face Username
+
+Your Hugging Face account name
+Used when saving trained models
+
+Example:
+
+username/model-name
+
+
+Light Mode vs Full Mode
+Light Mode:
+
+Small dataset (~20,000 records)
+Free T4 GPU
+Faster training
+Good for learning
+
+Full Mode:
+
+Large dataset (~800,000 records)
+Longer training
+Better results
+
+
+Run Name
+
+Unique name for each training run
+Usually generated using timestamp
+
+Example:
+
+price-20260703-1500
+price-20260703-1500-light
+
+Purpose:
+
+Identify experiments easily
+Compare different runs
+
+
+Overall Training Hyperparameters
+Epochs
+Definition:
+
+Number of times model sees entire training dataset
+
+Example:
+Light mode:
+
+1 epoch
+
+Full mode:
+
+3 epochs
+
+More epochs:
+
+More learning
+Higher overfitting risk
+
+
+Batch Size
+Definition:
+
+Number of samples processed together
+
+Example:
+Light mode:
+
+32
+
+Full mode:
+
+256
+
+Larger batch:
+
+Faster
+Uses more GPU memory
+
+Smaller batch:
+
+Slower
+Uses less memory
+
+
+Maximum Sequence Length
+Definition:
+
+Maximum number of tokens allowed in input
+
+Example:
+
+128
+
+Purpose:
+
+Controls memory usage
+Longer sequences need more GPU RAM
+
+
+Gradient Accumulation Steps
+Definition:
+
+Number of batches processed before updating weights
+
+Example:
+
+1
+
+Purpose:
+
+Simulate larger batch sizes
+Useful when GPU memory is limited
+
+
+QLoRA Hyperparameters
+Quantization
+Example:
+
+QUANT_4_BIT = True
+
+Purpose:
+
+Convert weights to 4-bit
+Reduce memory consumption
+
+Benefits:
+
+Smaller model
+Faster loading
+Lower GPU requirements
+
+
+LoRA Rank (r)
+Example:
+
+r = 32
+
+Definition:
+
+Size of LoRA adapter matrices
+
+Small r:
+
+Less memory
+Faster
+
+Large r:
+
+Learns more
+More memory usage
+
+
+LoRA Alpha
+Example:
+
+alpha = r × 2
+
+If:
+
+r = 32
+
+Then:
+
+alpha = 64
+
+Purpose:
+
+Controls strength of LoRA updates
+
+Higher alpha:
+
+Stronger effect
+
+Lower alpha:
+
+Weaker effect
+
+
+Target Modules
+Attention Layers:
+
+q_proj
+k_proj
+v_proj
+o_proj
+
+MLP Layers:
+
+gate_proj
+up_proj
+down_proj
+
+Purpose:
+
+Decide which layers receive LoRA adapters
+
+Light Mode:
+
+Attention only
+
+Full Mode:
+
+Attention + MLP
+
+
+LoRA Dropout
+Example:
+
+0.1
+
+Meaning:
+
+Randomly disable 10% of LoRA neurons during training
+
+Purpose:
+
+Reduce overfitting
+Improve generalization
+
+
+Learning Hyperparameters
+Learning Rate
+Example:
+
+1e-4
+
+Definition:
+
+Size of weight update per training step
+
+Too High:
+
+Unstable training
+
+Too Low:
+
+Slow learning
+
+
+Warmup Ratio
+Example:
+
+0.01
+
+Meaning:
+
+First 1% of training steps gradually increase learning rate
+
+Purpose:
+
+Stable start
+Prevent large initial updates
+
+
+LR Scheduler Type
+Example:
+
+cosine
+
+Purpose:
+
+Adjust learning rate during training
+
+Cosine Scheduler:
+
+Starts higher
+Gradually decreases
+Fine adjustments at end
+
+Benefits:
+
+Stable convergence
+Common in LLM training
+
+
+Weight Decay
+Example:
+
+0.001
+
+Purpose:
+
+Prevent weights from becoming too large
+Helps reduce overfitting
+
+Used by:
+
+AdamW Optimizer
+
+
+Optimizer
+Example:
+
+paged_adamw_32bit
+
+Purpose:
+
+Updates weights during training
+
+Responsibilities:
+
+Uses gradients
+Calculates parameter updates
+
+AdamW:
+
+Most common for LLM fine-tuning
+
+
+Validation Hyperparameters
+Validation Set
+Purpose:
+
+Check performance on unseen data
+
+Training Data:
+
+Learn
+
+Validation Data:
+
+Evaluate
+
+Test Data:
+
+Final evaluation
+
+
+Validation Size
+Example:
+Light:
+
+500 samples
+
+Full:
+
+1000 samples
+
+Purpose:
+
+Faster evaluation
+
+
+Tracking Hyperparameters
+Log Steps
+Example:
+
+10
+
+Meaning:
+
+Log metrics every 10 training steps
+
+Logs:
+
+Loss
+Learning rate
+Progress
+
+Purpose:
+
+Monitor training
+
+
+Save Steps
+Example:
+
+200
+
+Meaning:
+
+Save model checkpoint every 200 steps
+
+Purpose:
+
+Prevent losing progress
+Allow checkpoint recovery
+
+
+Save Total Limit
+Example:
+
+10
+
+Purpose:
+
+Keep only latest 10 checkpoints
+
+Prevents:
+
+Disk running out of space
+
+
+Evaluation Strategy
+Example:
+
+evaluation_strategy = steps
+
+Meaning:
+
+Run validation during training
+
+Usually:
+
+Every save step
+
+Purpose:
+
+Monitor overfitting
+Track validation loss
+
+
+Early Stopping Concept
+Training:
+Train Loss:
+
+Continues decreasing
+
+Validation Loss:
+
+May start increasing
+
+Example:
+Epoch 1:
+
+Eval Loss = 1.2
+
+Epoch 2:
+
+Eval Loss = 0.8
+
+Epoch 3:
+
+Eval Loss = 0.6
+
+Epoch 4:
+
+Eval Loss = 0.9
+
+Best model:
+
+Epoch 3
+
+Reason:
+
+Lowest validation loss
+
+
+Weights & Biases (WandB)
+Definition:
+
+Experiment tracking platform
+
+Purpose:
+
+Monitor training visually
+
+
+What WandB Tracks
+
+Training loss
+Validation loss
+Learning rate
+GPU usage
+Hyperparameters
+Training curves
+
+
+Why Use WandB
+Benefits:
+
+Compare experiments
+Detect overfitting
+Monitor training live
+Save experiment history
+
+
+WandB Workflow
+Create Account
+↓
+Get API Key
+↓
+Store in Colab Secrets
+↓
+Login
+↓
+Start Training
+↓
+Metrics Automatically Logged
+
+Hugging Face + Trainer Flow
+Load Dataset
+↓
+Load Model
+↓
+Apply Quantization
+↓
+Configure LoRA
+↓
+Define Training Arguments
+↓
+Create SFT Trainer
+↓
+Train
+↓
+Validate
+↓
+Save Checkpoints
+↓
+Upload To Hugging Face
+
+Most Important Interview Points
+
+Epochs = dataset passes
+Batch Size = samples per step
+Learning Rate = update size
+Warmup Ratio = slow start
+Cosine Scheduler = gradual LR decrease
+Weight Decay = reduce overfitting
+LoRA Rank (r) = adapter size
+Alpha = LoRA strength
+Dropout = prevent overfitting
+Log Steps = training logs frequency
+Save Steps = checkpoint frequency
+WandB = experiment tracking
+Validation Loss = performance on unseen data
+Early Stopping = choose checkpoint with lowest validation loss
+AdamW = optimizer used to update trainable parameters
+Provide your feedback on BizChat
+
+Warmup Ratio
+
+What it is:
+
+Controls how long the model starts learning slowly.
+Learning rate does not immediately jump to the target value.
+It gradually increases at the beginning of training.
+
+Why it is needed:
+
+At the start, the model weights are not adapted to your dataset.
+A large learning rate can make training unstable.
+Loss may increase suddenly or training may fail.
+
+Example:
+
+Learning rate = 0.0001
+Warmup ratio = 0.01
+Total steps = 10,000
+
+Then:
+
+First 100 steps are warmup steps.
+Learning rate gradually goes from very small value to 0.0001.
+
+Simple idea:
+
+Start slowly before running fast.
+
+Cosine Scheduler
+
+What it is:
+
+A strategy that changes learning rate during training.
+After warmup, learning rate gradually decreases.
+
+Why it is needed:
+
+Early training needs larger updates.
+Later training needs smaller and more precise updates.
+
+What happens:
+
+Beginning: learning rate is high.
+Middle: learning rate slowly decreases.
+End: learning rate becomes very small.
+
+Benefit:
+
+Stable convergence.
+Better final accuracy.
+Commonly used for LLM fine-tuning.
+
+Simple idea:
+
+Learn aggressively at first.
+Fine tune carefully at the end.
+
+Weight Decay
+
+What it is:
+
+A regularization technique.
+Prevents weights from becoming too large.
+
+Problem without weight decay:
+
+Some weights may become extremely large.
+Model may memorize training data.
+Overfitting increases.
+
+What it does:
+
+Adds a penalty when weights grow too much.
+Encourages simpler models.
+
+Benefit:
+
+Better generalization.
+Less overfitting.
+
+Simple idea:
+
+Prevent weights from becoming too powerful.
+
+Dropout
+
+What it is:
+
+Randomly disables some neurons during training.
+
+Example:
+
+Dropout = 0.1
+About 10% of neurons are temporarily ignored.
+
+Why it is needed:
+
+Prevents the model from relying too much on a few neurons.
+Forces the model to learn multiple patterns.
+
+Benefit:
+
+Reduced memorization.
+Better performance on new data.
+
+Important:
+
+Dropout is only used during training.
+During inference, all neurons are active.
+
+Simple idea:
+
+Hide some neurons so the model cannot cheat by memorizing.
+
+Early Stopping
+
+What it is:
+
+A technique used to stop training before overfitting starts.
+
+What we monitor:
+
+Validation Loss
+
+Example:
+
+Epoch 1:
+
+Validation Loss = 1.2
+
+Epoch 2:
+
+Validation Loss = 0.8
+
+Epoch 3:
+
+Validation Loss = 0.6
+
+Epoch 4:
+
+Validation Loss = 0.7
+
+Epoch 5:
+
+Validation Loss = 1.0
+
+Best model:
+
+Epoch 3
+
+Why?
+
+Lowest validation loss.
+
+Even though Epoch 5 trained more, it performed worse on unseen data.
+
+Simple idea:
+
+Stop when validation performance is best.
+
+AdamW Optimizer
+
+What it is:
+
+The component that actually updates weights.
+
+Process:
+
+Loss → Gradients → AdamW → New Weights
+
+What AdamW does:
+
+Uses gradients to decide how much each weight should change.
+Uses learning rate.
+Applies weight decay automatically.
+
+Why AdamW is popular:
+
+Faster convergence.
+More stable training.
+Works very well for transformers and LLMs.
+
+What AdamW receives:
+
+Weight values.
+Gradients from backpropagation.
+
+What AdamW outputs:
+
+Updated weights.
+
+Simple idea:
+
+AdamW is the mechanic that adjusts the weights after backpropagation tells what is wrong.

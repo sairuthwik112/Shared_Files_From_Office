@@ -1,0 +1,298 @@
+---  RAG Pipeline using langchain
+
+Lang Chain is a framework that simplifies building LLM-based applications by providing tools to connect models with data sources, vector databases, and workflows like retrieval, chaining, and agents. It helps reduce development effort and enables building complex systems like RAG and chatbots efficiently
+
+
+| **Library Name**                 | **Usage (What it does)**                                               |
+| -------------------------------- | ---------------------------------------------------------------------- |
+| `os`                             | Used to access system variables like API keys and file paths           |
+| `glob`                           | Used to load multiple files using patterns (e.g., all `.txt` files)    |
+| `tiktoken`                       | Used to tokenize text and count tokens (important for LLM limits)      |
+| `numpy (np)`                     | Used for numerical operations and handling vectors                     |
+| `dotenv (load_dotenv)`           | Loads environment variables (like API keys) from `.env` file           |
+| `OpenAIEmbeddings`               | Converts text into vectors using OpenAI embedding models               |
+| `Chroma`                         | Vector database used to store embeddings and perform similarity search |
+| `HuggingFaceEmbeddings`          | Converts text into vectors using free/open-source models               |
+| `DirectoryLoader`                | Loads multiple documents (files) from a folder                         |
+| `TextLoader`                     | Loads a single text file                                               |
+| `RecursiveCharacterTextSplitter` | Splits large documents into smaller chunks for processing              |
+| `TSNE`                           | Reduces high-dimensional vectors into 2D/3D for visualization          |
+| `plotly.graph_objects (go)`      | Used to create graphs/plots (visualize vectors or clusters)            |
+
+
+KNOWLEDGE EXPERT PROJECT (RAG) – COMPLETE NOTES
+────────────────────────────────────────
+
+WHAT IS THIS PROJECT
+
+This project builds a system where you can ask questions on your own documents and get answers using an LLM.
+Example:
+User asks → “What is AI?”
+System → searches your data + gives answer
+This is called RAG (Retrieval-Augmented Generation)
+────────────────────────────────────────
+
+FULL PROCESS FLOW
+
+Load documents
+Convert to Document objects
+Split into chunks
+Convert chunks to vectors (embeddings)
+Store vectors in Chroma
+User asks question
+Convert question to vector
+Find similar vectors (similarity search)
+Get relevant text chunks
+Send question + chunks to LLM
+LLM generates answer
+────────────────────────────────────────
+
+WHY WE NEED THIS
+
+LLMs cannot:
+
+Store your large data
+Remember your documents
+
+So we:
+Store data externally (vector DB)
+Retrieve relevant parts when needed
+────────────────────────────────────────
+
+STEP-BY-STEP EXPLANATION
+
+STEP 1 – LOAD DOCUMENTS
+We use glob + DirectoryLoader
+What happens:
+All files from folders are loaded
+Why:
+LLM cannot directly read files
+────────────────────────────────────────
+STEP 2 – CONVERT TO DOCUMENT OBJECTS
+Files are converted into Document objects
+Each document contains:
+
+text (content)
+metadata (extra info like folder name)
+
+Why:
+LangChain works with structured data, not raw text
+────────────────────────────────────────
+STEP 3 – CHUNKING
+Large documents are split into smaller pieces
+Why:
+LLM cannot process very large input
+Smaller chunks improve search accuracy
+Example:
+1 file → multiple chunks
+────────────────────────────────────────
+STEP 4 – EMBEDDINGS
+Chunks are converted into vectors
+Text → numbers
+Example:
+“AI is powerful” → [0.12, -0.88, 0.45...]
+Why:
+Computers compare numbers, not text
+Similarity search works using vectors
+────────────────────────────────────────
+STEP 5 – STORE IN VECTOR DATABASE
+We use Chroma
+Store:
+vector + original text
+Why:
+To quickly search similar data later
+────────────────────────────────────────
+STEP 6 – USER QUERY
+User asks question
+Example:
+“What is AI?”
+────────────────────────────────────────
+STEP 7 – QUERY TO VECTOR
+Convert question to vector
+Why:
+To compare with stored vectors
+────────────────────────────────────────
+STEP 8 – SIMILARITY SEARCH
+Compare:
+query vector vs all stored vectors
+Use:
+cosine similarity
+Result:
+top-k most relevant chunks
+Why:
+Find best matching content
+────────────────────────────────────────
+STEP 9 – SEND TO LLM
+Combine:
+user question + retrieved chunks
+Why:
+LLM needs context to answer correctly
+────────────────────────────────────────
+STEP 10 – FINAL OUTPUT
+LLM generates answer based on context
+────────────────────────────────────────
+
+LIBRARIES AND THEIR USE
+
+os
+Used to access environment variables like API keys
+dotenv
+Loads API keys from .env file
+glob
+Finds files from folders automatically
+DirectoryLoader
+Loads multiple files from a folder
+TextLoader
+Reads content from text files
+RecursiveCharacterTextSplitter
+Splits large documents into smaller chunks
+tiktoken
+Converts text into tokens and counts them
+HuggingFaceEmbeddings
+Converts text into vectors using open-source model
+OpenAIEmbeddings
+Converts text into vectors using OpenAI API
+Chroma
+Stores vectors and performs similarity search
+numpy
+Handles vectors and numerical operations
+TSNE
+Converts high-dimensional vectors (like 384) into 2D or 3D
+plotly
+Visualizes vectors as graphs
+────────────────────────────────────────
+
+WHY EACH STEP IS IMPORTANT
+
+Loading → get data
+Documents → structured format
+Chunking → manageable size
+Embeddings → convert to numbers
+Vector DB → enable search
+Similarity → find relevant data
+LLM → generate final answer
+────────────────────────────────────────
+
+SIMPLE UNDERSTANDING
+
+Documents are broken into small chunks
+Each chunk is converted into numbers
+Numbers are stored in a database
+User question is also converted into numbers
+System finds closest matching numbers
+Returns text
+LLM answers using that text
+────────────────────────────────────────
+
+FINAL ONE-LINE SUMMARY
+
+This project converts documents into vectors, stores them in a vector database, retrieves relevant chunks using similarity search, and sends them to an LLM to generate accurate answers.
+
+
+Day 2 we created the database
+Day 3 we use that database
+
+Step 1: Load environment
+We use dotenv to load API keys from .env file
+This is needed so we can use the OpenAI model securely
+
+Step 2: Define model and database
+MODEL means which LLM we are using (like GPT-4)
+DB_NAME is the folder where vectors are stored
+
+Step 3: Load embedding model
+We use HuggingFaceEmbeddings
+This converts text into vectors
+Why needed:
+The retriever will convert the user question into a vector and compare it with stored vectors
+
+Step 4: Connect to vector database
+We use Chroma with DB_NAME
+Important point:
+This does not create a database
+This only loads existing data
+Data was already stored earlier in Day 2
+
+Step 5: Create retriever
+Retriever is created from vectorstore
+Retriever job:
+Take question
+Convert into vector
+Find similar vectors
+Return matching chunks
+Why needed:
+It simplifies similarity search
+
+Step 6: Create LLM
+We use ChatOpenAI
+temperature = 0
+This means output will be accurate and predictable
+Why:
+This is a QA system, so we don’t want creative answers
+
+Step 7: invoke() method
+invoke is used to call both retriever and LLM
+retriever.invoke(question) → returns documents
+llm.invoke(input) → returns answer
+Why:
+Common interface for all components
+
+Step 8: System Prompt
+We create a template with instructions
+It tells LLM:
+Act like assistant
+Use given context
+Don’t make up answers
+{context} is a placeholder
+It will be replaced with retrieved data
+
+Step 9: Main function (core logic)
+First:
+retriever.invoke(question)
+This gives relevant chunks
+Second:
+Combine all chunks into one text (context)
+Third:
+Insert context into system prompt
+Fourth:
+Send to LLM using
+SystemMessage → instructions + context
+HumanMessage → user question
+Fifth:
+LLM generates answer
+Finally:
+Return response.content
+
+Step 10: Run function
+Call the function with a question
+It executes the full pipeline
+
+Full flow summary
+User question
+→ retriever
+→ get relevant chunks
+→ combine into context
+→ send context + question to LLM
+→ LLM generates answer
+
+Simple understanding
+Data is already stored as vectors
+User question is converted into vector
+System finds similar vectors
+Gets corresponding text
+Sends that text to LLM
+LLM answers
+
+Whole Process Behind it
+
+Step 1: Load documents
+Step 2: Add metadata
+Step 3: Split into chunks
+Step 4: Convert chunks → embeddings
+Step 5: Store embeddings in vector DB
+Step 6: User asks question
+Step 7: Convert question → embedding
+Step 8: Search similar chunks (top-k)
+Step 9: Pass context to LLM
+Step 10: Generate final answer
+

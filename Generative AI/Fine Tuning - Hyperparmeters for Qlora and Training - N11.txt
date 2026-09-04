@@ -1,0 +1,614 @@
+-> Hyperparameters for Qlora 
+
+
+1. target_modules = WHERE to learn
+Suppose the model has 100 parts inside it.
+Instead of changing all 100 parts, we tell LoRA:
+
+"Only modify q_proj and v_proj"
+
+Example:
+Python target_modules = ["q_proj", "v_proj"]Show more lines
+Think of it like:
+
+Whole car = Model
+Engine = q_proj
+Steering = v_proj
+
+You only upgrade specific parts of the car, not the entire car.
+✅ Decides WHERE LoRA learns.
+
+2. r (Rank) = HOW MUCH to learn
+Suppose LoRA gets a notebook to write new knowledge.
+Small r
+Python = 4Show more lines
+Small notebook.
+Can write only a little information.
+Large r
+Python = 64Show more lines
+Big notebook.
+Can write much more information.
+✅ Higher r = More learning capacity
+✅ Lower r = Less memory needed
+
+3. alpha = HOW STRONGLY to use new learning
+Suppose LoRA learned:
+Interest rate = 7%
+
+The model asks:
+
+"How much should I trust this new learning?"
+
+Alpha controls that.
+Small alpha
+Python alpha = 8Show more lines
+Model says:
+
+"I'll use this new knowledge a little."
+
+Large alpha
+Python alpha = 64Show more lines
+Model says:
+
+"I'll strongly use this new knowledge."
+
+✅ Controls strength of LoRA updates.
+
+4. dropout = Avoid memorization
+Suppose you have 100 training examples.
+If the model memorizes all 100 examples:
+❌ Bad
+It may fail on new questions.
+Dropout randomly hides some information during training.
+Example:
+Python dropout = 0.1
+Show more lines
+Means:
+
+Use 90% connections
+Ignore 10% connections randomly
+
+Like a teacher hiding some answers during practice so students learn concepts instead of memorizing.
+✅ Prevents overfitting.
+
+5. quantization = Compress the model
+Suppose the model is a huge book.
+Original:
+1000 MB
+
+After quantization:
+250 MB
+
+Same book,
+but compressed.
+Example:
+Weight = 0.18374628
+
+stored as
+0.18
+
+Slightly less precise but much smaller.
+✅ Saves GPU memory.
+✅ Makes large models fit on smaller GPUs.
+
+Real QLoRA Example
+Python = 16alpha = 32 dropout = 0.1target_modules = [  "q_proj",  "v_proj"]quantization = 4-bitShow more lines
+Meaning:
+
+Learn in q_proj and v_proj
+Learning capacity = 16
+Learning strength = 32
+Drop 10% connections during training
+Compress model to 4-bit to save memory
+
+One-Line Memory Trick
+
+target_modules → Where to learn
+r → How much to learn
+alpha → How strongly to use new learning
+dropout → Prevent memorization
+quantization → Save GPU memory
+
+-> Overfitting - Overfitting (Simple Explanation)
+Overfitting happens when a model memorizes the training data instead of learning the patterns.
+
+-> Hyperparameters for fine tuning
+
+Batch
+A batch is a small group of training examples processed at one time.
+Example:
+1000 training examples
+Batch size = 100
+
+The model learns from:
+100 examples → update weights
+Next 100 examples → update weights
+
+✅ Saves memory
+
+Epoch
+An epoch means the model has seen the entire dataset once.
+Example:
+1000 examples
+Batch size = 100
+
+After processing all 10 batches:
+100 + 100 + ... + 100 = 1000
+
+✅ 1 Epoch completed
+
+Why Multiple Epochs?
+Just like a student reads a book multiple times.
+Epoch 1 → Learn basics
+Epoch 2 → Learn better
+Epoch 3 → Learn even better
+
+Too many epochs:
+❌ Model may memorize data (overfitting)
+
+Simple Memory Trick
+Batch = Few pages of a book
+
+Epoch = Reading the whole book once
+
+Example:
+Dataset = 1000 samples
+Batch Size = 100
+Epochs = 3
+
+Result:
+10 batches = 1 epoch
+
+10 batches × 3 epochs
+= 30 training steps
+
+Batch = How much data to learn at a time
+Epoch = How many times to read the entire dataset 
+
+Learning Rate 
+
+Learning Rate = How much the model changes its knowledge after seeing a mistake.
+Example:
+Actual answer = 10
+Model predicted = 6
+The model made a mistake.
+Gradient says:
+"Increase the weight."
+Learning rate decides:
+"How much should I increase it?"
+Small learning rate:
+
+Small weight changes
+Learns slowly
+More stable
+
+Large learning rate:
+
+Big weight changes
+Learns faster
+Can become unstable
+
+Simple analogy:
+Gradient = Direction
+Learning Rate = Step size
+If someone says:
+"Go east."
+That is the gradient.
+Take 1 step east = Small learning rate
+Take 100 steps east = Large learning rate
+Interview answer:
+Learning Rate is a hyperparameter that controls how much the model's weights are updated during each training step. A small learning rate learns slowly, while a large learning rate learns faster but may become unstable. ✅Provide your feedback on BizChatFilesFiles
+
+Gradient Accumulation
+Gradient accumulation is used when your GPU cannot handle a large batch size.
+Example:
+You want:
+
+Batch Size = 16
+
+But GPU can only fit:
+
+Batch Size = 4
+
+So instead of updating weights after every 4 samples:
+Step 1:
+
+Process 4 samples
+Save gradients
+
+Step 2:
+
+Process next 4 samples
+Add gradients
+
+Step 3:
+
+Process next 4 samples
+Add gradients
+
+Step 4:
+
+Process next 4 samples
+Add gradients
+
+Now:
+4 + 4 + 4 + 4 = 16 samples
+Then update weights once.
+Why use it?
+
+Uses less GPU memory
+Simulates a larger batch size
+Helps train large models on smaller GPUs
+
+Simple memory trick:
+
+Batch Size = Data processed at once
+Gradient Accumulation = Number of batches to combine before updating weights
+
+
+Optimizer
+Optimizer is the component that updates the weights using gradients.
+Flow:
+Training Data
+↓
+Prediction
+↓
+Loss
+↓
+Gradient
+↓
+Optimizer updates weights
+Think of it like:
+
+Gradient tells the model what direction to move.
+Optimizer decides how to move the weights.
+
+Example:
+Suppose:
+
+Weight = 100
+Gradient = 2
+Learning Rate = 0.1
+
+Optimizer calculates:
+New Weight = 100 - (0.1 × 2)
+= 99.8
+The optimizer performs this update.
+
+Common Optimizers
+SGD (Stochastic Gradient Descent)
+
+Basic optimizer
+Moves using gradients directly
+Simple but slower
+
+Adam
+
+Most popular
+Learns faster
+More stable
+
+AdamW
+
+Most commonly used for LLM fine-tuning
+Improved version of Adam
+Used in QLoRA and Hugging Face training
+
+
+Easy Interview Answer
+Gradient Accumulation
+
+Combines gradients from multiple small batches before updating weights.
+Used when GPU memory is limited.
+
+Optimizer
+
+Updates model weights using gradients to reduce loss.
+AdamW is the most commonly used optimizer for LLM fine-tuning. 
+
+
+Exactly! ✅ That's the subtle part you're catching.
+
+I oversimplified earlier. Let's do it correctly.
+
+Suppose:
+
+Plain Text
+1
+Batch Size = 8
+Show more lines
+
+We have 8 training examples:
+
+Plain Text
+1
+Example 1
+2
+Example 2
+3
+Example 3
+4
+Example 4
+5
+Example 5
+6
+Example 6
+7
+Example 7
+8
+Example 8
+Show more lines
+What happens first?
+
+The model does a forward pass for ALL 8 examples.
+
+It gets 8 losses:
+
+Plain Text
+1
+Example 1 Loss = 1.2
+2
+Example 2 Loss = 0.8
+3
+Example 3 Loss = 1.5
+4
+Example 4 Loss = 0.9
+5
+Example 5 Loss = 1.1
+6
+Example 6 Loss = 0.7
+7
+Example 7 Loss = 1.3
+8
+Example 8 Loss = 0.5
+Show more lines
+Then PyTorch computes Batch Loss
+
+Average:
+
+Plain Text
+1
+(1.2 + 0.8 + 1.5 + 0.9 + 1.1 + 0.7 + 1.3 + 0.5) / 8
+2
+ 
+3
+= 1.0
+Show more lines
+
+So:
+
+Plain Text
+1
+Batch Loss = 1.0
+Show more lines
+Now Backpropagation
+
+This is the important part.
+
+For a weight W:
+
+Plain Text
+1
+Gradient_E1 = -0.30
+2
+Gradient_E2 = -0.10
+3
+Gradient_E3 = -0.25
+4
+Gradient_E4 = -0.20
+5
+Gradient_E5 = -0.15
+6
+Gradient_E6 = -0.35
+7
+Gradient_E7 = -0.05
+8
+Gradient_E8 = -0.20
+Show more lines
+
+The framework computes all of these internally.
+
+Then averages them:
+
+Plain Text
+1
+(-0.30
+2
+-0.10
+3
+-0.25
+4
+-0.20
+5
+-0.15
+6
+-0.35
+7
+-0.05
+8
+-0.20) / 8
+9
+ 
+10
+= -0.20
+Show more lines
+
+So the batch gradient becomes:
+
+Plain Text
+1
+Gradient = -0.20
+2
+ 
+Show more lines
+Why average?
+
+Because we want the update to represent:
+
+Plain Text
+1
+What is best for all 8 examples together?
+2
+ 
+Show more lines
+
+Not:
+
+Plain Text
+1
+What is best for only Example 3?
+Show more lines
+Then Gradient Accumulation
+
+Suppose:
+
+Plain Text
+1
+Batch Size = 8
+2
+Gradient Accumulation = 4
+Show more lines
+
+Then:
+
+Batch 1
+Plain Text
+1
+Gradient = -0.20
+Show more lines
+
+Store it.
+
+No update yet.
+
+Batch 2
+Plain Text
+1
+Gradient = -0.15
+Show more lines
+
+Store it.
+
+No update.
+
+Batch 3
+Plain Text
+1
+Gradient = -0.10
+Show more lines
+
+Store it.
+
+No update.
+
+Batch 4
+Plain Text
+1
+Gradient = -0.25
+Show more lines
+
+Store it.
+
+No update.
+
+Now accumulated gradient:
+
+Plain Text
+1
+-0.20
+2
+-0.15
+3
+-0.10
+4
+-0.25
+5
+ 
+6
+=
+7
+-0.70
+Show more lines
+
+Average:
+
+Plain Text
+1
+-0.70 / 4
+2
+ 
+3
+=
+4
+-0.175
+Show more lines
+Finally Weight Update
+
+Weight:
+
+Plain Text
+1
+0.50
+Show more lines
+
+Learning Rate:
+
+Plain Text
+1
+0.01
+Show more lines
+
+Update:
+
+Plain Text
+1
+New Weight
+2
+ 
+3
+=
+4
+0.50 - (0.01 × -0.175)
+5
+ 
+6
+=
+7
+0.50175
+Show more lines
+Real Understanding
+
+For Batch Size = 8:
+
+✅ Gradient is calculated for every example internally
+
+Plain Text
+1
+g1, g2, g3, g4, g5, g6, g7, g8
+2
+``
+Show more lines
+
+✅ Then averaged into ONE batch gradient
+
+Plain Text
+1
+g_batch
+Show more lines
+
+✅ Then gradient accumulation averages multiple batch gradients
+
+Plain Text
+1
+g_accumulated
+2
+`
+Show more lines
+
+✅ Then optimizer updates weights once.
+
+So you're absolutely right:
+
+There are 8 data points, so there are actually 8 individual gradients first.
+
+The framework just averages them into one batch gradient before the weight update.

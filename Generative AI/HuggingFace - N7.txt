@@ -1,0 +1,128 @@
+Hugging Face is a platform that provides us the models, datasets and transformers for free to us them and we can download them also 
+
+Hugging Face Hub
+
+A central platform to store and share AI resources
+Works like GitHub for ML models and datasets
+Contains:
+
+Pre-trained models (BERT, GPT, etc.)
+Datasets
+Spaces (demo apps)
+
+
+
+🔹 Key Uses:
+
+Download models → from_pretrained()
+Upload your trained models
+Share and collaborate with others
+Version control for models
+
+✅ One line:
+👉 Hub = storage place for models & datasets
+
+✅ Hugging Face Datasets
+
+Library used to load and manage datasets easily
+Provides ready datasets (IMDB, SQuAD, etc.)
+Handles large data efficiently
+
+🔹 Key Features:
+
+load_dataset() to fetch data
+Supports:
+
+filtering
+preprocessing
+splitting
+
+
+Works directly with Transformers
+
+🔹 Example:
+Pythonfrom datasets import load_datasetdataset = load_dataset("imdb")Show more lines
+✅ One line:
+👉 Datasets = data loading + processing tool
+
+✅ Hugging Face Transformers
+
+Library to use pre-trained transformer models
+Supports NLP, vision, audio tasks
+
+🔹 Key Features:
+
+Load models easily (AutoModel, pipeline)
+Built-in tokenization
+Ready-to-use pipelines:
+
+text generation
+summarization
+sentiment analysis
+
+
+
+🔹 Example:
+Pythonfrom transformers import pipelinepipe = pipeline("sentiment-analysis")Show more lines
+✅ One line:
+👉 Transformers = tool to run AI models
+
+🔥 How They Work Together (Important)
+
+Hub → stores models & datasets
+Datasets → loads data
+Transformers → runs models
+
+👉 Flow:
+Hub → (model + data)
+      ↓
+Datasets → load data
+Transformers → use model
+      ↓
+Application output
+
+-> We can use huggingface models in google colab by creating a new write token and adding that key in the google colab secret keys
+
+For example generating images by using the diffusion models in the hugging face 
+
+The image clarity is depends upon the model we are using and the inference steps and the gpus we are using 
+
+T4 is the free use gpu in the colab if you want the best one for more size and ram use a100
+
+-> Pipelines for inference tasks
+
+Inference is like running the model that is already trained with the data
+
+The most commonly used Hugging Face pipelines include text-generation, sentiment-analysis, question-answering, summarization, and feature-extraction, which are widely used in building AI applications like chatbots, RAG systems, and document processing tools.
+
+Hugging Face pipelines use predefined default models for each task based on internal mappings. They do not dynamically select the best model, so developers can override the default by specifying a model explicitly.
+
+Transformers are neural network architectures used in LLMs to process and generate text using attention mechanisms, while diffusion models are used for image generation by starting from noise and iteratively refining it into a coherent image.
+
+-> Quantization
+
+Quantization is a technique that reduces the precision of model weights (e.g., from 32-bit to 8-bit or 4-bit) to decrease memory usage and improve inference speed, enabling efficient deployment of large models on limited hardware.
+
+-> Tokenizer
+
+In Hugging Face, tokenizers convert text into model-readable tokens, and different models use different tokenization methods like BPE, WordPiece, or SentencePiece. For chat models, apply_chat_template formats conversation messages, and add_generation_prompt ensures the model generates a response.
+
+-> HuggingFace Transformers
+
+Model parameters consist of multiple types of weights, including embedding weights, attention weights (query, key, value), feedforward network weights, and output projection weights, all of which work together to process input and generate predictions.
+
+Benchmarks and leaderboard
+
+There are some benchmarks like GPQA, MMLU and HLE. Benchmarks means the models are trained with these benchmarks and leaderboard is just to rank them
+
+Artifical Analysis, Vellum, SEAL, LiveBench, LMArena, HuggingFace Spacec  are leaderboards that compare the model in cost, performance, output speed, cost for input and out tokens
+
+How to evaluate the performance of genai solution
+
+Need the scores of Loss, perplexity, Accurary, Recall, F1 Score model centric metrics and business centric metrics
+
+
+
+
+
+

@@ -1,0 +1,878 @@
+Step 1: What problem are we trying to solve?
+
+The RSS feeds contain messy, unstructured data.
+
+Example:
+
+Dell Inspiron Laptop - Save $300. Original Price $850. Now $550.
+
+This is text that humans can understand but computers cannot easily work with.
+
+We want to convert it into a structured format like:
+
+Product = Dell Inspiron Laptop
+Price = $550
+URL = xyz.com
+
+This process is called:
+
+Unstructured Data → Structured Data
+
+Step 2: What is Structured Output?
+
+Normally an LLM returns natural language.
+
+Example:
+
+"The Dell Inspiron laptop is available for $550."
+
+This is readable but difficult for a program to use.
+
+With Structured Outputs, we tell the LLM:
+
+"Don't give me a sentence. Give me data in a specific format."
+
+Example:
+
+Description
+Price
+URL
+
+Now Python can easily use these values.
+
+Step 3: How does Structured Output feel?
+
+It feels like:
+
+We create a Python class.
+We send the class to GPT.
+GPT directly fills the class.
+We get back a Python object.
+
+Almost like GPT understands Python objects.
+
+This is how it appears to us.
+
+Step 4: What actually happens internally?
+
+The reality is simpler.
+
+The class is converted into a JSON Schema.
+
+The JSON Schema tells GPT:
+
+"You must return data in this format."
+
+GPT then generates JSON instead of natural language.
+
+OpenAI automatically converts that JSON back into a Python object.
+
+So the flow is:
+
+Python Class
+
+↓
+
+JSON Schema
+
+↓
+
+GPT generates JSON
+
+↓
+
+OpenAI converts JSON
+
+↓
+
+Python Object
+
+Step 5: What is Pydantic?
+
+Pydantic is a library used to define data structures.
+
+Think of it as a way to define a form.
+
+Example:
+
+A Deal must contain:
+
+Description
+Price
+URL
+
+Pydantic generates rules for this structure.
+
+These rules become the JSON Schema.
+
+Step 6: Understanding the Deal Class
+
+The first class is:
+
+Deal
+
+Think of it as:
+
+One Product Deal
+
+A Deal contains:
+
+Product Description
+Price
+URL
+
+Example:
+
+Deal
+
+Description = Dell Laptop
+
+Price = 550
+
+URL = dealnews.com/abc
+
+One deal = one product.
+
+Step 7: Understanding the DealSelection Class
+
+The prompt asks GPT:
+
+"Find the best 5 deals."
+
+A single Deal can only store one product.
+
+We need something to store all 5 products.
+
+That's why DealSelection exists.
+
+Think:
+
+DealSelection
+
+contains
+
+Deal 1
+Deal 2
+Deal 3
+Deal 4
+Deal 5
+
+So:
+
+DealSelection = Collection of Deals
+
+Step 8: RSS Feed Processing
+
+The program reads RSS feeds.
+
+Examples:
+
+Electronics Deals
+Computer Deals
+Smart Home Deals
+
+It reads:
+
+First 10 deals
+Second 10 deals
+Third 10 deals
+
+Total:
+
+30 Deals
+
+Step 9: Additional Web Scraping
+
+The RSS summary may not contain enough information.
+
+So the system visits the original deal page.
+
+It extracts more content.
+
+Now each deal contains:
+
+RSS Data
+Website Data
+
+This produces a richer description.
+
+Step 10: Creating the Prompt
+
+The prompt tells GPT:
+
+"Find the best 5 deals."
+
+The prompt also warns GPT:
+
+Do not confuse:
+
+"$500 Off"
+
+with
+
+"Actual Price = $500"
+
+because earlier experiments showed GPT sometimes made this mistake.
+
+This is called Prompt Engineering.
+
+Step 11: Why Field Descriptions Matter
+
+Inside the Deal class, each field has a description.
+
+Example:
+
+Price field:
+
+"Use the actual product price."
+
+Why?
+
+Suppose GPT sees:
+
+Original Price = $800
+
+Discount = $250
+
+Current Price = $550
+
+Without instructions GPT may choose:
+
+$250
+
+which is wrong.
+
+The descriptions guide GPT.
+
+Step 12: What OpenAI Parse Does
+
+Normally:
+
+GPT returns text.
+
+With Parse:
+
+GPT returns JSON following the schema.
+
+OpenAI then converts that JSON into:
+
+DealSelection Object
+
+which contains:
+
+5 Deal Objects
+
+Step 13: What Happens After GPT Responds?
+
+GPT returns:
+
+Best Deal 1
+
+Best Deal 2
+
+Best Deal 3
+
+Best Deal 4
+
+Best Deal 5
+
+Each deal contains:
+
+Description
+Price
+URL
+
+The program can now easily access them.
+
+For example:
+
+Description
+
+Price
+
+URL
+
+for every deal.
+
+Step 14: Complete Flow
+
+RSS Feeds
+
+↓
+
+Scrape 30 Deals
+
+↓
+
+Visit Deal Websites
+
+↓
+
+Collect More Information
+
+↓
+
+Build Prompt
+
+↓
+
+Generate JSON Schema from DealSelection
+
+↓
+
+Send Prompt + Schema to GPT
+
+↓
+
+GPT Finds Best 5 Deals
+
+↓
+
+GPT Returns JSON
+
+↓
+
+OpenAI Converts JSON
+
+↓
+
+DealSelection Object
+
+↓
+
+Contains 5 Deal Objects
+
+↓
+
+Used by Scanner Agent
+
+Step 15: What is the Scanner Agent Actually Doing?
+
+Scanner Agent's job is:
+
+Read RSS feeds.
+Read deal websites.
+Collect unstructured deal information.
+Send it to GPT.
+Use Structured Outputs.
+Return the best 5 deals in a clean format.
+
+So the Scanner Agent is acting like a:
+
+Deal Discovery Agent
+
+It searches the internet for promising deals and converts messy web content into structured deal objects that later agents can use.
+
+Most Important Interview Point
+
+Deal Class
+
+= Represents ONE product deal.
+
+Contains:
+
+Description
+Price
+URL
+
+DealSelection Class
+
+= Represents a COLLECTION of deals.
+
+Contains:
+
+List of 5 Deal objects.
+
+Structured Outputs allow the LLM to convert messy RSS feed data into these predefined objects so that Python programs can use the information directly without manual parsing.
+
+
+Intelligent Parsing with LLMs and Scanner Agent Workflow
+1. Main Idea
+
+The instructor highlights one of the most powerful capabilities of LLMs:
+
+Turning unstructured data into structured data.
+
+Example:
+
+Unstructured text:
+
+"$100 off $300"
+
+LLM understands:
+
+Original Price = $300
+
+Discount = $100
+
+Final Price = $200
+
+Traditional parsers struggled with this type of reasoning, but LLMs can understand the meaning behind the text.
+
+2. Why This Was Difficult Before LLMs
+
+Earlier systems relied on:
+
+Rule-based parsers
+Regex patterns
+Hardcoded conditions
+If-else logic
+
+Example:
+
+Parser expects:
+
+"$100 off $300"
+
+But website changes wording to:
+
+"Usually $200 off, but this week only $250 off"
+
+Traditional parser:
+
+Fails
+Returns wrong data
+Requires new rules
+
+Problems:
+
+Brittle
+Hard to maintain
+Break when format changes
+Expensive to build
+3. Why LLMs Changed Everything
+
+LLMs understand meaning instead of exact patterns.
+
+They can read:
+
+Product descriptions
+Discounts
+Deals
+Resumes
+Emails
+Documents
+
+And convert them into structured formats.
+
+For example:
+
+Input:
+
+"This Samsung TV normally costs $800 but is on sale for $499."
+
+Output:
+
+Product: Samsung TV
+
+Original Price: 800
+
+Current Price: 499
+
+Discount: 301
+
+4. Resume Parsing Example
+
+The instructor worked on resume parsing.
+
+Before LLMs:
+
+A parser needed:
+
+Hundreds of rules
+Name extraction logic
+Skill extraction logic
+Education extraction logic
+Experience extraction logic
+
+Different resume formats caused problems.
+
+Now:
+
+LLMs can read almost any resume format and extract:
+
+Name
+Skills
+Education
+Experience
+Certifications
+
+Much more easily.
+
+5. Benefits of LLM-Based Parsing
+Advantage 1
+
+Handles different wording styles.
+
+Advantage 2
+
+Understands context.
+
+Advantage 3
+
+Needs fewer rules.
+
+Advantage 4
+
+Works on messy data.
+
+Advantage 5
+
+Easy to adapt to new domains.
+
+6. Drawbacks of LLM Parsing
+
+Nothing is perfect.
+
+Cost
+
+API calls cost money.
+
+Latency
+
+Response takes time.
+
+Unpredictability
+
+LLMs can hallucinate.
+
+They may sometimes:
+
+Misread values
+Miss information
+Return incorrect data
+7. Solution: Structured Outputs
+
+The biggest fix is:
+
+Structured Outputs.
+
+Instead of getting random text:
+
+"Looks like a nice TV deal!"
+
+We force the model to return:
+
+{ product_name, price, url, discount }
+
+Benefits:
+
+Consistent format
+Easy for applications
+Easy validation
+Reliable downstream processing
+8. Scanner Agent Overview
+
+The Scanner Agent's job is:
+
+Step 1
+
+Read RSS feeds.
+
+↓
+
+Step 2
+
+Fetch deal descriptions.
+
+↓
+
+Step 3
+
+Send deal text to GPT-5.
+
+↓
+
+Step 4
+
+GPT-5 chooses good deals.
+
+↓
+
+Step 5
+
+GPT-5 extracts structured information.
+
+↓
+
+Step 6
+
+Return structured deal objects.
+
+9. Scanner Agent Workflow
+Fetch Deals
+
+First:
+
+RSS feed provides deal listings.
+
+Example:
+
+30 deals fetched.
+
+Create Prompt
+
+System Prompt
+
+Tells GPT what role it has.
+
+Example:
+
+"You are a deal extraction expert."
+
+User Prompt
+
+Contains:
+
+Deal descriptions
+Product details
+Discount information
+Call GPT-5
+
+GPT receives:
+
+RSS data
+Prompt
+Structured output schema
+Structured Output Parsing
+
+The important line:
+
+response.parsed
+
+Instead of reading text manually,
+
+OpenAI returns:
+
+A validated Python object.
+
+Example:
+
+DealSelection
+
+Containing:
+
+Product name
+Price
+URL
+Description
+Final Result
+
+Scanner Agent returns:
+
+Structured deal data
+
+instead of
+
+Raw RSS text.
+
+10. Why Scanner Agent Is Powerful
+
+Without GPT:
+
+RSS Feed → Raw Text
+
+With GPT:
+
+RSS Feed → Understanding → Structured Data
+
+The model performs:
+
+Selection
+Parsing
+
+at the same time.
+
+11. Push Notification Agent
+
+After finding deals, the system notifies the user.
+
+The instructor uses:
+
+Pushover
+
+which sends notifications directly to a phone.
+
+12. Why Use Pushover?
+
+Alternative:
+
+Twilio
+
+Problems:
+
+More setup
+More paperwork
+SMS restrictions
+
+Pushover:
+
+Simple
+Fast
+Personal use friendly
+13. Pushover Configuration
+
+You need two tokens.
+
+User Token
+
+Starts with:
+
+U
+
+Example:
+
+Uxxxxxxxx
+
+Identifies you.
+
+Application Token
+
+Starts with:
+
+A
+
+Example:
+
+Axxxxxxxx
+
+Identifies your application.
+
+Both are stored in:
+
+.env
+
+Example:
+
+PUSHOVER_USER
+
+PUSHOVER_TOKEN
+
+14. Push Function Workflow
+
+Push function creates:
+
+Payload
+
+Containing:
+
+User token
+Application token
+Message
+
+Then sends request to:
+
+Pushover API
+
+Result:
+
+Notification arrives on phone.
+
+15. Messaging Agent
+
+The instructor wanted another AI agent.
+
+Instead of:
+
+Sending plain notification
+
+The new agent:
+
+Creates a marketing-style message first.
+
+Example Input:
+
+Samsung TV $499
+
+Normal Notification:
+
+Samsung TV available for $499
+
+AI Notification:
+
+🚨 Amazing Deal Alert!
+
+Get this Samsung 60-inch LED TV for only $499 before it's gone!
+
+Looks much more exciting.
+
+16. Messaging Agent Workflow
+
+Deal Found
+
+↓
+
+Claude/OpenAI receives deal
+
+↓
+
+LLM creates hype message
+
+↓
+
+Push notification generated
+
+↓
+
+Pushover API called
+
+↓
+
+Phone receives alert
+
+17. Complete System Architecture
+
+RSS Feed
+
+↓
+
+Scanner Agent
+
+↓
+
+GPT-5
+
+↓
+
+Structured Outputs
+
+↓
+
+Deal Selection Object
+
+↓
+
+Messaging Agent
+
+↓
+
+Claude/OpenAI
+
+↓
+
+Hype Message
+
+↓
+
+Pushover
+
+↓
+
+Phone Notification
+
+18. Key Learning from This Section
+
+The most important lesson is not the phone notification.
+
+The real lesson is:
+
+LLMs can act as intelligent parsers.
+
+They can:
+
+Read messy data
+Understand meaning
+Extract structured information
+Return validated objects
+
+This capability has opened an entirely new class of AI applications that were extremely difficult to build using traditional software engineering approaches.

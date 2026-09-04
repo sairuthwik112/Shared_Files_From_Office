@@ -1,0 +1,483 @@
+QLoRA is a parameter-efficient fine-tuning technique that combines quantization and LoRA to enable training large language models with very low memory and computational cost.
+
+using Llama 3.2 with 3B parameters is large far too much for us to train
+
+✅ Step 0: Pretrained Model Ready
+
+Model (LLaMA) is already trained ✅
+Has billions of parameters ✅
+Knows language + general patterns ✅
+
+👉 This is called base model
+
+✅ Step 1: Load the Model
+
+Load LLaMA into memory
+Takes GPU RAM
+All weights already exist
+
+👉 At this stage:
+
+❌ No training
+✅ Just loading
+
+
+✅ Step 2: Freeze All Parameters 🔥
+
+Freeze all original weights
+No updates to 3B parameters
+
+👉 Why:
+
+Too expensive
+Not needed
+
+
+✅ Step 3: Prepare Your Dataset
+Example:
+Input: "Apple iPhone 13, 128GB"
+Output: "50000"
+
+👉 Convert into JSONL format ✅
+
+✅ Step 4: Select Target Modules
+
+Choose important layers:
+
+Attention ✅
+MLP ✅
+
+
+
+👉 These are the parts we want to adjust
+
+✅ Step 5: Add LoRA Adapters
+Add small matrices:
+LoRA A
+LoRA B
+
+👉 These are:
+
+small ✅
+trainable ✅
+
+
+✅ Step 6: Forward Pass
+For each input:
+Input → Model → Prediction
+
+Internally:
+Modified weight = Original + α × (A × B)
+
+
+✅ Step 7: Calculate Loss (Error)
+Example:
+Actual = 50000  
+Predicted = 42000  
+Error = 8000
+
+👉 Model knows it is wrong
+
+✅ Step 8: Backpropagation
+👉 Learning step:
+
+❌ Do NOT update LLaMA weights
+✅ ONLY update:
+
+LoRA A
+LoRA B
+
+
+
+
+✅ Step 9: Update LoRA Parameters
+
+LoRA matrices adjusted
+Model improves predictions
+
+
+✅ Step 10: Repeat Training (Epochs)
+Train → Update → Train → Update
+
+👉 Repeat for all data
+
+✅ Step 11: Validation (During Training)
+
+Check performance on validation data ✅
+No weight updates ❌
+
+👉 Helps avoid overfitting
+
+✅ Step 12: Final Model Ready
+👉 Final output:
+Output = Base Model + LoRA Adjustment
+
+✅ Model is now specialized
+
+✅ Step 13: Testing
+
+Use test data (unseen) ✅
+Calculate error
+
+👉 Final performance check
+
+✅ Step 14: Inference (Real Use)
+Now you can use model:
+Input: "Dell Laptop i7"
+Output: "65000"
+
+✅ Works on new data
+
+✅ ✅ Final Flow (Very Important)
+1. Load pretrained model
+2. Freeze all parameters
+3. Prepare dataset
+4. Select target modules
+5. Add LoRA layers (A & B)
+6. Forward pass
+7. Calculate loss
+8. Backpropagation
+9. Update LoRA
+10. Repeat (epochs)
+11. Validate
+12. Test
+13. Use model for prediction
+
+
+✅ Key Insights 🔥
+
+Base model → NOT trained again ❌
+LoRA → ONLY trained ✅
+Learning happens in LoRA ✅
+
+
+✅ One-Line Summary
+👉 Fine-tuning = freeze big model + train small adapters + improve performance
+
+✅ Interview One-Liner
+Fine-tuning with LoRA involves freezing the pretrained model and training small adapter layers using custom data to efficiently adapt the model to a specific task.
+
+
+
+✅ ✅ WEIGHTS – NOTES
+✅ What are Weights
+
+
+Weights are numbers inside the model
+
+
+Stored as:
+
+vectors ✅
+matrices ✅
+
+
+
+Example:
+
+
+W = [[0.2, -0.5, 0.8], ...]
+
+
+✅ What Do Weights Do
+
+Control importance of input ✅
+Transform embeddings ✅
+Learn patterns from data ✅
+
+
+✅ Simple Formula
+Output = Input × Weight + Bias
+
+
+✅ In LLM (GPT / LLaMA)
+Weights exist in:
+
+Attention layers → Wq, Wk, Wv ✅
+MLP layers ✅
+Embedding layer ✅
+
+
+✅ Size of Weights
+
+Millions / billions of numbers
+Example:
+
+3B parameters = 3 billion numbers
+
+
+✅ Important Point
+👉 Weights are:
+
+randomly initialized first ❌
+learned during training ✅
+
+
+✅ ✅ HOW WEIGHTS WORK (IN NORMAL MODEL)
+✅ Flow
+Text → Tokens → Embeddings → Multiply with weights → Output
+
+
+✅ What Happens
+
+Input → converted to embeddings ✅
+Embeddings × weights ✅
+Transformed into new vectors ✅
+Repeated across layers ✅
+
+
+✅ Key Idea
+👉 Weights do NOT store data
+👉 They store patterns
+
+✅ ✅ HOW WEIGHTS ARE LEARNED
+✅ Training Process
+1. Give input
+2. Model predicts
+3. Calculate error
+4. Update weights
+5. Repeat
+
+
+✅ Update Formula
+New Weight = Old Weight - learning_rate × gradient
+
+
+✅ Important Insight
+👉 Data → teaches
+👉 Weights → learn
+
+✅ ✅ WEIGHTS IN ATTENTION (IMPORTANT 🔥)
+✅ QKV Calculation
+Q = Embedding × Wq
+K = Embedding × Wk
+V = Embedding × Wv
+
+
+✅ Meaning
+
+Wq → helps ask questions
+Wk → helps match words
+Wv → holds information
+
+
+✅ Important
+👉 Same weights are used for:
+
+all tokens ✅
+every input ✅
+
+
+✅ ✅ WEIGHTS IN FINE-TUNING (MAIN PART 🔥)
+
+✅ Case 1: Full Fine-Tuning
+
+Update all weights ❌ (expensive)
+
+Wq, Wk, Wv, MLP → ALL updated
+
+
+✅ Case 2: LoRA Fine-Tuning ✅ (Most Important)
+✅ What Happens
+1. Load pretrained model
+2. Freeze all weights ❌ (no updates)
+3. Add LoRA parameters (small matrices)
+
+
+✅ LoRA Weights
+A and B matrices
+
+
+✅ Final Weight Formula
+New Weight = Original Weight + α × (A × B)
+
+
+✅ Training Step
+👉 During fine-tuning:
+
+❌ Original weights NOT updated
+✅ Only LoRA weights updated
+
+
+✅ Flow in Fine-Tuning
+Input → Model → Prediction
+↓
+Calculate loss
+↓
+Backpropagation
+↓
+Update LoRA weights only
+
+
+✅ ✅ KEY DIFFERENCE
+
+ConceptNormal TrainingFine-Tuning (LoRA)Weights updatedAllOnly fewCostHighLowSpeedSlowFast
+
+✅ ✅ FINAL KEY POINTS 🔥
+
+Weights = numbers inside model
+They transform embeddings
+They are learned from data
+In fine-tuning:
+
+base weights are frozen ✅
+small weights are added and trained ✅
+
+
+
+
+✅ ✅ ONE-LINE SUMMARY
+👉 Weights are numerical parameters that transform embeddings, and in fine-tuning (LoRA), only small additional weights are updated instead of the full model.
+
+✅ ✅ MEMORY TRICKS
+
+“Weights = learned numbers”
+“Data teaches, weights learn”
+“LoRA = train small weights, freeze big model”
+
+Base Model
+A base model is the original pretrained model that has learned language from huge amounts of internet, books, articles, etc.
+Examples:
+
+Llama 3 Base
+GPT Base
+Mistral Base
+
+Its job:
+
+Predict the next token.
+Complete text.
+Doesn't know how to behave as an assistant.
+
+Example:
+Prompt:
+What is Python?
+
+Base model output:
+What is Python?
+
+Python is a programming language created by Guido van Rossum...
+
+Or it may continue the text in unexpected ways because it is simply doing next-token prediction.
+Chat Model
+A chat model starts with a base model and is then instruction-tuned.
+Process:
+Base Model
+     ↓
+Instruction Tuning
+     ↓
+Chat Model
+
+During instruction tuning, the model learns:
+
+Follow instructions
+Answer questions
+Refuse harmful requests
+Maintain conversations
+Act like an assistant
+
+Examples:
+
+GPT-4o Chat
+ChatGPT models
+Llama 3 Instruct
+Mistral Instruct
+
+Example:
+Prompt:
+What is Python?
+
+Chat Model output:
+Python is a high-level programming language commonly used for web development, data science, AI, and automation.
+
+It gives a direct helpful answer because it was trained to follow instructions.
+Real Example
+Base Model:
+Translate English to French:
+
+Hello
+
+Output might be:
+Bonjour
+
+Translate English to German:
+
+It keeps completing text.
+Chat Model:
+Translate English to French:
+
+Hello
+
+Output:
+Bonjour
+
+It understands the instruction and stops.
+Training Flow
+Step 1:
+Pretraining
+Internet + Books + Documents
+           ↓
+      Base Model
+
+Step 2:
+Instruction Tuning
+Question → Answer datasets
+           ↓
+      Chat Model
+
+Step 3:
+RLHF / Preference Training
+(Human feedback)
+           ↓
+ Better Chat Model
+
+Fine-Tuning Difference
+If you fine-tune a:
+Base Model
+You need to teach:
+
+Task format
+Response style
+Domain knowledge
+
+Example:
+Llama-3-Base
+   ↓
+Medical Fine-Tuning
+   ↓
+Medical Assistant
+
+Chat Model
+It already knows:
+
+How to answer
+How to chat
+How to follow instructions
+
+You only teach:
+
+Your company data
+Special task
+Custom behavior
+
+Example:
+Llama-3-Instruct
+       ↓
+Banking Fine-Tuning
+       ↓
+Banking Assistant
+
+Simple Interview Answer
+Base Model
+
+Pretrained on large text data.
+Predicts next token.
+Not optimized for conversations.
+Requires instruction tuning.
+
+Chat Model
+
+Base model + instruction tuning.
+Optimized for Q&A and conversations.
+Follows instructions.
+Usually preferred for chatbot application

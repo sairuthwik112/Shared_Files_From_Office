@@ -1,0 +1,181 @@
+4 Types in Agentic AI
+1. AI Builders
+
+Build agents using drag-and-drop.
+
+Examples:
+
+n8n
+OpenAI Agent Builder
+CrewAI Studio
+ElevenLabs
+
+Used by:
+
+Technical users
+Non-technical users
+2. Agent Products
+
+Ready-made products that use agents.
+
+Examples:
+
+Claude Code
+Codex
+OpenClaude
+Claude Desktop
+
+Users use the agents but don't build them.
+
+3. Agent Runtimes
+
+Places where agents run in production.
+
+Examples:
+
+AWS Bedrock AgentCore
+Vertex AI Agent Engine
+Cloud platforms
+
+Purpose:
+
+Deploy and run agents
+4. Agent Frameworks
+
+Libraries used to build agents.
+
+Examples:
+
+OpenAI Agents SDK
+CrewAI
+LangGraph
+LangChain
+Google ADK
+AWS Strands
+
+Purpose:
+
+Make agent development easier
+What is an Agent Framework?
+
+An agent framework is a helper library that reduces repetitive coding when building agents.
+
+Frameworks do NOT create agents.
+
+They only make development easier and faster.
+
+What Do Frameworks Handle?
+1. Orchestration
+
+Connect multiple LLM calls.
+
+Example:
+
+LLM 1 → LLM 2 → LLM 3
+
+2. Tool Calling
+
+Give LLMs abilities like:
+
+Web Search
+Database Access
+Reading Files
+Stock Price Lookup
+3. Structured Outputs
+
+Normally:
+
+LLM returns text.
+
+With structured outputs:
+
+LLM returns JSON.
+
+Framework converts JSON into Python objects.
+
+Important:
+
+LLM does NOT create Python objects directly.
+
+LLM → JSON Text → Framework → Python Object
+
+4. MCP Support
+
+MCP lets you use tools built by other people.
+
+Instead of creating every tool yourself, you can connect to existing tools.
+
+5. Agent Loop
+
+Frameworks help create:
+
+LLM ↓ Tool ↓ LLM ↓ Tool ↓ Repeat Until Goal Complete
+
+This is the Agent Loop.
+
+Popular Frameworks
+OpenAI Agents SDK
+Lightweight
+Simple
+Flexible
+More control
+Google ADK
+Lightweight
+Similar to OpenAI SDK
+AWS Strands Agents
+Lightweight
+AWS focused
+CrewAI
+Opinionated
+Batteries included
+Lots of built-in features
+Fast development
+LangGraph + LangChain
+Enterprise focused
+More structured
+Very popular in production systems
+What is an Opinionated Framework?
+
+The framework expects you to follow its way of working.
+
+Advantages
+Faster development
+Less code
+Disadvantages
+Less flexibility
+Do We Need Frameworks?
+
+No.
+
+You can build agents using:
+
+Python
+LLM APIs
+Tool Calls
+Loops
+
+without any framework.
+
+Why Learn Without Frameworks First?
+
+Anthropic recommends starting without frameworks.
+
+Benefits:
+
+Understand tool calling
+Understand loops
+Understand how agents really work
+Remove framework magic
+Framework Selection
+
+Don't overthink framework choice.
+
+Most frameworks ultimately do:
+
+LLM + Tools + Loop + Goal
+
+Choose based on:
+
+Team skills
+Simplicity vs flexibility
+Personal preference

@@ -1,0 +1,686 @@
+Autonomous Planning Agent - Complete Workflow Notes
+
+This is the most important workflow in the course because it combines everything learned so far:
+
+Agents
+Tools
+Structured Outputs
+Multiple Models
+Agent Orchestration
+Agent Loop
+Tool Calling
+Planning
+Autonomy
+
+The final result is:
+
+Find Deals
+    ↓
+Analyze Deals
+    ↓
+Estimate True Value
+    ↓
+Choose Best Deal
+    ↓
+Send Notification
+
+
+And the LLM decides which tools to call and when.
+
+Step 1: Why Do We Need A Planning Agent?
+
+Before this section we already had:
+
+Scanner Agent
+
+Finds deals from the internet.
+
+Ensemble Agent
+
+Calculates true product value.
+
+Messaging Agent
+
+Sends notifications.
+
+But somebody needs to coordinate them.
+
+Question:
+
+Who decides:
+
+Scan first?
+Analyze second?
+Notify third?
+
+Answer:
+
+Planning Agent
+
+Think:
+
+Manager Agent
+      ↓
+Scanner Agent
+      ↓
+Ensemble Agent
+      ↓
+Messaging Agent
+
+
+The Planning Agent acts like a manager.
+
+Step 2: Refresher On Tool Calling
+
+Remember from Week 2:
+
+LLMs cannot execute functions directly.
+
+Instead:
+
+LLM is given a list of available tools.
+
+Example:
+
+Tool 1:
+Scan Internet
+
+Tool 2:
+Estimate Value
+
+Tool 3:
+Notify User
+
+
+The LLM chooses:
+
+I want Tool 1
+
+
+Python executes it.
+
+The result is sent back to the LLM.
+
+Then the LLM decides:
+
+Now I want Tool 2
+
+
+This continues until the goal is finished.
+
+Step 3: Creating Fake Functions
+
+Initially three fake functions were created.
+
+Function 1
+
+Scan Internet For Bargains
+
+Purpose:
+
+Return Deal List
+
+
+Output:
+
+Fake deals
+
+Function 2
+
+Estimate True Value
+
+Purpose:
+
+Estimate what item should cost
+
+
+Output:
+
+$300
+
+
+Always returns:
+
+300
+
+
+Dummy value.
+
+Function 3
+
+Notify User
+
+Purpose:
+
+Send notification
+
+
+Output:
+
+Notification Sent
+
+
+Again just fake.
+
+Step 4: Why Create Fake Functions First?
+
+The goal is to test:
+
+Can the LLM plan correctly?
+
+
+Before connecting real agents.
+
+First test:
+
+Planning Logic
+
+
+Later:
+
+Real Agents
+
+
+This makes debugging easier.
+
+Step 5: Tool JSON
+
+Every tool needs a JSON description.
+
+Example:
+
+Tool Name
+Description
+Parameters
+
+
+Example:
+
+{
+  "name": "estimate_true_value",
+  "description": "Estimate product value"
+}
+
+
+This JSON tells GPT:
+
+What tools exist
+What each tool does
+What arguments are required
+
+Step 6: Important Observation
+
+The LLM never sees Python functions.
+
+The LLM only sees:
+
+Tool Schema
+
+
+Example:
+
+{
+ "name":"scan_internet"
+}
+
+
+The model knows:
+
+A tool exists
+
+
+It doesn't know how the function is implemented.
+
+Step 7: What Agent Frameworks Do
+
+Frameworks like:
+
+LangChain
+LangGraph
+CrewAI
+AutoGen
+OpenAI Agents SDK
+
+generate this JSON automatically.
+
+You write:
+
+def scan():
+
+
+Framework creates:
+
+{
+  "name":"scan"
+}
+
+
+behind the scenes.
+
+That's why frameworks reduce boilerplate code.
+
+Step 8: Handle Tool Call
+
+Now comes the important section.
+
+The model returns:
+
+Call Tool:
+scan_internet_for_bargains
+
+
+Python receives:
+
+Tool Name
+Arguments
+
+
+Then:
+
+Find corresponding function
+Execute it
+Get result
+Send result back to LLM
+
+
+This is exactly how tool calling works.
+
+Step 9: The Most Important Prompt In The Course
+System Prompt
+Find great bargain deals and notify the user.
+
+
+This defines the agent role.
+
+User Prompt
+
+Instructions:
+
+1. Scan Deals
+2. Estimate Values
+3. Find Best Deal
+4. Notify User
+5. Reply OK
+
+
+The Planning Agent now has a goal.
+
+Step 10: The Magic Behind Agentic AI
+
+The instructor says:
+
+This is the most important line.
+
+while not done
+
+
+Why?
+
+Because this creates:
+
+Agent Loop
+
+Without Loop
+
+LLM
+ ↓
+Response
+
+
+Normal chatbot.
+
+With Loop
+
+LLM
+ ↓
+Tool
+ ↓
+LLM
+ ↓
+Tool
+ ↓
+LLM
+ ↓
+Goal Completed
+
+
+This becomes an Agent.
+
+Step 11: Why This Is Called An Agent
+
+Modern definition:
+
+LLM + Loop + Tools + Goal
+
+
+This workflow satisfies all requirements.
+
+Because:
+
+✅ Has an LLM
+
+✅ Has Tools
+
+✅ Has Loop
+
+✅ Has Goal
+
+Therefore:
+
+✅ Agent
+
+Step 12: What Happened During Testing?
+
+The LLM autonomously decided:
+
+Step 1
+
+Scan Internet
+
+
+Step 2
+
+Estimate Value
+
+
+multiple times.
+
+Step 3
+
+Notify User
+
+
+Step 4
+
+Reply OK
+
+
+No programmer explicitly told it:
+
+Call this function now
+
+
+The model made the decision.
+
+That is autonomy.
+
+Step 13: Replacing Fake Functions
+
+Now the real magic starts.
+
+Instead of:
+
+Fake Functions
+
+
+The functions now call Real Agents.
+
+Scanner Tool
+
+Calls:
+
+Scanner Agent
+
+
+Estimate Tool
+
+Calls:
+
+Ensemble Agent
+
+
+Notify Tool
+
+Calls:
+
+Messaging Agent
+
+
+The Planning Agent doesn't know.
+
+It thinks:
+
+Normal Tools
+
+
+But behind the scenes:
+
+Each tool is a full AI agent.
+
+Step 14: New Architecture
+Planning Agent
+       ↓
+Scanner Agent
+       ↓
+Ensemble Agent
+       ↓
+Messaging Agent
+
+
+Manager + Specialists
+
+Exactly how companies work.
+
+Step 15: Complete Execution Flow
+Phase 1
+
+Planning Agent Starts
+
+Goal:
+Find best bargain
+
+Phase 2
+
+Planning Agent Calls Scanner Agent
+
+Scan Internet
+
+
+Scanner Agent:
+
+RSS Feed
+ ↓
+30 Deals Collected
+
+Phase 3
+
+Structured Outputs
+
+Scanner Agent sends:
+
+Unstructured Deal Text
+
+
+to GPT.
+
+GPT returns:
+
+DealSelection Object
+
+
+containing:
+
+Top 5 Deals
+
+Phase 4
+
+Planning Agent Receives Deals
+
+Now it wants pricing.
+
+Calls:
+
+Ensemble Agent
+
+Phase 5
+
+Ensemble Agent
+
+Uses:
+
+Frontier Models
+GPT-5
+GPT-5.1
+Claude
+
+and
+
+Open Source Models
+Fine-Tuned Specialist Model
+GPT-OSS 20B
+Embedding Model
+
+and
+
+Traditional ML
+Neural Network
+
+All collaborate.
+
+Phase 6
+
+Price Estimation
+
+Each product receives:
+
+Estimated True Value
+
+
+Example:
+
+Deal Price = $600
+
+Estimated Value = $1000
+
+Phase 7
+
+Planning Agent Comparison
+
+Calculates:
+
+How big is the bargain?
+
+
+Example:
+
+Price = 600
+
+True Value = 1000
+
+
+Huge discount.
+
+Likely winner.
+
+Phase 8
+
+Best Deal Selected
+
+The Planning Agent chooses:
+
+Single Best Deal
+
+Phase 9
+
+Messaging Agent
+
+Receives:
+
+Deal Information
+
+
+Creates:
+
+Marketing Style Message
+
+
+Example:
+
+Amazing Deal Alert!
+
+Phase 10
+
+Push Notification
+
+Messaging Agent:
+
+Pushover API
+     ↓
+Phone Notification
+
+
+Phone rings.
+
+Mission complete.
+
+Complete System Workflow
+User Goal
+     ↓
+Planning Agent
+     ↓
+Tool Call
+     ↓
+Scanner Agent
+     ↓
+RSS Feed
+     ↓
+GPT Structured Outputs
+     ↓
+Top 5 Deals
+     ↓
+Planning Agent
+     ↓
+Tool Call
+     ↓
+Ensemble Agent
+     ↓
+Multiple Models
+     ↓
+True Value Estimation
+     ↓
+Planning Agent
+     ↓
+Best Deal Selection
+     ↓
+Tool Call
+     ↓
+Messaging Agent
+     ↓
+LLM Generates Alert
+     ↓
+Pushover
+     ↓
+Phone Notification
+
+Biggest Learning From This Lesson
+
+The Planning Agent itself does not know how to:
+
+Scan RSS Feeds
+Predict Product Values
+Send Notifications
+
+It only knows:
+
+Which tool should I call next?
+
+
+This is exactly how agentic systems work.
+
+The Planning Agent is the "manager."
+
+The other agents are the "specialists."
+
+The manager breaks the problem into steps, calls specialists when needed, receives results, and keeps looping until the goal is achieved.
+
+That is why the instructor says the core definition of an Agent is:
+
+LLM
++
+Tools
++
+Loop
++
+Goal
+=
+Agentic AI System

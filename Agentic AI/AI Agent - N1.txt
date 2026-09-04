@@ -1,0 +1,584 @@
+Ai Agent -  An LLM with tools in a loop to achieve a goal
+
+What is an AI Agent?
+
+Most accepted definition:
+
+Agent = LLM + Tools + Loop + Goal
+
+Meaning:
+
+LLM thinks
+Uses tools
+Repeatedly reasons
+Works until goal is achieved
+3 Definitions of AI Agent
+1. AI Works Independently
+
+Agent can perform tasks for you without constant guidance.
+
+Example:
+
+Find a restaurant
+Check availability
+Give recommendation
+2. LLM Controls Workflow
+
+Instead of hard-coding:
+
+A → B → C
+
+We ask:
+
+"Should I do A, B, or C?"
+
+LLM decides the next step.
+
+3. LLM + Tools + Loop + Goal
+
+Current industry definition.
+
+This is the most important one.
+
+Very Important Concept
+What does an LLM actually do?
+
+LLM only:
+
+Input Tokens → Predict Next Tokens
+
+LLM does NOT:
+
+Send emails
+Call APIs
+Query databases
+Take actions
+
+Our code interprets LLM output and performs actions.
+
+Mental Model
+
+LLM = Brain
+
+Tools = Hands
+
+Agent = Brain + Hands + Goal
+
+Agent Flow
+
+User Request ↓ LLM Thinks ↓ Selects Tool ↓ Tool Executes ↓ LLM Reviews Result ↓ Repeat Until Goal Completed
+
+Anthropic's Agentic Systems
+
+Two types:
+
+1. Workflow
+Predefined path
+Structured
+Predictable
+Easy to test
+
+Example:
+
+Ask Questions ↓ Search Web ↓ Create Report ↓ Generate Summary
+
+2. Agent
+Dynamic path
+Open-ended
+Decides next action
+Uses tools repeatedly
+
+Example:
+
+GPT Agent, Claude Code, Codex
+
+Workflow vs Agent
+Workflow
+Fixed path
+More reliable
+Easier debugging
+Preferred in enterprises
+Agent
+Flexible path
+More autonomous
+Harder to test
+More powerful
+Real-World Reality
+
+Most companies use:
+
+Workflow + Agent + Workflow
+
+Example:
+
+Receive Ticket ↓ Workflow ↓ Agent Investigation ↓ Workflow Approval ↓ Send Response
+
+Interview Questions
+What is an Agent?
+
+An agent is an LLM with tools in a loop that continuously reasons and takes actions until it achieves a goal.
+
+What is a Workflow?
+
+A workflow is a predefined sequence of LLM-powered steps where the execution path is known beforehand.
+
+Difference Between LLM and Agent?
+
+LLM:
+
+Generates text
+
+Agent:
+
+Uses LLM + tools + loop + decision making to achieve a goal
+Golden Formula (Remember This)
+
+LLM = Brain
+
+Tools = Hands
+
+Workflow = Fixed Path
+
+Agent = Dynamic Path
+
+Agent = LLM + Tools + Loop + Goal
+
+Anthropic's 5 Workflow Patterns + 1 Agent Pattern
+1. Prompt Chaining
+Idea
+
+Break a big problem into smaller steps.
+
+Flow
+
+LLM 1 → LLM 2 → LLM 3 → Output
+
+The output of one LLM becomes the input of the next.
+
+Example
+
+Create Blog Post
+
+Step 1: Generate outline
+
+↓
+
+Step 2: Write content
+
+↓
+
+Step 3: Proofread content
+
+↓
+
+Final Output
+
+Key Point
+
+Complex task → Multiple smaller LLM calls
+
+2. Routing
+Idea
+
+Use an LLM to decide where the request should go.
+
+Flow
+
+User Query ↓
+
+Router LLM ↓
+
+Technical Team OR Business Team OR Other Team
+
+Example
+
+Customer Support
+
+User: "My application is crashing."
+
+Router LLM decides:
+
+Technical Issue
+
+↓
+
+Send to Technical Support Prompt
+
+Key Point
+
+LLM acts like a traffic controller.
+
+3. Parallelization
+Idea
+
+Multiple LLMs work simultaneously.
+
+Flow
+
+Task ↓
+
+Code splits work
+
+↓
+
+LLM 1 + LLM 2 + LLM 3
+
+↓
+
+Combine Results
+
+Example
+
+Product Review Analysis
+
+LLM 1: Analyze positive reviews
+
+LLM 2: Analyze negative reviews
+
+LLM 3: Analyze suggestions
+
+↓
+
+Combine findings
+
+Key Point
+
+Tasks are pre-divided by code.
+
+Faster execution.
+
+4. Orchestrator-Worker
+Idea
+
+An LLM decides how to divide work.
+
+Flow
+
+Orchestrator LLM ↓
+
+Worker LLMs ↓
+
+Synthesizer LLM ↓
+
+Output
+
+Example
+
+Research Report
+
+Orchestrator decides:
+
+Research Market Size
+Research Competitors
+Research Trends
+
+↓
+
+Separate worker LLMs do research
+
+↓
+
+Synthesizer combines into final report
+
+Key Point
+
+Difference from Parallelization:
+
+Parallelization: Code decides task division.
+
+Orchestrator-Worker: LLM decides task division.
+
+5. Evaluator-Optimizer
+Idea
+
+One LLM creates.
+
+Another LLM reviews.
+
+Flow
+
+Generator LLM ↓
+
+Evaluator LLM
+
+If bad: ← Send back for improvement
+
+If good: ↓
+
+Output
+
+Example
+
+Resume Creation
+
+Generator: Creates resume
+
+Evaluator: Checks quality
+
+Not good? Send back
+
+Good? Return final version
+
+Key Point
+
+LLM reviews another LLM's work.
+
+Also called:
+
+LLM as a Judge
+
+6. Agent Pattern
+Idea
+
+Open-ended system.
+
+No predefined path.
+
+Flow
+
+Human Input ↓
+
+LLM Thinks ↓
+
+Uses Tool ↓
+
+Gets Result ↓
+
+Thinks Again ↓
+
+Uses Another Tool
+
+↓
+
+Repeat Until Goal Achieved
+
+Example
+
+Claude Code / Codex / GPT Agent
+
+User:
+
+"Build a website."
+
+Agent may:
+
+Write code
+Run tests
+Fix bugs
+Update code
+Create documentation
+
+Until task is completed.
+
+Key Point
+
+LLM continuously decides what happens next.
+
+Workflow vs Agent
+Workflow
+Fixed path
+Predictable
+Easy to test
+Easier debugging
+Production friendly
+
+Patterns:
+
+Prompt Chaining
+Routing
+Parallelization
+Orchestrator-Worker
+Evaluator-Optimizer
+Agent
+Dynamic path
+Open-ended
+Continuously decides
+Harder to test
+More autonomous
+
+Pattern:
+
+Agent Loop
+Interview Revision
+Prompt Chaining
+
+Break one big task into multiple sequential LLM calls.
+
+Routing
+
+LLM chooses which path or specialist should handle the request.
+
+Parallelization
+
+Code splits work and multiple LLMs run simultaneously.
+
+Orchestrator-Worker
+
+LLM splits work and coordinates multiple LLMs.
+
+Evaluator-Optimizer
+
+One LLM generates, another evaluates and improves.
+
+Agent
+
+LLM + Tools + Loop + Goal.
+
+One-Line Summary
+
+Prompt Chaining = Step-by-step execution
+
+Routing = Choose the right path
+
+Parallelization = Multiple LLMs work together
+
+Orchestrator-Worker = LLM manages other LLMs
+
+Evaluator-Optimizer = LLM reviews LLM
+
+Agent = LLM thinks, acts, and repeats until goal is achieved
+
+Biggest Risk of Agents
+
+Unpredictability
+
+Different execution paths
+Different outputs
+Different costs
+Non-deterministic behavior
+How to Reduce Risk?
+1. Monitoring
+
+Track:
+
+LLM calls
+Tool usage
+Costs
+Agent behavior
+
+Know exactly what the agent is doing.
+
+2. Evals
+
+Measure success using business metrics.
+
+Examples:
+
+Revenue generated
+Leads generated
+Customer satisfaction
+
+If you can't measure it, you can't know if it works.
+
+3. LLM as Judge
+
+One LLM evaluates another LLM's output.
+
+Generator LLM ↓ Evaluator LLM ↓ Accept / Reject
+
+(Also called Evaluator-Optimizer pattern)
+
+4. Guardrails
+
+Safety checks around agents.
+
+Purpose:
+
+Safe outputs
+Consistent behavior
+Business rule enforcement
+Hallucination prevention
+
+Guardrails = Rules + Validation Checks
+
+Trap 1: "I Need An Agent"
+
+❌ Wrong:
+
+"I need a culture agent."
+
+✅ Right:
+
+"What business problem am I solving?"
+
+Example:
+
+Need Agent ❌
+
+High employee attrition ✅
+
+Always identify the business problem first.
+
+Most Important AI Engineering Principle
+
+LLMs generate:
+
+Believable content
+
+Not necessarily:
+
+Correct content
+
+Your job is to verify that the output actually solves the business problem.
+
+Trap 2: Anthropomorphism
+
+Meaning:
+
+Treating agents like humans.
+
+Example:
+
+Manager Agent
+Research Agent
+Risk Agent
+
+Just because humans have these roles.
+
+Correct Approach
+
+Start simple:
+
+1 LLM ↓ Measure Results ↓ Improve Architecture ↓ Add More Agents Only If Needed
+
+Golden Rule
+
+Don't add more agents because:
+
+❌ It looks smart
+
+Add more agents because:
+
+✅ Performance improves
+
+Hallucinations
+
+As an AI User:
+
+"AI hallucinated."
+
+As an AI Engineer:
+
+Add guardrails
+Add validations
+Add monitoring
+Add evaluations
+
+Managing hallucinations is the AI Engineer's responsibility.
+
+Agentic Engineer (2 Meanings)
+1. Uses Agents
+
+Example:
+
+Claude Code
+Copilot
+Cursor
+2. Builds Agents
+
+Example:
+
+Workflows
+Tools
+Guardrails
+Agent Systems

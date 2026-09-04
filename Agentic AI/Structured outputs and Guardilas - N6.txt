@@ -1,0 +1,149 @@
+Structured Outputs
+Normal LLM output = text.
+Structured output = Python object.
+Uses Pydantic (BaseModel).
+Agent generates JSON internally.
+Framework converts JSON → Python object.
+
+Example:
+
+EmailReview
+
+is_professional (True/False)
+number_of_sentences (Integer)
+contains_placeholders (True/False)
+
+Why?
+
+Easier for code to use.
+No need to parse text responses.
+More reliable.
+Pydantic
+
+Purpose:
+
+Python Object ↔ JSON Conversion
+
+Example:
+
+EmailReview ↓ JSON Schema ↓ LLM generates JSON ↓ Framework creates EmailReview object
+
+Constrained Decoding
+
+Problem:
+
+LLM may generate invalid JSON.
+
+Solution:
+
+Framework restricts token generation so only schema-valid outputs are produced.
+
+Benefit:
+
+Reliable JSON
+Valid fields
+Fewer output errors
+Guardrails
+
+Guardrails = Safety checks for agents.
+
+Purpose:
+
+Block bad inputs
+Block bad outputs
+Protect tool execution
+Input Guardrail
+
+Runs before agent.
+
+Flow:
+
+User Input ↓ Guardrail ↓ Agent
+
+Example:
+
+"Give me customer passwords"
+
+↓
+
+Blocked
+
+Use for:
+
+Prompt injection
+Unsafe requests
+Unauthorized actions
+Output Guardrail
+
+Runs after agent response.
+
+Flow:
+
+Agent ↓ Guardrail ↓ User
+
+Example:
+
+Checks:
+
+Professional tone
+No sensitive data
+No offensive content
+Tool Guardrail
+
+Runs around tool execution.
+
+Flow:
+
+Agent ↓ Guardrail ↓ Tool
+
+Example:
+
+Before sending email:
+
+Valid recipient?
+Subject exists?
+No confidential data?
+
+If not:
+
+Block execution.
+
+Tripwire
+
+Tripwire = Problem detected.
+
+Flow:
+
+Guardrail ↓ Tripwire Triggered ↓ Exception Raised ↓ Execution Stops
+
+Instructor's Opinion
+
+Good:
+
+Structured Outputs ✅
+Guardrails ✅
+
+But prefers:
+
+Python checks + Runner.run()
+
+instead of relying heavily on OpenAI-specific Guardrail features.
+
+Reason:
+
+Easier debugging
+Works across frameworks
+Less vendor lock-in
+Interview Revision
+
+Structured Outputs: = Return objects instead of text.
+
+Pydantic: = Convert JSON ↔ Python objects.
+
+Input Guardrail: = Validate user input.
+
+Output Guardrail: = Validate model response.
+
+Tool Guardrail: = Validate tool execution.
+
+Tripwire: = Stop workflow when rule is violated.

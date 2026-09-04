@@ -1,0 +1,257 @@
+Project Goal
+The goal of the project is to automatically find products that are being sold below their estimated market value and notify the user about profitable deals.
+Example:
+
+Seller is selling a gaming laptop for $500
+AI estimates the laptop is worth $1200
+Difference = $700
+
+The system identifies this as a potentially profitable deal.
+
+Main Components
+
+UI (Gradio)
+Agent Framework
+Planning Agent
+Scanner Agent
+Specialist Agent
+Frontier Agent
+Neural Network Agent
+Ensemble Agent
+Messaging Agent
+
+
+Step 1 - User Opens UI
+The user opens the Gradio web application.
+Example request:
+"Find profitable gaming laptops"
+The UI only does two things:
+
+Accept user input
+Display final results
+
+The UI does not make decisions.
+
+Step 2 - Agent Framework
+The user request enters the agent framework.
+Responsibilities:
+
+Memory management
+Logging
+Communication between agents
+
+Example logs:
+
+User request received
+Scanner Agent started
+Specialist Agent started
+
+The framework acts as the backbone of the system.
+
+Step 3 - Planning Agent
+The Planning Agent acts like a manager.
+It receives:
+"Find profitable gaming laptops"
+The Planning Agent creates a plan.
+Example:
+
+Run Scanner Agent
+Run Specialist Agent
+Run Frontier Agent
+Run Neural Network Agent
+Run Ensemble Agent
+Run Messaging Agent
+
+The Planning Agent coordinates work but does not estimate prices.
+
+Step 4 - Scanner Agent
+The Scanner Agent searches for products.
+Sources:
+
+RSS Feeds
+Product listings
+Deal websites
+Online marketplaces
+
+Example listing found:
+Product:
+ASUS ROG Gaming Laptop
+Seller Price:
+$500
+The Scanner Agent's job is only to discover products.
+It does not know whether the product is a good deal.
+It simply collects opportunities and passes them to other agents.
+Without the Scanner Agent:
+
+Users would need to manually provide every product.
+The system could not automatically discover new deals.
+
+
+Step 5 - Specialist Agent
+The Specialist Agent uses the fine-tuned LLM created in Week 7.
+Input:
+ASUS ROG Gaming Laptop
+The agent calls the model deployed on Modal.
+The model predicts:
+Estimated Value = $1200
+How?
+The model learned pricing patterns from training data and now estimates product value from descriptions.
+
+Step 6 - Frontier Agent (RAG Agent)
+The Frontier Agent uses RAG.
+RAG = Retrieval Augmented Generation.
+The product description is searched against the vector database.
+Example retrieved products:
+
+ASUS Gaming Laptop = $1250
+ASUS RTX Laptop = $1199
+ASUS ROG Model = $1299
+
+These retrieved examples are sent to a frontier model such as GPT or Claude.
+The model reasons over the retrieved products and produces:
+Estimated Value = $1240
+The Frontier Agent estimates value using retrieved evidence instead of only model memory.
+
+Step 7 - Neural Network Agent
+The Neural Network Agent uses the traditional neural pricing model built earlier in the course.
+Input:
+ASUS ROG Gaming Laptop
+Output:
+Estimated Value = $1180
+This provides another independent opinion.
+
+Step 8 - Ensemble Agent
+Now three pricing estimates exist.
+Specialist Agent:
+$1200
+Frontier Agent:
+$1240
+Neural Network Agent:
+$1180
+The Ensemble Agent combines all estimates.
+Final estimate:
+Fair Market Value = $1207
+Why use Ensemble?
+Multiple models together are usually more reliable than a single model.
+
+Step 9 - Profitability Calculation
+The system compares:
+Seller Price:
+$500
+Fair Market Value:
+$1207
+Difference:
+$1207 - $500 = $707
+The system concludes:
+"This is a promising deal."
+The larger the difference, the better the deal.
+
+Step 10 - Messaging Agent
+The Messaging Agent informs the user.
+Example notification:
+Product:
+ASUS ROG Gaming Laptop
+Seller Price:
+$500
+Estimated Value:
+$1207
+Potential Profit:
+$707
+The notification can be:
+
+Displayed in UI
+Email
+Push notification
+
+
+Final Result Shown to User
+The UI displays:
+Product:
+ASUS ROG Gaming Laptop
+Listed Price:
+$500
+Estimated Market Value:
+$1207
+Potential Profit:
+$707
+Recommendation:
+Strong Buy Opportunity
+
+Where Modal Fits In
+The Specialist Agent uses a fine-tuned model hosted on Modal.
+Workflow:
+Product Description
+↓
+Modal Deployment
+↓
+Fine-Tuned Model
+↓
+Predicted Value
+↓
+Return Result
+Modal provides:
+
+Cloud servers
+GPUs
+Model hosting
+Deployments
+
+
+Where RAG Fits In
+The Frontier Agent uses RAG.
+Workflow:
+Product Description
+↓
+Vector Search
+↓
+Retrieve Similar Products
+↓
+Frontier LLM
+↓
+Price Estimate
+RAG uses retrieved information as evidence before pricing.
+
+Why Multiple Pricing Agents?
+Each pricing agent uses a different method.
+Specialist Agent:
+
+Fine-Tuned LLM
+
+Frontier Agent:
+
+RAG + Frontier Model
+
+Neural Network Agent:
+
+Traditional Neural Network
+
+Each may make mistakes.
+Combining them improves reliability.
+
+Complete Project Flow
+User enters request
+↓
+UI receives request
+↓
+Agent Framework manages workflow
+↓
+Planning Agent creates execution plan
+↓
+Scanner Agent finds products
+↓
+Specialist Agent estimates value
+↓
+Frontier Agent estimates value
+↓
+Neural Network Agent estimates value
+↓
+Ensemble Agent combines estimates
+↓
+System calculates profitability
+↓
+Messaging Agent creates alert
+↓
+UI displays best deals
+
+One-Line Summary
+The project is a multi-agent AI system that automatically finds products from online listings, estimates their true market value using multiple pricing models, combines those estimates with an ensemble agent, calculates potential profit, and notifies the user when a valuable deal is found.

@@ -1,0 +1,456 @@
+Project Goal
+
+Build a CrewAI application that:
+
+Finds trending companies in a sector
+Researches those companies
+Chooses the best company for investment
+Sends a notification with the recommendation
+New Concepts Learned
+1. Tools
+
+Tool = Capability given to an agent
+
+Examples:
+
+SERPA Search Tool
+Push Notification Tool
+
+Without tools → Agent only uses LLM knowledge
+
+With tools → Agent can search web, call APIs, send notifications, etc.
+
+2. Structured Outputs
+
+Instead of free-text output, force LLM to generate structured data.
+
+CrewAI uses:
+
+Pydantic Models
+
+Benefits:
+
+Consistent format
+JSON output
+Easier processing
+3. Context
+
+Context = Output from one task passed to another task.
+
+Example:
+
+Find Trending Companies
+
+↓
+
+Research Companies
+
+↓
+
+Pick Best Company
+
+Each task uses previous task results.
+
+4. Memory
+
+Enable using:
+
+memory=True
+
+Purpose:
+
+Remember previous runs
+Avoid repeating results
+Store important information
+
+CrewAI automatically performs memory retrieval.
+
+Memory works similar to built-in RAG.
+
+5. Hierarchical Process
+
+Manager Agent controls workflow.
+
+Instead of:
+
+Task1 → Task2 → Task3
+
+LLM Manager decides:
+
+What runs first
+What runs next
+Task delegation
+Agents
+Trending Company Finder
+
+Role:
+
+News Analyst
+
+Purpose:
+
+Search latest news
+Find trending companies
+
+Tool:
+
+SERPA Search Tool
+
+Output:
+
+Trending company list
+
+Financial Researcher
+
+Role:
+
+Financial Analyst
+
+Purpose:
+
+Research companies deeply
+Analyze market position
+Analyze future outlook
+
+Tool:
+
+SERPA Search Tool
+
+Output:
+
+Research report
+
+Stock Picker
+
+Role:
+
+Investment Expert
+
+Purpose:
+
+Compare researched companies
+Select best investment
+
+Tool:
+
+Push Notification Tool
+
+Output:
+
+Final recommendation
+
+Manager Agent
+
+Used only in Hierarchical Process.
+
+Purpose:
+
+Coordinate agents
+Delegate tasks
+Decide execution order
+
+Requires:
+
+allow_delegation=True
+
+Tasks
+Task 1
+
+Find Trending Companies
+
+Agent:
+
+Trending Company Finder
+
+Output:
+
+trendingcompanies.json
+
+Task 2
+
+Research Trending Companies
+
+Agent:
+
+Financial Researcher
+
+Context:
+
+Task 1 Output
+
+Output:
+
+researchreport.json
+
+Task 3
+
+Pick Best Company
+
+Agent:
+
+Stock Picker
+
+Context:
+
+Task 2 Output
+
+Output:
+
+decision.md
+
+Extra Action:
+
+Send Push Notification
+
+Structured Output Models
+TrendingCompany
+
+Contains:
+
+Name
+Ticker
+Reason
+TrendingCompanyList
+
+Contains:
+
+List of Trending Companies
+TrendingCompanyResearch
+
+Contains:
+
+Name
+Market Position
+Future Outlook
+Investment Potential
+TrendingCompanyResearchList
+
+Contains:
+
+List of Company Research Results
+How Structured Outputs Are Added
+
+Step 1:
+
+Create Pydantic Model
+
+Step 2:
+
+Use
+
+output_pydantic=ModelName
+
+inside task definition
+
+That's all.
+
+CrewAI automatically generates structured JSON.
+
+Custom Tool Creation
+
+CrewAI supports custom tools.
+
+Modern approach:
+
+@tool decorator
+
+Requirements:
+
+Function name
+Type hints
+Docstring
+
+CrewAI automatically converts function into tool.
+
+Custom Push Notification Tool
+
+Purpose:
+
+Send investment recommendation to phone.
+
+Flow:
+
+Stock Picker Agent
+
+↓
+
+Calls Tool
+
+↓
+
+Tool Sends Notification
+
+↓
+
+User Receives Message
+
+Project Flow
+
+Input:
+
+Sector = Technology
+
+↓
+
+Find Trending Companies
+
+↓
+
+Research Companies
+
+↓
+
+Generate Structured Research
+
+↓
+
+Pick Best Company
+
+↓
+
+Send Notification
+
+↓
+
+Generate Final Report
+
+Files Generated
+
+trendingcompanies.json
+
+Stores:
+
+Trending companies list
+
+researchreport.json
+
+Stores:
+
+Company research output
+
+decision.md
+
+Stores:
+
+Final recommendation
+
+Memory in CrewAI
+
+Enable:
+
+memory=True
+
+CrewAI automatically:
+
+Stores information
+Retrieves relevant past information
+Injects memory into prompts
+
+Think:
+
+Memory = Built-in RAG + Retrieval
+
+Sequential vs Hierarchical
+
+Sequential
+
+Fixed order
+Code decides workflow
+
+Example:
+
+Task1 → Task2 → Task3
+
+Hierarchical
+
+Manager Agent decides workflow
+LLM controls execution
+
+Example:
+
+Manager ↓ Task Selection ↓ Agent Execution
+
+Manager Setup
+
+Create Manager Agent
+
+↓
+
+allow_delegation=True
+
+↓
+
+Add to Crew
+
+↓
+
+Change
+
+process=Process.hierarchical
+
+Traces
+
+Purpose:
+
+Understand what happened internally.
+
+Can inspect:
+
+Prompts
+Tool Calls
+Memory Usage
+Context Passing
+LLM Responses
+
+Best debugging feature in CrewAI.
+
+Important Lessons
+
+✅ Tools extend agent capabilities
+
+✅ Pydantic enables structured outputs
+
+✅ Context passes outputs between tasks
+
+✅ Memory adds retrieval functionality
+
+✅ Hierarchical process uses manager agent
+
+✅ Traces help debug workflows
+
+✅ CrewAI provides many features out of the box
+
+Interview Revision
+
+Tool = External capability available to agent
+
+Context = Previous task output used by another task
+
+Memory = Retrieval of information from previous runs
+
+Structured Output = LLM output constrained using Pydantic
+
+Sequential = Fixed workflow
+
+Hierarchical = Manager-controlled workflow
+
+Manager Agent = Delegates and coordinates tasks
+
+output_pydantic = Creates structured JSON response
+
+@tool = Converts Python function into CrewAI Tool
+
+memory=True = Enables Crew memory
+
+Biggest Takeaway
+
+CrewAI makes advanced agent features extremely easy:
+
+Tools → add with tools=[...]
+Structured Outputs → output_pydantic=
+Memory → memory=True
+Hierarchical Workflow → Process.hierarchical
+Custom Tools → @tool
+
+A few configuration changes can turn a simple agent into a multi-agent system with tools, memory, structured outputs, and manager-based orchestration.
+

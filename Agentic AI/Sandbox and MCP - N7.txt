@@ -1,0 +1,223 @@
+OUTPUT GUARDRAIL
+
+Purpose: Check generated emails before they are returned to the user.
+
+Flow:
+
+Cowboy Agent ↓ Generates Email ↓ Checker Agent ↓ Reviews Email ↓ Guardrail Decision ↓ Pass or Fail
+
+The guardrail itself does not judge the email.
+
+It calls the Checker Agent.
+
+The Checker Agent returns:
+
+is_professional
+number_of_sentences
+contains_placeholders
+
+The guardrail simply reads those values.
+
+TRIPWIRE
+
+Tripwire = Failure Signal
+
+If:
+
+Not professional OR
+Contains placeholders
+
+Then:
+
+Tripwire Triggered ↓ Exception Raised ↓ Execution Stops
+
+The email is never returned.
+
+COWBOY EXAMPLE
+
+Instructions:
+
+Write a sales email and speak like a cowboy.
+
+Generated:
+
+"Howdy Partner..."
+
+Checker Review:
+
+is_professional = False
+contains_placeholders = True
+
+Result:
+
+Guardrail Failed ↓ Tripwire Triggered ↓ Output Blocked
+
+INSTRUCTOR'S PREFERRED APPROACH
+
+Instead of OpenAI Guardrails:
+
+Generate Email ↓ Run Checker Agent ↓ Read Review Object ↓ Python Decision ↓ Send or Reject
+
+Reason:
+
+Easier to understand
+Easier to debug
+Works in any framework
+Less framework dependency
+
+SANDBOX AGENTS
+
+What is a Sandbox?
+
+A safe isolated environment where agents can:
+
+Read files
+Edit files
+Run commands
+Create files
+
+without affecting your real project.
+
+Think:
+
+Mini Computer Inside Your Computer.
+
+WHY USE SANDBOX?
+
+Allows agents to:
+
+Fix code
+Analyze files
+Test changes
+
+safely.
+
+MANIFEST
+
+Purpose:
+
+Defines the workspace.
+
+Tells the agent:
+
+What folders exist
+What files are available
+What can be accessed
+
+CAPABILITIES
+
+Purpose:
+
+Defines permissions.
+
+Examples:
+
+Read files
+Write files
+Execute shell commands
+
+RUN CONFIG
+
+Purpose:
+
+Defines where the sandbox runs.
+
+Options:
+
+Local machine
+Cloud
+
+BUG FIX EXAMPLE
+
+Input:
+
+orders.py
+
+Agent Task:
+
+Find bug ↓ Fix bug ↓ Save corrected file
+
+WHAT HAPPENED?
+
+Original File ↓ Copied to Sandbox ↓ Agent Reviews Code ↓ Finds Bug ↓ Creates Fixed Version ↓ Writes Fixed File To Output Folder
+
+Original file remains unchanged.
+
+MCP (MODEL CONTEXT PROTOCOL)
+
+Purpose:
+
+Lets agents use tools created by other people.
+
+Without MCP:
+
+You must:
+
+Write tool
+Create API integration
+Define schemas
+Connect agent
+
+Lots of work.
+
+WITH MCP
+
+Someone already built the tool.
+
+You simply connect their MCP server.
+
+Agent automatically gets access to those tools.
+
+CONTEXT7 EXAMPLE
+
+Context7 is an MCP server.
+
+Purpose:
+
+Provides access to latest documentation.
+
+WITHOUT MCP
+
+Question:
+
+"What is Manifest in Sandbox Agents?"
+
+Old model answer:
+
+"I don't know."
+
+Reason:
+
+Training cutoff.
+
+WITH MCP
+
+Question ↓ Agent Uses Context7 Tool ↓ Reads Latest Documentation ↓ Generates Correct Answer
+
+WHAT HAPPENED INTERNALLY?
+
+Agent ↓ Resolve Library Tool ↓ Find Documentation ↓ Query Documentation Tool ↓ Retrieve Latest Information ↓ Generate Answer
+
+FINAL REVISION
+
+Structured Outputs = Return objects instead of free text.
+
+Guardrails = Safety checks.
+
+Tripwire = Stop execution when guardrail fails.
+
+Sandbox = Safe environment for file and code operations.
+
+Manifest = Workspace definition.
+
+Capabilities = Permissions available to agent.
+
+Run Config = Defines where sandbox runs.
+
+MCP = Standard way to connect external tools.
+
+Context7 = MCP server used for accessing latest documentation.
+
+Most Important Takeaway:
+
+Structured Outputs make agents reliable, Guardrails make them safe, Sandbox lets them work with files safely, and MCP lets them use tools built by others.

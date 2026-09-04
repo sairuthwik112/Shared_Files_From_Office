@@ -1,0 +1,458 @@
+Modal
+
+Modal is a cloud platform that lets you run Python code either on your laptop or on cloud machines.
+The main advantage is that you write normal Python code and Modal handles infrastructure, containers, GPUs and deployment.
+Instead of managing servers yourself, Modal automatically creates and manages them.
+
+Why Modal?
+
+Running AI models locally is limited by your hardware.
+Modal allows code to run on cloud GPUs.
+The same code can be executed locally or remotely with very small changes.
+
+UTF-8 Check
+
+Modal outputs emojis and special characters in logs.
+Some Windows systems may not use UTF-8 encoding.
+The notebook checks encoding to avoid Unicode errors.
+If UTF-8 is not enabled, Python encoding is changed to UTF-8.
+
+Modal Authentication
+
+Modal requires authentication before using cloud resources.
+You create:
+
+MODAL_TOKEN_ID
+MODAL_TOKEN_SECRET
+
+
+These are similar to API keys.
+They identify your account and allow access to Modal resources.
+
+Modal Token Setup
+
+Generate tokens from Modal dashboard.
+Run the token setup command.
+If setup fails, tokens can be stored in a .env file.
+load_dotenv() loads the credentials automatically.
+
+Modal App
+
+modal.App("hello") creates a Modal application.
+Think of it as creating a cloud project.
+
+Modal Image
+
+An image defines the environment that Modal should create.
+Example:
+
+Debian Linux
+requests package installed
+
+
+Modal uses this information when creating cloud containers.
+
+Modal Functions
+
+@app.function() marks a function as cloud executable.
+The same function can run:
+
+Locally
+Remotely
+
+
+
+hello.py
+
+The function calls the IPInfo API.
+The API returns:
+
+City
+Region
+Country
+
+
+The function returns:
+
+"Hello from City, Region, Country"
+
+
+
+Local Execution
+
+hello.local()
+Runs on your laptop.
+API sees your laptop's IP address.
+Returns your location.
+
+Remote Execution
+
+hello.remote()
+Runs on Modal servers.
+API sees Modal server IP address.
+Returns the location of the cloud server.
+
+Region Selection
+
+Modal allows execution in specific regions.
+Example:
+
+region="eu"
+
+
+Function runs on European servers.
+Useful for compliance requirements such as GDPR.
+
+Main Lesson of hello.py
+
+Same function.
+Same code.
+Different execution locations.
+Change only:
+
+.local()
+.remote()
+
+
+
+
+Hugging Face Secrets
+Why Needed?
+
+Remote Modal servers must download models from Hugging Face.
+Hugging Face requires authentication.
+
+Secret Configuration
+Create a secret:
+
+Name: huggingface-secret
+Key: HF_TOKEN
+Value: your Hugging Face token
+
+Purpose
+
+Securely provides Hugging Face credentials to cloud machines.
+Avoids hardcoding tokens inside code.
+
+
+llama.py
+Goal
+
+Run Llama 3.2 on a cloud GPU.
+
+Libraries
+
+torch
+transformers
+accelerate
+
+Purpose:
+
+Load models
+Run inference
+Use GPUs efficiently
+
+GPU
+
+Uses NVIDIA T4 GPU.
+GPU greatly speeds up LLM inference.
+
+What Happens During Inference?
+Modal:
+
+Creates cloud machine
+Attaches GPU
+Installs libraries
+Downloads Llama model
+Loads model
+Generates response
+Returns output
+
+First Run Delay
+The first execution is slow because Modal must:
+
+Build environment
+Download model files
+Load model into memory
+
+
+Running the Fine-Tuned Model
+pricer_ephemeral.py
+Purpose:
+
+Run the Week 7 fine-tuned pricing model on Modal.
+
+Additional libraries:
+
+bitsandbytes
+peft
+
+Why These Libraries?
+bitsandbytes:
+
+Memory optimization
+Quantization
+
+peft:
+
+LoRA support
+Loading fine-tuned adapters
+
+
+Training Format vs Inference Format
+Important Problem
+The model was trained on preprocessed data.
+Training inputs contained:
+
+Title
+Category
+Structured information
+
+The model learned this format.
+Risk
+If inference uses completely different formatting:
+
+Predictions may become less reliable.
+
+Best Practice
+Treat inference data exactly like training data.
+This is called:
+Training-Serving Consistency
+
+Preprocessor
+Purpose
+Convert raw product text into the same format used during training.
+Benefits
+
+More consistent predictions
+Better reliability
+Better production behavior
+Matches training distribution
+
+Observation
+In the instructor's example:
+
+Raw text prediction
+Preprocessed text prediction
+
+Both returned the same price.
+However preprocessing is still considered best practice.
+
+Ephemeral Inference
+Meaning of Ephemeral
+Temporary execution.
+For every request Modal must:
+
+Create machine
+Install dependencies
+Download models
+Run inference
+Shut everything down
+
+Problem
+Response takes around:
+
+1 minute
+Sometimes longer
+
+Not practical for real applications.
+
+Deployment
+Idea
+Instead of creating everything for each request:
+Deploy once.
+Reuse many times.
+Benefit
+
+Faster requests
+Production-ready workflow
+
+
+pricer_service.py
+Purpose
+Deploy the pricing model permanently.
+Deployment Command
+uv run modal deploy pricer_service.py
+What Happens?
+Modal:
+
+Builds environment
+Creates deployment
+Stores deployment in cloud
+
+The model becomes available as a cloud service.
+
+Calling a Deployed Function
+Instead of creating a temporary function every time:
+
+Get a handle to the deployed function.
+Call it remotely whenever needed.
+
+This is similar to calling an API.
+
+Modal Dashboard
+Dashboard allows you to view:
+
+Running jobs
+Execution logs
+Startup times
+Model activity
+Deployment status
+
+Useful for debugging and monitoring.
+
+Performance Issue
+Even after deployment:
+
+Startup time is still significant.
+Models still need to be loaded.
+
+Response time remains around one minute.
+
+pricer_service2.py
+Improvement
+Introduces:
+
+Class-based deployment
+Persistent storage
+Model caching
+
+Goal
+Reduce startup time.
+
+Class-Based Deployment
+Instead of a simple function:
+
+Use a class.
+
+Benefits:
+
+Initialization happens once.
+Resources can be reused.
+Faster subsequent requests.
+
+
+Modal Volumes
+What Is a Volume?
+Persistent storage attached to a deployment.
+Think of it as:
+
+Cloud hard drive
+
+Why Use It?
+Without a volume:
+
+Model downloaded repeatedly.
+
+With a volume:
+
+Model downloaded once.
+Stored permanently.
+Reused later.
+
+
+Model Caching
+First Request
+
+Download model
+Store model
+
+Future Requests
+
+Load stored model
+Skip downloading
+
+Result:
+
+Faster startup
+
+
+Speed Improvement
+Before optimization:
+
+About 60–90 seconds
+
+After caching:
+
+Around 30 seconds
+
+Roughly twice as fast.
+
+Cold Start
+A cold start occurs when:
+
+No active container exists.
+
+Modal must:
+
+Create container
+Initialize GPU
+Load model
+
+This causes startup delay.
+
+Warm Start
+A warm start occurs when:
+
+Container already exists.
+Model already loaded.
+
+Requests execute much faster.
+
+Modal Auto Sleep
+To save money:
+
+Modal automatically shuts down idle containers.
+
+Default idle period:
+
+About 2 minutes
+
+After that the container sleeps.
+
+Consequence of Sleeping
+The next request causes another cold start.
+The system must:
+
+Wake container
+Reload model
+Reinitialize resources
+
+
+Keeping Containers Alive
+Possible options:
+
+Keep minimum containers running.
+Increase idle timeout.
+
+Benefits:
+
+Faster responses
+Fewer cold starts
+
+Trade-off:
+
+Higher cost
+
+
+Key Concepts Learned
+
+Modal App
+Image
+Secrets
+Hugging Face Token
+GPU Configuration
+Local Execution
+Remote Execution
+Deployment
+Volume
+Cache
+Cold Start
+Warm Start
+Fine-Tuned Model Inference
+Training-Serving Consistency
+Preprocessing
+Persistent Cloud Services
+
+Final Summary
+Day 1 teaches how to take a fine-tuned LLM from a laptop, run it on cloud GPUs using Modal, securely access Hugging Face models, preprocess inputs correctly, deploy the model as a permanent service, use caching and volumes to improve speed, and understand production concepts like cold starts, warm starts, and serverless AI deployment.Provide your feedback on BizChat

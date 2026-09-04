@@ -1,0 +1,415 @@
+
+                                                          ---- CURATING THE DATA ----
+
+There are many ways of finding datasets
+
+-- Your Own datasets 
+-- Kaggle
+-- Hugging Face datasets
+-- Synthetic data
+-- Data from scale.com
+
+There are three types of data
+
+-- Training data
+-- Evaluation data -> whether can model take new predictions accurately
+-- Test data -> used at the end of process
+
+
+Data scrubbing -> changing the unstructured data to structured data like we can choose the price of the items on which we are training put the min ana max prices and max and min characters 
+
+✅ DATA CURATION (DAY 1) — FINAL NOTES
+
+Goal: Convert raw Amazon data into clean, balanced dataset for ML
+
+Step 1: Load dataset
+
+Load Amazon dataset from Hugging Face
+Data includes title, price, description, category
+
+
+Step 2: Understand raw data
+
+Check total number of items
+Inspect few samples
+Identify missing values and noise
+
+
+Step 3: Clean price values
+
+Convert price into float
+Skip invalid price values like text or empty
+Use try/except to ignore bad data
+
+
+Step 4: Explore data (EDA)
+
+Find maximum price item
+Detect outliers
+Understand value ranges
+
+
+Step 5: Parse raw data
+
+Convert raw JSON into structured Item object
+Each Item contains title, price, full text, category
+Combine title + description into one clean text field (full)
+
+
+Step 6: Remove invalid items
+
+Remove items where parsing fails
+Keep only valid structured items
+
+
+Step 7: Extract features
+
+Create price list from items
+Create text length list using length of full text
+
+
+Step 8: Analyze distributions
+
+Plot distribution of text lengths
+Plot distribution of prices
+Identify skew (many cheap items, few expensive items)
+
+
+Step 9: Load multiple categories
+
+Load data from categories like Electronics, Automotive, Appliances
+Combine all categories into one dataset
+
+
+Step 10: Shuffle data
+
+Randomly shuffle items
+Avoid bias caused by ordering
+
+
+Step 11: Remove duplicate titles
+
+Use a set to track seen titles
+Keep only unique titles
+Remove repeated products
+
+
+Step 12: Remove duplicate descriptions
+
+Use a second set to track full text
+Remove items with same description
+Avoid redundant training data
+
+
+Step 13: Re-check cleaned data
+
+Plot distributions again
+Ensure dataset is improving after cleaning
+
+
+Step 14: Analyze category distribution
+
+Count number of items per category
+Identify imbalance
+Example: Electronics may dominate
+
+
+Step 15: Normalize prices
+
+Convert prices into range 0 to 1
+Helps in further sampling logic
+
+
+Step 16: Create sampling weights
+
+Higher price items get higher weight
+Lower price items get lower weight
+Formula: weights proportional to squared normalized price
+
+
+Step 17: Adjust category weights
+
+Reduce weights for overrepresented categories
+Example: Automotive weight reduced significantly
+Helps avoid category bias
+
+
+Step 18: Normalize weights
+
+Ensure total weight sums to 1
+Convert weights into probabilities
+
+
+Step 19: Weighted sampling
+
+Randomly select subset of items using weights
+Ensures balanced representation
+Keeps important examples
+
+
+Step 20: Create final dataset
+
+Use selected indices to create final sample
+This becomes model training data
+
+
+Step 21: Validate sampled data
+
+Plot price distribution again
+Confirm better balance
+Ensure no heavy skew
+
+
+Step 22: Final shuffle
+
+Shuffle sampled data again
+Prevent order-based learning issues
+
+
+✅ FINAL FLOW (MEMORIZE)
+Load data
+→ Inspect raw dataset
+→ Parse into Item objects
+→ Remove invalid items
+→ Merge categories
+→ Shuffle dataset
+→ Remove duplicates
+→ Analyze distributions
+→ Handle imbalance using weights
+→ Apply weighted sampling
+→ Shuffle final dataset
+
+✅ KEY CONCEPTS     
+
+Data cleaning
+Data validation
+Deduplication
+Exploratory Data Analysis
+Feature extraction
+Data imbalance
+Weighted sampling
+Dataset preparation for ML
+                                                            --- Data Preprocessing ---
+
+
+JSONL + Batch processing = send many AI requests together, get results later, and match them using IDs.
+
+You are ordering food:
+
+Normal way:
+Order 1 dish → wait → order next → wait
+
+Batch way:
+Write 50 orders on paper (JSONL)
+Give it to kitchen at once
+Kitchen prepares all and returns (in any order)
+👉 You use order numbers (IDs) to organize them.
+
+🔹 1. Goal of Day‑2
+
+Convert raw items → structured outputs using LLM
+Process large data using batch instead of single calls
+Store results and map back to items
+
+
+🔹 2. Item → LLM Input
+
+Each item has .full field
+.full = complete product description (combined text)
+This is sent to LLM as input
+
+
+🔹 3. System Prompt
+
+Defines output format
+Forces structured response
+
+Example:
+
+Title
+Category
+Brand
+Description
+Details
+
+
+🔹 4. Single LLM Call
+
+messages = system + user
+user = item.full
+completion() → sends request
+response → contains generated output
+track tokens + cost
+
+
+🔹 5. Why Batch Processing
+
+Avoid sending requests one by one
+Send thousands of requests together
+Faster + cheaper + scalable
+
+
+🔹 6. JSONL Format
+
+JSONL = JSON Lines
+Each line = one request
+File = multiple LLM requests
+
+Example:
+line1 → item1 request
+line2 → item2 request
+
+🔹 7. make_jsonl(item)
+
+Converts item → JSON request
+adds model + messages
+adds custom_id
+converts to string using json.dumps()
+
+Important:
+
+custom_id = item.id
+used to map results later
+
+
+🔹 8. Structure of JSONL line
+
+custom_id → unique identifier
+method → POST
+url → /v1/chat/completions
+body → model + messages
+
+
+🔹 9. make_file(start, end, filename)
+
+Creates JSONL file from items
+loops through items
+converts each item using make_jsonl()
+writes each line into file
+adds newline between entries
+
+Output:
+
+jsonl file with multiple requests
+
+
+🔹 10. Upload File
+
+groq.files.create(file, purpose="batch")
+uploads JSONL file to Groq
+returns file_id
+
+
+🔹 11. Create Batch Job
+
+groq.batches.create()
+input_file_id → uploaded file
+endpoint → chat completions
+completion_window → time
+
+Meaning:
+
+Groq processes all requests in file
+
+
+🔹 12. What "Process Requests" Means
+
+Reads each line
+sends to model
+generates output
+stores results
+
+Each line = one LLM call
+
+🔹 13. Check Batch Status
+
+groq.batches.retrieve(batch_id)
+returns status
+
+Status:
+
+validating
+running
+completed
+
+
+🔹 14. Get Output File
+
+result.output_file_id
+this contains results
+
+
+🔹 15. Download Results
+
+groq.files.content(output_file_id)
+save as results.jsonl
+
+
+🔹 16. Read Results File
+
+read file line by line
+json.loads(line) → convert to dict
+
+
+🔹 17. Extract Output
+
+custom_id → original item index
+response.body.choices[0].message.content → LLM output
+
+
+🔹 18. Map Results to Items
+
+item_id = custom_id
+items[item_id].summary = output
+
+Important:
+
+results may come in random order
+custom_id fixes mapping
+
+
+🔹 19. Validate Results
+
+check if item.summary exists
+print missing indexes
+
+
+🔹 20. Cleanup Data
+
+remove unnecessary fields
+item.full = None
+item.id = None
+
+
+🔹 21. Batch Class (Automation)
+
+Batch.create() → splits + creates files
+Batch.run() → uploads + starts jobs
+Batch.fetch() → downloads + maps results
+
+
+🔹 22. Full Pipeline Flow
+
+items → make_jsonl()
+→ JSONL file
+→ upload
+→ create batch job
+→ process requests
+→ results file
+→ read results
+→ map using custom_id
+→ store summary in items
+
+
+🔹 23. Key Concepts (VERY IMPORTANT)
+
+JSONL = multiple requests in one file
+custom_id = mapping key
+batch = async processing
+results not in order
+mapping fixes order
+batch is scalable solution
+
+
+✅ ✅ ONE LINE SUMMARY
+👉 Convert items → JSONL → upload → batch process → download results → map outputs using custom_id

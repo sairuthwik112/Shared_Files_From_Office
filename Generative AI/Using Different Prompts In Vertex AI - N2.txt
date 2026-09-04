@@ -1,0 +1,73 @@
+VERTEX AI – TEXT PROMPT DESIGN: COMPLETE STEP-BY-STEP PROCESS
+
+STEP 0: WHAT WE ARE DOING
+We are not training any AI model. We are using a pretrained Gemini model on Vertex AI and controlling its behavior using prompts. This is called Prompt Engineering.
+
+STEP 1: INSTALL VERTEX AI (GEN AI) SDK
+Command:
+%pip install --upgrade --quiet google-cloud-aiplatform
+Reason:
+This installs Google's official Vertex AI SDK, which allows our notebook to communicate with Gemini models hosted on Google Cloud.
+
+STEP 2: RESTART THE KERNEL
+Reason:
+Restarting ensures the newly installed SDK is correctly loaded and avoids version conflicts.
+
+STEP 3: IMPORT REQUIRED LIBRARIES
+from inspect import cleandoc
+from IPython.display import display, Markdown
+import vertexai
+from vertexai.generative_models import GenerativeModel, GenerationConfig
+Reason:
+These imports allow us to connect to Vertex AI, load Gemini models, control model behavior, clean prompts, and display formatted output.
+
+STEP 4: INITIALIZE VERTEX AI
+PROJECT_ID = "qwiklabs-gcp-01-815339211af7"
+LOCATION = "us-central1"
+vertexai.init(project=PROJECT_ID, location=LOCATION)
+Reason:
+This tells Google which project and region to use for authentication, billing, and grading.
+
+STEP 5: LOAD A SUPPORTED GEMINI MODEL
+Code:
+generative_model = GenerativeModel(
+    "gemini-1.5-flash",
+    generation_config=GenerationConfig(temperature=0)
+)
+Reason:
+Gemini 1.5 Flash is supported in Qwiklabs. Temperature 0 ensures deterministic output for grading.
+
+STEP 6: CREATE A HELPER FUNCTION
+Code:
+def print_response(prompt):
+    response = generative_model.generate_content(prompt)
+    print(response.text)
+Reason:
+This avoids repeating code and allows all tasks to reuse a single response function.
+
+TASK 2: PERSONA PROMPTING
+Prompt:
+You are an energetic and inspiring personal trainer...
+Reason:
+Persona prompting controls tone and style without changing the model.
+
+TASK 3: STRUCTURED OUTPUT (YAML)
+Instruction:
+Convert ingredients into YAML with ingredient and quantity keys.
+Reason:
+Structured output is required for real-world applications like APIs and databases.
+
+TASK 4: FALLBACK RESPONSE
+Instruction:
+Only answer historical landmark questions. Otherwise reply with a fixed message.
+Reason:
+Fallback responses add guardrails and keep AI on topic.
+
+TASK 5: FEW-SHOT PROMPTING
+Instruction:
+Use examples that always include bicycles.
+Reason:
+Examples teach the model patterns without retraining.
+
+FINAL SUMMARY
+This lab demonstrates how to control generative AI behavior using prompts instead of training, covering personas, formatting, guardrails, and examples.

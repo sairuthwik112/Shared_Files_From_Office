@@ -1,0 +1,292 @@
+Goal
+
+Build a Deep Research System using 4 specialized agents.
+
+Flow:
+
+User Query
+ ↓
+ Planner Agent
+ ↓
+ Search Agents (Parallel Searches)
+ ↓
+ Writer Agent
+ ↓
+ Email Agent
+ ↓
+ Send Report
+
+Why Orchestrate With Code?
+
+Developer controls everything.
+
+Benefits:
+
+Easy to understand
+Easy debugging
+Predictable workflow
+Easy to add guardrails
+
+Pattern:
+
+Runner.run() ↓ Runner.run() ↓ Runner.run()
+
+Function 1: runSearches()
+
+Purpose:
+
+Generate search queries and execute them.
+
+Steps:
+
+Call Planner Agent
+Get search plan
+Create search tasks
+Run all searches in parallel using asyncio.gather()
+Return all search results
+
+Flow:
+
+User Query ↓ Planner Agent ↓ 5 Search Queries ↓ AsyncIO Parallel Searches ↓ Results Returned
+
+Why Use AsyncIO.gather()?
+
+Without AsyncIO:
+
+Search 1 ↓ Search 2 ↓ Search 3 ↓ Slow
+
+With AsyncIO:
+
+Search 1
+
+Search 2
+
+Search 3
+
+Search 4
+
+Search 5
+
+(All run together)
+
+↓
+
+Faster execution
+
+Function 2: search()
+
+Purpose:
+
+Perform one web search.
+
+Steps:
+
+Receive search query
+Receive search reason
+Create input message
+Call Search Agent
+Return search summary
+
+Flow:
+
+Search Query ↓ Search Agent ↓ Web Search Tool ↓ Summary Returned
+
+Why Include Reason?
+
+Example:
+
+Query: "LangGraph popularity"
+
+Reason: "Need framework adoption data"
+
+The Search Agent gets more context and produces better search results.
+
+Function 3: writeReport()
+
+Purpose:
+
+Convert search results into a report.
+
+Input:
+
+Original query
+All search results
+
+Steps:
+
+Call Writer Agent
+Generate report
+Return ReportData object
+
+Output:
+
+Short Summary
+Markdown Report
+Follow-up Questions
+Function 4: sendReportEmail()
+
+Purpose:
+
+Send final report.
+
+Steps:
+
+Call Email Agent
+Convert report to HTML
+Use Send Email Tool
+Send email
+Complete Workflow
+
+User asks:
+
+"Most popular AI Agent Frameworks in 2026"
+
+↓
+
+Planner Agent
+
+Generates 5 searches
+
+Example:
+
+Framework rankings
+LangGraph adoption
+CrewAI popularity
+Enterprise usage
+Open-source frameworks
+
+↓
+
+5 Search Agents
+
+Run in parallel
+
+↓
+
+Research Results
+
+↓
+
+Writer Agent
+
+Creates:
+
+Summary
+Detailed Report
+Follow-up Questions
+
+↓
+
+Email Agent
+
+Creates:
+
+Subject
+HTML Email
+
+↓
+
+Send Email Tool
+
+↓
+
+Email Delivered
+
+Trace Analysis
+
+Trace showed:
+
+Planner Agent ↓ Completed
+
+↓
+
+5 Search Agents (Running Parallel)
+
+↓
+
+Writer Agent
+
+↓
+
+Email Agent
+
+↓
+
+Finished
+
+Why Traces Are Useful?
+
+You can verify:
+
+Which agent ran
+Execution order
+Timing
+Parallel execution
+Tool calls
+
+Useful for debugging.
+
+Bigger Experiment
+
+Changes:
+
+GPT-5.5 instead of GPT-5 Mini
+20 searches instead of 5
+
+Result:
+
+More research ↓ Better report quality ↓ Longer execution ↓ Higher cost
+
+Observation
+
+5 Searches
+
+Faster
+Cheaper
+Less comprehensive
+
+20 Searches
+
+Slower
+More expensive
+Better research quality
+
+Trade-off:
+
+Cost vs Quality
+
+Important Lesson
+
+Increasing searches improves research quality because:
+
+More Sources ↓ More Evidence ↓ Better Report ↓ Better Final Conclusions
+
+Agent Responsibilities
+
+Planner Agent
+
+Decides what to search
+
+Search Agent
+
+Collects information
+
+Writer Agent
+
+Creates research report
+
+Email Agent
+
+Delivers report
+
+Each agent has a single responsibility.
+
+Key Takeaway
+
+Deep Research Agent = Multiple specialized agents working together.
+
+Workflow:
+
+Query ↓ Plan ↓ Search ↓ Research ↓ Write ↓ Email
+
+And the entire system is orchestrated using simple Python functions with Runner.run() calls.

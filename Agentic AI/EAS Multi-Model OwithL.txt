@@ -1,0 +1,524 @@
+WHAT IS THE GOAL OF THIS LAB?
+
+The goal is to learn:
+
+How to use non-OpenAI models in OpenAI Agents SDK
+How to orchestrate multiple models together
+How to compare outputs from different models
+How to select the best result using an agent
+How to use tools and agents together
+
+BIG RECAP
+
+There are two main orchestration styles:
+
+Orchestration By Code
+
+Developer controls everything.
+
+Example:
+
+Run Agent A ↓ Run Agent B ↓ Run Agent C ↓ Choose Result
+
+Advantages:
+
+Predictable
+Easier debugging
+Stable
+Production friendly
+Orchestration By LLM
+
+LLM controls workflow.
+
+Example:
+
+Manager Agent ↓ Calls Tool 1 ↓ Calls Tool 2 ↓ Calls Tool 3 ↓ Chooses Best Result
+
+Advantages:
+
+More autonomous
+More flexible
+Better for complex tasks
+
+Disadvantages:
+
+Less predictable
+Harder to debug
+
+HANDOFFS VS TOOLS
+
+Tools
+
+Agent A ↓ Calls Tool ↓ Gets Result Back ↓ Continues Working
+
+Control returns to Agent A.
+
+Handoffs
+
+Agent A ↓ Transfers Control ↓ Agent B
+
+Agent B becomes responsible.
+
+Control does not immediately return.
+
+INSTRUCTOR'S RECOMMENDATION
+
+Preferred:
+
+Tools
+
+Reasons:
+
+Simpler
+More reliable
+Supported everywhere
+Easier to understand
+
+Handoffs are OpenAI-specific and use framework-specific behavior.
+
+WHAT IS THIS LAB BUILDING?
+
+We are building:
+
+Multi-Model Sales Email System
+
+Multiple models create sales emails.
+
+Manager agent reviews them.
+
+Best email gets selected and sent.
+
+BUSINESS SCENARIO
+
+Company:
+
+Comply AI
+
+Product:
+
+SOC2 Compliance SaaS Platform
+
+Goal:
+
+Generate the best cold sales email.
+
+PREVIOUS LAB
+
+Previous Lab:
+
+3 Agents
+
+Different Writing Styles
+
+Professional Agent Humorous Agent Executive Agent
+
+Same Model
+
+Different Instructions
+
+THIS LAB
+
+3 Agents
+
+Same Instructions
+
+Different Models
+
+Gemini Agent Kimi Agent GPT-OSS Agent
+
+WHY DO THIS?
+
+We want to compare model quality.
+
+Question:
+
+Which model writes the best sales email?
+
+Instead of comparing manually:
+
+Let another agent evaluate them.
+
+STEP 1: OPENAI-COMPATIBLE ENDPOINTS
+
+Many providers expose APIs compatible with OpenAI.
+
+Examples:
+
+Google Gemini
+
+OpenRouter
+
+Grok
+
+Because their APIs follow OpenAI format, OpenAI Agents SDK can use them.
+
+OPENAI-COMPATIBLE API
+
+Means:
+
+Even though the model is not OpenAI,
+
+the SDK can communicate with it exactly like an OpenAI model.
+
+Example:
+
+OpenAI SDK ↓ Gemini
+
+OpenAI SDK ↓ Kimi
+
+OpenAI SDK ↓ GPT-OSS
+
+STEP 2: CREATE CLIENTS
+
+A separate client is created for each provider.
+
+Each client contains:
+
+Base URL
+API Key
+
+Purpose:
+
+Connect to that model provider.
+
+STEP 3: CREATE MODEL OBJECTS
+
+Unlike OpenAI models,
+
+you do not provide a string.
+
+Instead:
+
+Create a model object.
+
+The model object contains:
+
+Which client to use
+Which model name to use
+
+OPENAI MODEL
+
+Example:
+
+Model = "gpt-5.4-mini"
+
+Just text.
+
+NON-OPENAI MODEL
+
+Example:
+
+Model Object
+
+Contains:
+
+Client + Model Name
+
+THREE MODELS USED
+
+Model 1
+
+Gemini Flash Lite
+
+Characteristics:
+
+Very fast
+Cheap
+
+Model 2
+
+Kimi K2.6
+
+Characteristics:
+
+Strong reasoning
+Open source
+Slower
+
+Model 3
+
+GPT OSS 120B
+
+Characteristics:
+
+Open-source OpenAI model
+Very fast through Grok
+
+THREE SALES AGENTS
+
+Agent 1
+
+Gemini Sales Agent
+
+Uses Gemini model.
+
+Agent 2
+
+Kimi Sales Agent
+
+Uses Kimi model.
+
+Agent 3
+
+GPT OSS Sales Agent
+
+Uses GPT OSS model.
+
+IMPORTANT DIFFERENCE
+
+Instructions:
+
+Exactly the same
+
+Task:
+
+Exactly the same
+
+Only model changes.
+
+Purpose:
+
+Measure model quality.
+
+CONVERTING AGENTS INTO TOOLS
+
+Each sales agent becomes a tool.
+
+Example:
+
+Gemini Agent ↓ Sales Writer Tool 1
+
+Kimi Agent ↓ Sales Writer Tool 2
+
+GPT OSS Agent ↓ Sales Writer Tool 3
+
+WHY CONVERT THEM?
+
+The Sales Manager agent can use tools.
+
+The manager calls tools.
+
+The tools invoke agents.
+
+TOOL FLOW
+
+Sales Manager ↓ Tool ↓ Agent ↓ Model ↓ Email Generated ↓ Manager Receives Result
+
+EMAIL TOOL
+
+Additional Tool:
+
+send_email_tool
+
+Purpose:
+
+Send chosen email to user.
+
+AVAILABLE TOOLS
+
+Tool 1
+
+Gemini Email Writer
+
+Tool 2
+
+Kimi Email Writer
+
+Tool 3
+
+GPT OSS Email Writer
+
+Tool 4
+
+Send Email Tool
+
+SALES MANAGER AGENT
+
+A manager agent orchestrates everything.
+
+Responsibilities:
+
+Generate drafts
+Evaluate drafts
+Select best draft
+Send best draft
+
+SALES MANAGER THINKING PROCESS
+
+Step 1
+
+Generate draft from Gemini
+
+Step 2
+
+Generate draft from Kimi
+
+Step 3
+
+Generate draft from GPT OSS
+
+Step 4
+
+Compare all three drafts
+
+Step 5
+
+Select best draft
+
+Step 6
+
+Call Send Email Tool
+
+Step 7
+
+Finish
+
+ORCHESTRATION VIA LLM
+
+Notice:
+
+Python did not explicitly write:
+
+Run Agent 1 Run Agent 2 Run Agent 3
+
+Instead:
+
+Sales Manager decided which tools to call.
+
+The LLM controlled the workflow.
+
+Therefore:
+
+This is orchestration via LLM.
+
+TRACE ANALYSIS
+
+Trace showed:
+
+Sales Manager ↓ Tool 1
+
+Tool 2
+
+Tool 3
+
+All executed
+
+↓
+
+Sales Manager
+
+↓
+
+Send Email Tool
+
+↓
+
+Completed
+
+PERFORMANCE OBSERVATIONS
+
+Gemini
+
+Around 2 seconds
+
+Very fast.
+
+GPT OSS
+
+Around 1.5 seconds
+
+Fastest model.
+
+Kimi K2.6
+
+Around 77 seconds
+
+Much slower.
+
+Spent more time reasoning.
+
+WHICH MODEL WON?
+
+Sales Manager selected:
+
+Kimi K2.6
+
+Despite being slower,
+
+its email was judged best.
+
+IMPORTANT LESSON
+
+Fastest model
+
+≠
+
+Best model
+
+Sometimes a slower reasoning model creates higher quality output.
+
+WHY USE MULTIPLE MODELS?
+
+Different models have different strengths.
+
+Example:
+
+Gemini ↓ Speed
+
+GPT OSS ↓ Fast + Open Source
+
+Kimi ↓ Strong Reasoning
+
+We can combine strengths instead of relying on one model.
+
+ARCHITECTURE
+
+User Request ↓ Sales Manager
+
+↓
+
+Gemini Writer Tool ↓ Gemini Agent ↓ Gemini Model
+
+↓
+
+Kimi Writer Tool ↓ Kimi Agent ↓ Kimi Model
+
+↓
+
+GPT OSS Writer Tool ↓ GPT OSS Agent ↓ GPT OSS Model
+
+↓
+
+Sales Manager Evaluates Results
+
+↓
+
+Selects Best Email
+
+↓
+
+Send Email Tool
+
+↓
+
+Email Sent
+
+KEY INTERVIEW TAKEAWAY
+
+OpenAI Agents SDK is not limited to OpenAI models.
+
+You can use:
+
+OpenAI
+Gemini
+Grok
+OpenRouter Models
+Open Source Models
+
+by:
+
+Creating a compatible client
+Creating a model object
+Passing the model object into the Agent
+
+The rest of the agent workflow remains exactly the same.

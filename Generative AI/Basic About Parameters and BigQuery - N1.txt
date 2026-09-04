@@ -1,0 +1,157 @@
+                                                                    Generative AI
+
+Predictive ai is to specific the animal is cat or dog
+
+Generative ai is the ai that creates new images, text, audio or files based on the data it is trained on
+Fundamentals for building generative ai are foundation models, vector ai conversion, vector ai search
+foundation
+
+their various types of prompting
+for llms:
+n-short promoting - zero and
+few short promting used for examples
+chain of thought promting
+reACT - thought, action, observation
+
+decoding stargies- for ouput generation
+the parameters used are temp and top-k and top-p
+temperature-randomness off topic -high temp
+top-k - we need to set the k-value means it can pick any of those k values from the suggested output
+top-p - cumulative prop >= prob
+we can use these all parameters in the vertex ai
+
+reterival auagumented generation(rag) -
+for example for google research papers to find
+use vertex ai search ai search for research papers
+
+prompt to production life cycle
+
+design prompt - evaluate and refine - build and test - monitor and optimizer - production
+
+grounding helps the gen ai to take the external information through rags that is implementation
+
+vertex ai studio uses supervised fine tuning to train the data to the model
+If top‑p = 0.9, the model:
+
+Sorts words by probability
+Keeps adding words until total probability ≥ 90%
+If top‑k = 3, the model only looks at:
+
+park
+office
+store
+
+It ignores:
+
+beach
+moon
+everything else
+
+Then it randomly picks one word from those 3, based on probability.
+
+What is SynthID?
+SynthID is a technology developed by Google DeepMind that embeds a digital watermark directly into the pixels of AI-generated images. This watermark is designed to be imperceptible to the human eye but detectable by an algorithm. Its purpose is to help identify images as AI-generated, promoting transparency and responsible AI practices, even if the image is later modified (e.g., compressed, filtered).
+
+
+GEN AI LABS
+
+Task-1 - Create applications from prompts - with the help of agent platform studio
+Task-2 - Design effective prompts like go back and edit the prompt in the model we develop at first
+Task 3 - Engineer and manage prompts
+Task 1. Open the notebook in Vertex AI Workbench
+
+The Gen AI SDK is not an API; it is a developer library that uses Google’s Generative AI APIs to securely and easily access pretrained multilingual models like Gemini.
+
+------>All these steps together teach you how to build a full‑featured, secure, scalable Generative AI application or AI agent using the Gen AI SDK.
+
+install the Gen AI SDK
+Connect to an API service
+Send text prompts
+Send multimodal prompts
+Set system instruction
+Configure model parameters
+Configure safety filters
+Start a multi-turn chat
+Control generated output
+Generate content stream
+Send asynchronous requests
+Count tokens and compute tokens
+Use context caching
+Function calling
+Get text embeddings
+
+----->Prompt Design Strategies
+
+Define the output format & specify constraints
+Assign a persona or role
+Include examples
+Experiment with parameter values
+Utilize fallback responses
+Add contextual information
+Structure prompts with prefixes or tags
+Use system instructions
+Break down complex tasks
+Demonstrate the chain-of-thought
+Implement prompt iteration strategies to improve your prompts version
+
+----->steps to build the ai application
+
+✅ Connect to Gen AI (initialize)
+✅ Choose the AI brain (load model)
+✅ Decide its role (persona)
+✅ Get clean structured output (schema)
+✅ Handle wrong questions safely (fallback)
+✅ Improve accuracy with examples
+
+-------->
+
+Explore Data with Gemini in BigQuery
+
+BigQuery is used to store, process, and analyze very large amounts of data quickly using SQL.
+BigQuery helps you analyze huge datasets in seconds—without managing servers.
+
+As a data analyst at Data Beans, you are moving from simple queries to more complex analysis and need to work more independently. By using BigQuery’s Gemini features, you can describe your goals in plain English and let Gemini generate SQL, explain existing queries, and transform results (for example, formatting or adding logic) without rewriting everything manually. When you get stuck, Gemini can review and debug your SQL, suggest fixes, and explain why errors occur. This helps you quickly build confidence, handle complex queries on your own, and deliver deeper insights more efficiently—while still validating results through the Table Explorer and query runs.
+
+You are a data analyst:
+
+New dataset arrives
+
+Use Table Explorer & Insights
+
+
+Need a complex query
+
+Use Gemini SQL generation
+
+
+Confused by a query
+
+Use Explain this query
+
+
+Fix or optimize
+
+Use Gemini debugging & suggestions
+
+
+Present workflow
+
+Use Data Canvas
+
+This slide explains where and how Gemini helps in BigQuery—from exploring data, to writing and explaining SQL, to visualizing workflows—using the right tool for each job.
+
+BigQuery = Empty warehouse
+Your data = Goods you put inside
+Gemini = Smart helper inside the warehouse
+
+Company collects data (orders, users, logs)
+Data is loaded into BigQuery
+Analyst runs SQL queries
+Gemini helps:
+
+Write SQL
+Explain SQL
+Fix errors
+Generate insights
+
+

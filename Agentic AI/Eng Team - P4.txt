@@ -1,0 +1,515 @@
+This project is basically about building our own mini version of Claude Code using CrewAI.
+
+Instead of having one agent do everything, we create an entire software engineering team where each agent has a specific responsibility. The agents collaborate together exactly like a real software development team.
+
+The business requirement is simple:
+
+Build a Trading Account Management System that allows users to:
+
+Create accounts
+Deposit money
+Withdraw money
+Buy shares
+Sell shares
+Track holdings
+View transactions
+Calculate portfolio value
+
+The goal is not just to generate code. The goal is to generate working software.
+
+Why Multiple Agents?
+
+A common beginner mistake in Agentic AI is thinking:
+
+"One powerful agent can do everything."
+
+Technically it can try.
+
+But large tasks become unreliable.
+
+Instead, we divide responsibilities.
+
+Think of a real company:
+
+Engineering Lead → Designs the system
+
+Backend Engineer → Writes the business logic
+
+Frontend Engineer → Builds the user interface
+
+Test Engineer → Tests and fixes bugs
+
+Each agent focuses on one area and does it well.
+
+This makes the overall system more reliable.
+
+Agent 1: Engineering Lead
+
+This is the architect of the team.
+
+Its job is not to write code.
+
+Its job is to think.
+
+The Engineering Lead receives the business requirements and creates a technical design.
+
+It decides:
+
+What modules are needed
+What classes are needed
+What methods are needed
+How components interact
+Which engineer should build what
+
+The most important instruction given to this agent is:
+
+"Do not write code."
+
+Why?
+
+Because LLMs love solving the entire problem immediately.
+
+If we allow the Engineering Lead to write code, it may completely ignore the rest of the team.
+
+So we force it to only design.
+
+Think:
+
+Requirement → Architecture → Work Assignment
+
+Agent 2: Backend Engineer
+
+This is the Python developer.
+
+Its job is to read the design document created by the Engineering Lead and implement the backend logic.
+
+Examples:
+
+Account creation
+Deposits
+Withdrawals
+Buy shares
+Sell shares
+Portfolio calculations
+
+Very important:
+
+The Backend Engineer should not create UI.
+
+Only business logic.
+
+This separation of concerns keeps the system cleaner.
+
+Agent 3: Frontend Engineer
+
+This is the Gradio specialist.
+
+Its responsibility is to build the UI.
+
+The Frontend Engineer reads:
+
+Business requirements
+Engineering design
+Backend implementation
+
+Then creates:
+
+app.py
+validate.py
+
+app.py contains the Gradio interface.
+
+validate.py verifies that the UI loads successfully.
+
+The UI is simply a demonstration layer for the backend.
+
+Agent 4: Test Engineer
+
+This is the quality assurance specialist.
+
+The Test Engineer's job is:
+
+Create unit tests
+Execute tests
+Find problems
+Fix problems
+
+This agent is extremely important because it creates a feedback loop.
+
+Without testing:
+
+Code is generated.
+
+With testing:
+
+Code is validated.
+
+The testing cycle becomes:
+
+Write Test
+
+↓
+
+Run Test
+
+↓
+
+Find Bug
+
+↓
+
+Fix Code
+
+↓
+
+Run Again
+
+↓
+
+Pass
+
+This is real Agentic AI behavior.
+
+Why Context7 MCP Was Added
+
+LLMs have knowledge cutoffs.
+
+Suppose Gradio releases a new API.
+
+The model may not know about it.
+
+Without Context7:
+
+Agent relies on memory.
+
+With Context7:
+
+Agent can ask for the latest documentation.
+
+The workflow becomes:
+
+Agent
+
+↓
+
+Context7 MCP
+
+↓
+
+Latest Documentation
+
+↓
+
+Correct Implementation
+
+We gave Context7 mainly to:
+
+Engineering Lead
+Frontend Engineer
+
+Because these agents need current API knowledge.
+
+Especially the Frontend Engineer that works with Gradio.
+
+Why Do We Need Sandbox Tools?
+
+The agents need a workspace.
+
+Just like a human developer works inside a project folder, agents need somewhere to store and execute code.
+
+The sandbox acts as that workspace.
+
+Without sandbox tools:
+
+Agents can only generate text.
+
+With sandbox tools:
+
+Agents can actually create software.
+
+The tools are:
+
+List Sandbox Files
+
+Lets the agent see what files already exist.
+
+Read Sandbox File
+
+Lets the agent inspect code.
+
+Write Sandbox File
+
+Lets the agent create or modify code.
+
+Run Sandbox Python
+
+Lets the agent execute code.
+
+These tools transform the agent from a text generator into a software builder.
+
+Why Execute Code?
+
+Imagine asking:
+
+"Build a trading system."
+
+Generating code is not enough.
+
+The agent must verify it works.
+
+So the workflow becomes:
+
+Write Code
+
+↓
+
+Run Code
+
+↓
+
+Observe Errors
+
+↓
+
+Fix Errors
+
+↓
+
+Run Again
+
+This is exactly what software engineers do.
+
+The agent is following the same workflow.
+
+Why Use UV?
+
+Instead of running Python directly, the project uses UV.
+
+Advantages:
+
+Dependency management
+Isolated project environment
+Consistent execution
+Easier package installation
+
+Every time the workflow starts, a fresh UV project is created.
+
+Then Gradio is installed.
+
+This guarantees a clean environment for every run.
+
+How Context Flows Between Agents
+
+This is one of the most important concepts.
+
+The Engineering Lead creates:
+
+design.md
+
+The Backend Engineer receives:
+
+design.md
+
+and writes backend code.
+
+The Frontend Engineer receives:
+
+design.md
+
+backend code
+
+and builds the UI.
+
+The Test Engineer receives:
+
+design.md
+
+backend code
+
+and writes tests.
+
+Notice what is happening.
+
+Each agent builds on previous work.
+
+Nobody starts from scratch.
+
+This is what context sharing means.
+
+Complete Workflow
+
+Step 1
+
+Business requirements are provided.
+
+Step 2
+
+Sandbox is reset.
+
+Step 3
+
+Fresh UV project is created.
+
+Step 4
+
+Gradio is installed.
+
+Step 5
+
+Engineering Lead creates technical design.
+
+Step 6
+
+Design document is saved.
+
+Step 7
+
+Backend Engineer implements backend.
+
+Step 8
+
+Frontend Engineer builds UI.
+
+Step 9
+
+Test Engineer creates tests.
+
+Step 10
+
+Tests are executed.
+
+Step 11
+
+Errors are identified.
+
+Step 12
+
+Code is fixed.
+
+Step 13
+
+Tests pass.
+
+Step 14
+
+Working software is produced.
+
+Interesting Problem Discovered
+
+CrewAI automatically caches tool outputs.
+
+Normally this is useful.
+
+Example:
+
+If a tool receives the exact same input twice, CrewAI may reuse the previous answer instead of running the tool again.
+
+But this became a problem.
+
+The agent might:
+
+Write a new file
+
+↓
+
+Call List Sandbox Files
+
+↓
+
+Receive the old cached result
+
+↓
+
+Think the file does not exist
+
+This confused the agents.
+
+The solution was to disable tool caching for sandbox tools.
+
+Now every tool call returns fresh information.
+
+What Makes This Project Special?
+
+This project combines almost every major concept learned so far.
+
+Multi-Agent Systems
+
+Multiple specialized agents working together.
+
+Task Delegation
+
+Each agent has a specific responsibility.
+
+Context Sharing
+
+Agents build on previous outputs.
+
+MCP
+
+Agents can access external knowledge.
+
+Context7
+
+Agents can use the latest documentation.
+
+Sandbox Tools
+
+Agents can work with files.
+
+Code Execution
+
+Agents can run software.
+
+Testing Loop
+
+Agents can validate and improve outputs.
+
+Software Generation
+
+Agents create real applications instead of text.
+
+Biggest Takeaway
+
+This project shows how modern coding agents actually work.
+
+A coding agent is not just:
+
+LLM → Code
+
+A real coding agent is:
+
+Requirements
+
+↓
+
+Planning
+
+↓
+
+Design
+
+↓
+
+Code Generation
+
+↓
+
+Tool Usage
+
+↓
+
+Code Execution
+
+↓
+
+Testing
+
+↓
+
+Bug Fixing
+
+↓
+
+Working Software
+
+That is why this Engineering Team project is one of the most complete CrewAI examples. It demonstrates how multiple agents, tools, MCP servers, testing loops, and code execution can work together to automatically build a functional software product from a business requirement.

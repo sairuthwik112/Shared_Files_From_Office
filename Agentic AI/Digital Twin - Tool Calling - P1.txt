@@ -1,0 +1,353 @@
+AGENTIC AI TOOL CALLING NOTES
+
+Digital Twin Prompt Structure
+
+Role
+
+Tell AI it is a digital twin of a person.
+Answer as if it represents that person.
+
+Context
+
+Provide LinkedIn profile summary.
+Include experience, skills, achievements, projects.
+
+Rules
+
+Stay in character.
+Be professional.
+If information is not available, say "I don't know".
+Never make up answers.
+Messages Structure
+
+Conversation is stored as a list of messages.
+
+Roles:
+
+system = instructions to AI
+user = user input
+assistant = AI response
+tool = output from a tool
+
+Conversation typically looks like: System Prompt → User Message → Assistant Reply → User Message → Assistant Reply
+
+Chat Function
+
+Purpose:
+
+Take current user message
+Add previous chat history
+Send everything to GPT
+Return response
+
+Flow: User Question ↓ Create messages list ↓ Call GPT ↓ Get response ↓ Return answer
+
+Gradio
+
+Gradio is only a UI layer.
+
+Responsibilities:
+
+Display chat screen
+Accept user input
+Pass message and history to chat()
+Show returned answer
+
+Flow: User ↓ Gradio ↓ chat(message, history) ↓ GPT ↓ Response shown on screen
+
+Tool Calling
+
+Normal LLM:
+
+Generates text only
+
+LLM with tools:
+
+Can request external actions
+
+Examples:
+
+Save email
+Search web
+Query database
+Send notification
+Call APIs
+
+Important: GPT never executes tools itself.
+
+GPT only says: "Please call this tool."
+
+Python code actually runs the tool.
+
+Email Recording Tool
+
+Purpose:
+
+Save email addresses into emails.txt
+
+Flow: User provides email ↓ GPT identifies email ↓ GPT requests tool execution ↓ Python runs tool ↓ Email saved into file ↓ GPT confirms to user
+
+Why JSON is Used
+
+JSON describes tools in a structured way.
+
+JSON contains:
+
+Tool name
+Tool description
+Parameters
+Required fields
+
+Why JSON?
+
+Standard format
+Easy for programs to parse
+LLMs are trained on JSON schemas
+Eliminates ambiguity
+Tool Description Components
+
+Name
+
+Tool identifier
+
+Description
+
+Explains when tool should be used
+
+Parameters
+
+Inputs expected by tool
+
+Required
+
+Mandatory inputs
+
+Example: Tool Name = record_email_tool Parameter = email Type = string
+
+Tool Calling Flow
+
+User says: "My email is abc@test.com"
+
+↓
+
+GPT decides tool is needed
+
+↓
+
+GPT returns tool request
+
+↓
+
+Python extracts arguments
+
+↓
+
+Python executes record_email_tool()
+
+↓
+
+Tool saves email
+
+↓
+
+Result sent back to GPT
+
+↓
+
+GPT replies: "Thanks, I've recorded your email."
+
+Meaning of
+
+message = response.choices[0].message
+
+This stores the assistant's full response.
+
+It may contain:
+
+normal text
+tool call requests
+
+When tool calling is used: message.tool_calls becomes important.
+
+Meaning of Tool Arguments
+
+GPT returns arguments as JSON text.
+
+Python uses json.loads() to convert:
+
+JSON String ↓ Python Dictionary
+
+Then extracts values such as email.
+
+Finish Reason
+
+finish_reason tells why GPT stopped.
+
+Common values:
+
+stop
+
+Normal response completed
+
+tool_calls
+
+GPT wants a tool to be executed
+Problem with Initial Tool Calling
+
+Initial code assumed:
+
+Only one tool call
+Only one email
+
+So it used:
+
+First tool call only
+
+Problem:
+
+User provides:
+
+x@test.com
+y@test.com
+z@test.com
+
+GPT creates 3 tool calls.
+
+Code handles only first one.
+
+Result: Error
+
+Fix 1: For Loop
+
+Instead of taking only first tool call:
+
+Loop through every tool call.
+
+Benefits:
+
+Supports multiple emails
+Supports multiple tool requests
+Fix 2: Agent Loop
+
+Original approach:
+
+If GPT requests tool → Execute once
+
+Problem: GPT might need more tools later.
+
+Solution: Replace if with while
+
+Now process continues until GPT no longer requests tools.
+
+Flow:
+
+GPT ↓ Tool Call ↓ Tool Result ↓ GPT ↓ Another Tool Call ↓ Tool Result ↓ GPT Final Answer
+
+Agent Definition
+
+Agent = LLM + Tools + Loop
+
+The loop allows repeated reasoning and actions until task completion.
+
+Why Agent Loop Works
+
+GPT receives goal.
+
+Example:
+
+"Record these three email addresses."
+
+GPT:
+
+Calls tool 1
+Calls tool 2
+Calls tool 3
+Produces final response
+
+The while loop keeps the process running until completion.
+
+What Actually Makes Tool Calling Work
+
+Behind the scenes it is mostly:
+
+Prompts
+JSON
+Tool schemas
+If statements
+While loops
+Function calls
+
+No magic involved.
+
+Agent Frameworks
+
+Examples:
+
+LangChain
+LangGraph
+CrewAI
+AutoGen
+
+Purpose:
+
+Generate tool JSON automatically
+Handle loops automatically
+Manage tool execution automatically
+
+They hide the low-level plumbing.
+
+Guardrails
+
+Purpose:
+
+Verify AI responses
+
+Flow:
+
+AI Response ↓ Evaluator LLM ↓ Check Rules ↓ Accept or Reject
+
+Example: Ensure digital twin only answers career-related questions.
+
+If response violates rules:
+
+Reject
+Generate again
+Evaluator-Optimizer Pattern
+
+First LLM:
+
+Creates answer
+
+Second LLM:
+
+Evaluates answer
+
+If bad:
+
+Retry
+
+If good:
+
+Return
+Key Interview Answer
+
+What is an AI Agent?
+
+An AI agent is an LLM equipped with tools and running inside a loop so it can repeatedly take actions, observe results, and continue until a goal is achieved.
+
+Formula:
+
+AI Agent = LLM + Tools + Memory/State + Loop
+
+Final Takeaway
+
+Agentic AI is essentially:
+
+Prompt Engineering
+Tool Definitions
+JSON Schemas
+LLM Calls
+Tool Execution
+For Loops
+While Loops
+Guardrails

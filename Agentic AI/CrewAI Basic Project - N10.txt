@@ -1,0 +1,335 @@
+CrewAI is a framework used to create multiple AI agents that work together to solve a problem.
+
+Think of it like a company:
+
+Agent = Employee
+Task = Work assigned to employee
+Crew = Team of employees
+
+Agent + Task + Crew = Complete AI Workflow
+
+Why did we build the Debate Project?
+
+The debate project helps us understand how multiple agents interact and how CrewAI manages tasks between them.
+
+We created:
+
+2 Agents
+
+Debater
+Judge
+
+3 Tasks
+
+Propose
+Oppose
+Decide
+
+How does a CrewAI project look?
+
+Every CrewAI project mainly contains 4 important files:
+
+agents.yaml
+tasks.yaml
+crew.py
+main.py
+
+Remember these because almost every CrewAI project uses them.
+
+agents.yaml
+
+Purpose:
+
+This file defines the agents.
+
+For each agent we specify:
+
+Role
+Goal
+Backstory
+LLM
+
+Example:
+
+Debater Agent
+
+Role: Professional Debater
+
+Goal: Convince people
+
+Backstory: Experienced speaker
+
+Judge Agent
+
+Role: Judge
+
+Goal: Find the best argument
+
+Backstory: Fair evaluator
+
+Why Role, Goal and Backstory?
+
+Because they guide model behavior.
+
+The LLM is the same, but changing these instructions makes the AI behave differently.
+
+tasks.yaml
+
+Purpose:
+
+Defines what work needs to be done.
+
+In our debate project we created 3 tasks.
+
+Task 1: Propose
+
+Work: Support the motion.
+
+Example:
+
+"There should be strict laws to regulate LLMs."
+
+The agent must argue in favor.
+
+Task 2: Oppose
+
+Work: Argue against the motion.
+
+The same agent creates counterarguments.
+
+Task 3: Decide
+
+Work: Judge reviews both arguments and chooses a winner.
+
+Each task is assigned to a specific agent.
+
+What are placeholders?
+
+In YAML we used:
+
+{motion}
+
+This is called a placeholder or variable.
+
+We don't know the topic when writing the YAML file.
+
+Later we will provide the value from main.py.
+
+Example:
+
+YAML: Debate about {motion}
+
+User Input: "There should be strict laws to regulate LLMs"
+
+CrewAI automatically replaces:
+
+{motion}
+
+with
+
+"There should be strict laws to regulate LLMs"
+
+crew.py
+
+Purpose:
+
+Connects Python code with YAML configuration.
+
+Many beginners think logic happens here.
+
+Actually most of the work is just connecting:
+
+Agents in YAML
+Tasks in YAML
+
+to
+
+CrewAI runtime
+
+The names must match exactly.
+
+If YAML contains:
+
+debater
+
+then crew.py must also reference:
+
+debater
+
+Even a small typo can cause errors.
+
+main.py
+
+Purpose:
+
+This is the starting point of the application.
+
+Execution begins here.
+
+main.py collects input from the user.
+
+Example:
+
+Enter the motion: "There should be strict laws to regulate LLMs"
+
+This value gets stored inside inputs.
+
+Those inputs are passed to CrewAI.
+
+kickoff()
+
+This is one of the most important concepts.
+
+kickoff() means:
+
+Start the crew.
+
+When kickoff() runs:
+
+Agents are created
+Tasks are started
+LLM calls are made
+Results are generated
+
+You can think of kickoff() as the engine start button.
+
+Execution Flow
+
+Step 1
+
+User enters motion.
+
+Step 2
+
+Propose task starts.
+
+Step 3
+
+Debater creates arguments supporting the motion.
+
+Step 4
+
+Oppose task starts.
+
+Step 5
+
+Debater creates arguments against the motion.
+
+Step 6
+
+Judge task starts.
+
+Step 7
+
+Judge reads previous arguments.
+
+Step 8
+
+Judge decides winner.
+
+Step 9
+
+Output files are generated.
+
+How does Judge know previous arguments?
+
+This is a very important CrewAI feature.
+
+CrewAI automatically passes previous task outputs as context.
+
+Flow:
+
+Propose Output
+
+↓
+
+Oppose Output
+
+↓
+
+Judge Task
+
+The judge receives both previous outputs automatically.
+
+You do not manually pass them.
+
+What are Traces?
+
+Traces allow us to see what happens internally.
+
+Using traces we can inspect:
+
+Agent prompts
+Task execution
+Context sharing
+LLM requests
+LLM responses
+
+Think of traces as debugging tools for CrewAI.
+
+Why are traces useful?
+
+Sometimes you may wonder:
+
+Did the judge really get the debater's arguments?
+
+The trace shows exactly what was sent to the LLM.
+
+This helps verify that CrewAI is working correctly.
+
+Output Files
+
+Inside tasks we specified output files.
+
+Examples:
+
+propose.md
+oppose.md
+decide.md
+
+CrewAI automatically saves task results into these files.
+
+Why is this useful?
+
+Store results
+Generate reports
+Review outputs later
+Share results with others
+
+Key Learning from this Project
+
+CrewAI organizes multi-agent systems.
+Agents are defined in agents.yaml.
+Tasks are defined in tasks.yaml.
+crew.py connects everything.
+main.py starts execution.
+kickoff() runs the workflow.
+Outputs from earlier tasks become context for later tasks.
+Traces help us understand what happens internally.
+Results can be saved to files automatically.
+
+Quick Revision
+
+Agent = AI worker
+
+Task = Work assigned to worker
+
+Crew = Team of workers
+
+agents.yaml = Agent definitions
+
+tasks.yaml = Task definitions
+
+crew.py = Links tasks and agents
+
+main.py = Entry point
+
+{motion} = Placeholder variable
+
+kickoff() = Start execution
+
+Traces = Debugging and monitoring
+
+Output files = Store task results
+
+CrewAI automatically shares task outputs with downstream tasks as context.

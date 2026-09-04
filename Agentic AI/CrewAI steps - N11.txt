@@ -1,0 +1,203 @@
+Core Concepts
+
+Agent = AI Worker
+
+Task = Work assigned to agent
+
+Crew = Team of agents working together
+
+Agent Contains
+LLM
+Role
+Goal
+Backstory
+Tools (optional)
+Memory (optional)
+
+Role = Who are you?
+
+Goal = What should you achieve?
+
+Backstory = How should you behave?
+
+Task Contains
+Description
+Expected Output
+Assigned Agent
+
+Task ≈ User Prompt for an Agent
+
+Crew Execution Modes
+
+Sequential
+
+Fixed order
+Deterministic
+Similar to Orchestration by Code
+
+Hierarchical
+
+Manager LLM decides order
+Dynamic workflow
+Similar to Orchestration by LLM
+5-Step CrewAI Development Process
+Create Project
+
+crewai create crew project_name
+
+Edit agents.yaml
+
+Define agents:
+
+Role
+Goal
+Backstory
+LLM
+Edit tasks.yaml
+
+Define:
+
+Tasks
+Agent Assignment
+Outputs
+Edit crew.py
+
+Connect agents and tasks from YAML to CrewAI.
+
+Edit main.py & Run
+
+Set inputs → kickoff() → crewai run
+
+Important Files
+
+agents.yaml → Agent Definitions
+
+tasks.yaml → Task Definitions
+
+crew.py → Connects YAML with Code
+
+main.py → Entry Point
+
+Placeholders
+
+Use:
+
+{motion}
+
+Value comes from:
+
+main.py → inputs dictionary
+
+kickoff()
+
+Most Important Function
+
+kickoff() = Start the Crew
+
+Creates agents → Executes tasks → Returns results
+
+Tools
+
+Tool = Extra capability for an agent
+
+Examples:
+
+Web Search
+Database Access
+Calculator
+API Call
+PDF Reader
+
+Formula:
+
+LLM + Tools = Powerful Agent
+
+Without Tools → Only model knowledge
+
+With Tools → Can access real-world data
+
+Context
+
+Context = Output of one task used by another task
+
+Example:
+
+Research ↓ Analysis ↓ Report
+
+Each task gets previous task output.
+
+Dependency
+
+Task B depends on Task A
+
+Meaning:
+
+Task A must finish first.
+
+Dependency controls execution order.
+
+Task Flow
+
+Task Output ↓ Becomes Context ↓ Used by Next Task
+
+This is how agents collaborate.
+
+YAML Best Practice
+
+Put static information in YAML.
+
+Put logic in Python.
+
+YAML = Prompts
+
+Python = Execution
+
+Interview One-Liners
+
+Agent = AI Worker
+
+Task = Assigned Work
+
+Crew = Team of Agents
+
+Sequential = Code-Based Orchestration
+
+Hierarchical = LLM-Based Orchestration
+
+Tool = External Capability
+
+Context = Previous Task Output
+
+Dependency = Task Execution Rule
+
+kickoff() = Starts Crew Execution
+
+agents.yaml = Agent Prompts
+
+tasks.yaml = Task Prompts
+
+crew.py = Agent/Task Mapping
+
+main.py = Input Provider & Entry Point
+
+30-Second Revision
+
+CrewAI = Agents + Tasks + Crew
+
+Agent → Performs work
+
+Task → Tells what work to do
+
+Crew → Coordinates everything
+
+Tools → Give capabilities
+
+Context → Shares outputs between tasks
+
+Sequential → Fixed workflow
+
+Hierarchical → Manager decides workflow
+
+kickoff() → Runs the entire crew
+
+4 Important Files: agents.yaml, tasks.yaml, crew.py, main.py.

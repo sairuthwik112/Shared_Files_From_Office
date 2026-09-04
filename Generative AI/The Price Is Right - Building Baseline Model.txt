@@ -1,0 +1,71 @@
+🔹 Random Pricer
+Steps
+
+Take item
+Ignore all data
+Generate random number
+Return as price
+
+
+🔹 Constant Pricer
+Steps
+
+Collect all prices from training data
+Calculate average price
+For any item
+Return same average value
+
+
+🔹 Feature Linear Regression
+Steps
+
+Take item
+Extract features (weight, text_length, etc.)
+Convert into numeric format
+Train model using features + price
+Learn formula (price = combination of features)
+Predict price using formula
+
+
+🔹 Text Based Linear Regression
+Steps
+
+Take item.summary (text)
+Use CountVectorizer
+Convert text → numbers (word counts)
+Train linear regression on these numbers
+Model learns importance of words
+Predict price based on words
+
+
+🔹 Random Forest
+Steps
+
+Take text → convert to vector (numbers)
+Pass to multiple decision trees
+Each tree makes prediction using rules
+Collect all predictions
+Take average of predictions
+Return final price
+
+
+🔹 XGBoost
+Steps
+
+Take text → convert to vector
+Build first tree → make initial prediction
+Find error (difference with actual price)
+Build next tree → correct error
+Repeat for many trees (like 1000)
+Combine all corrections
+Return final improved price
+
+
+🔹 Final Flow (Common for all advanced models)
+Steps
+
+Get item summary
+Convert text → numeric vector
+Pass to model
+Model predicts price
+Compare with actual price for evaluation

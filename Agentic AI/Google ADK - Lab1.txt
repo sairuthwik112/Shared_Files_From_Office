@@ -1,0 +1,523 @@
+Copilot said:
+GCP Agent Challenge Lab Notes (First-Time Learner Version)
+Overall Goal
+
+Build an AI agent for Cymbal Direct that can:
+
+Check delayed orders
+Check customer loyalty tier
+Give compensation based on company policy
+Respond to customers
+Deploy the agent as a cloud service
+
+Flow:
+
+Customer → Agent → MCP Tools → Company Data → Agent Decision → Response
+
+Task 1: Setup Antigravity CLI (AGY)
+Why are we doing this?
+
+AGY is Google's AI coding assistant.
+
+It helps us:
+
+Create MCP servers
+Create skills
+Create rules
+Build agents
+Deploy agents
+What happened?
+Opened Cloud Shell Editor
+Enabled hidden files
+
+Reason:
+
+AGY stores configuration inside hidden folders like .agents
+Authenticated AGY
+
+Reason:
+
+AGY needs access to our Google Cloud project
+Selected project
+
+Reason:
+
+AGY should know where to create resources
+Selected Gemini 3.5 Flash
+
+Reason:
+
+This becomes the LLM used by the agent
+Result
+
+AGY is connected to Google Cloud and ready to build agents.
+
+Task 2: Configure MCP Server
+What is MCP?
+
+MCP = Model Context Protocol
+
+It is a standard way for agents to access external tools and data.
+
+Think:
+
+Without MCP:
+
+Agent can only chat
+
+With MCP:
+
+Agent can call tools
+Agent can access databases
+Agent can perform actions
+What happened?
+Step 1
+
+Created:
+
+mcp folder
+
+Reason:
+
+Keep MCP server files organized
+Step 2
+
+Downloaded:
+
+cymbal_direct_mcp.py
+
+Reason:
+
+This is the logistics MCP server
+
+It exposes company tools.
+
+Step 3
+
+Installed MCP libraries
+
+Reason:
+
+Required to run MCP server
+Step 4
+
+Created:
+
+.agents/mcp_config.json
+
+Reason:
+
+AGY must know which MCP servers exist
+
+This file registers the server.
+
+Step 5
+
+Started AGY again
+
+Reason:
+
+Load the newly registered MCP server
+Step 6
+
+Typed:
+
+/mcp
+
+Reason:
+
+Verify that MCP server is available
+Tools Found
+get_order_status
+
+Purpose:
+
+Check order information
+Check delay reason
+get_customer_loyalty_info
+
+Purpose:
+
+Find customer loyalty tier
+
+Example:
+
+Platinum
+Gold
+Silver
+Member
+issue_disruption_compensation
+
+Purpose:
+
+Create customer compensation
+Issue credits
+Apply shipping upgrades
+Test Query
+
+What is the status of order CYM-EC-9921?
+
+What happened?
+
+Agent → calls get_order_status tool
+
+Tool → returns delayed because of winter storm
+
+Agent → answers customer
+
+What We Learned
+
+MCP allows agents to connect with enterprise systems safely.
+
+Task 3: Create Workspace Rules and Skills
+Part 1: Workspace Rules
+What is a Rule?
+
+Rules tell AGY how to behave while creating code.
+
+Think:
+
+Company Coding Standards
+
+Created GEMINI.md
+
+Why?
+
+Store workspace rules.
+
+Rules Added
+
+Rule 1
+
+Every Python file must contain docstring.
+
+Reason:
+
+Better maintainability
+
+Rule 2
+
+Every Python file must contain Cymbal Direct copyright comment.
+
+Reason:
+
+Company standard
+
+Rule 3
+
+All custom skills go under:
+
+.agents/skills/
+
+Reason:
+
+Organized project structure
+Always On
+
+Meaning:
+
+Every AGY action automatically follows these rules.
+
+No need to remind it every time.
+
+Part 2: Create Agent Skill
+What is a Skill?
+
+A skill is a reusable business workflow.
+
+Think:
+
+Standard Operating Procedure (SOP)
+
+Created Skill:
+
+winter-storm-triage
+
+Skill Logic
+
+Step 1
+
+Call:
+
+get_order_status
+
+Reason:
+
+Verify order problem
+
+Step 2
+
+Call:
+
+get_customer_loyalty_info
+
+Reason:
+
+Determine reward eligibility
+
+Step 3
+
+Calculate compensation
+
+Platinum:
+
+$100 credit
+Next-Day Air
+
+Gold:
+
+$50 credit
+Next-Day Air
+
+Silver:
+
+$25 credit
+3-Day Select
+
+Member:
+
+$10 credit
+Priority Shipping
+
+Step 4
+
+Call:
+
+issue_disruption_compensation
+
+Reason:
+
+Apply compensation
+
+Step 5
+
+Generate empathetic response
+
+Reason:
+
+Customer communication
+What We Learned
+
+Skills teach the agent company policies and business processes.
+
+Task 4: Build the Agent Application
+Why?
+
+Until now agent only existed inside AGY.
+
+Now we build a real application.
+
+Installed Agents CLI
+
+Purpose:
+
+Converts prototype into deployable project.
+
+Asked AGY to Build Agent
+
+Project Name:
+
+winter-storm-triage
+
+What AGY Generated
+
+app/
+
+agent.py
+
+configuration files
+
+deployment files
+
+dependency files
+
+Why agent.py?
+
+agent.py is the main entry point of the agent.
+
+Agent Runtime starts execution from here.
+
+Local Testing
+
+Used:
+
+agents-cli playground
+
+Why?
+
+Always test before deployment.
+
+Same approach used in real companies.
+
+Test Query
+
+Where is my order CYM-EC-1002?
+
+What Agent Did
+Called get_order_status
+Found delay
+Called loyalty tool
+Found Platinum customer
+Applied $100 compensation
+Generated final response
+What We Learned
+
+Prototype → Application
+
+Task 5: Deploy to Agent Runtime
+Why?
+
+Without deployment:
+
+Only you can run the agent.
+
+After deployment:
+
+Anyone can access the agent endpoint.
+
+Copied MCP Server
+
+Copied:
+
+cymbal_direct_mcp.py
+
+into:
+
+app/
+
+Reason:
+
+Production needs access to tool definitions.
+
+Without it:
+
+Tool calls fail.
+
+Deployment
+
+AGY executed deployment process.
+
+Behind the Scenes
+
+Step 1
+
+Build container image
+
+Reason:
+
+Package code
+
+Step 2
+
+Upload image
+
+Reason:
+
+Store in cloud
+
+Step 3
+
+Create Reasoning Engine
+
+Reason:
+
+Runtime environment for the agent
+
+Step 4
+
+Create Endpoint
+
+Reason:
+
+Public access URL
+
+Step 5
+
+Start Agent Runtime
+
+Reason:
+
+Serve customer requests
+What is Agent Runtime?
+
+Managed service that runs agents.
+
+Handles:
+
+Scaling
+Security
+Monitoring
+Logging
+Availability
+What is Reasoning Engine?
+
+The deployed AI agent instance.
+
+It contains:
+
+Gemini model
+Agent logic
+MCP integrations
+Skills
+Rules
+Production Flow
+
+Customer asks question
+
+↓
+
+Agent Runtime receives request
+
+↓
+
+Gemini reasons
+
+↓
+
+Calls MCP tools
+
+↓
+
+Gets data
+
+↓
+
+Applies skill logic
+
+↓
+
+Generates response
+
+↓
+
+Returns answer
+
+Final Revision Notes
+
+MCP = Connects agents to tools and data
+
+MCP Server = Hosts tools
+
+Tool = Function the agent can call
+
+Rules = Development standards
+
+GEMINI.md = Stores workspace rules
+
+Skill = Business workflow or SOP
+
+AGY = AI coding assistant
+
+Agents CLI = Builds deployable agent applications
+
+Playground = Local testing environment
+
+Agent Runtime = Production environment
+
+Reasoning Engine = Running deployed agent
+
+Deployment = Making agent available in the cloud
+
+Full Lifecycle:
+
+Setup AGY → Connect MCP Tools → Create Rules → Create Skills → Build Agent → Test Locally → Deploy to Agent Runtime → Production Agent Ready
