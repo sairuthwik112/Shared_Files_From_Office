@@ -1,0 +1,16 @@
+2026-09-10 16:18:46 - root - DEBUG - This is a debug message
+2026-09-10 16:18:46 - root - INFO - This is an info message
+2026-09-10 16:18:46 - root - WARNING - This is a warning message
+2026-09-10 16:18:46 - root - ERROR - This is an error message
+2026-09-10 16:18:46 - root - CRITICAL - This is a critical message
+2026-09-10 16:22:55 - root - DEBUG - Addition of two numbers is printing....
+2026-09-10 16:38:47 - root - DEBUG - Addition: 10 + 5 = 15
+2026-09-10 16:38:47 - root - DEBUG - Subtraction: 10 - 5 = 5
+2026-09-10 16:38:47 - root - DEBUG - Multiplication: 10 * 5 = 50
+2026-09-10 16:38:47 - root - DEBUG - Division: 10 / 2 = 5.0
+2026-09-10 16:38:47 - root - ERROR - Cannot divide by zero
+2026-09-10 16:40:46 - Arithmetic_Operations - DEBUG - Addition: 10 + 5 = 15
+2026-09-10 16:40:46 - Arithmetic_Operations - DEBUG - Subtraction: 10 - 5 = 5
+2026-09-10 16:40:46 - Arithmetic_Operations - DEBUG - Multiplication: 10 * 5 = 50
+2026-09-10 16:40:46 - Arithmetic_Operations - DEBUG - Division: 10 / 2 = 5.0
+2026-09-10 16:40:46 - Arithmetic_Operations - ERROR - Cannot divide by zero
